@@ -3,6 +3,7 @@
 import { Heart, Leaf, Sun } from "lucide-react";
 import { VALUES, IMPACT } from "@/lib/site";
 import { Reveal } from "./Reveal";
+import { Parallax } from "./Parallax";
 
 const ICONS = { heart: Heart, leaf: Leaf, sun: Sun };
 
@@ -10,16 +11,18 @@ export function Values() {
   return (
     <section id="values" className="bg-green py-24 text-cream sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <Reveal>
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-gold">
-            ✦ What we stand for
-          </p>
-        </Reveal>
-        <Reveal delay={0.05}>
-          <h2 className="mt-4 max-w-3xl font-display text-[clamp(2rem,5.5vw,4rem)] font-extrabold leading-[0.98] tracking-tight">
-            Doing good, baked into everything.
-          </h2>
-        </Reveal>
+        <Parallax amount={45}>
+          <Reveal>
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-gold">
+              ✦ What we stand for
+            </p>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <h2 className="mt-4 max-w-3xl font-display text-[clamp(2rem,5.5vw,4rem)] font-extrabold leading-[0.98] tracking-tight">
+              Doing good, baked into everything.
+            </h2>
+          </Reveal>
+        </Parallax>
 
         <div className="mt-14 grid gap-5 md:grid-cols-3">
           {VALUES.map((v, i) => {

@@ -17,6 +17,7 @@ export function RevealImage({
   rounded = "rounded-[2rem]",
   priority = false,
   sizes = "(max-width: 1024px) 100vw, 50vw",
+  unoptimized = false,
 }: {
   src: string;
   alt: string;
@@ -26,6 +27,7 @@ export function RevealImage({
   rounded?: string;
   priority?: boolean;
   sizes?: string;
+  unoptimized?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-12% 0px" });
@@ -57,6 +59,7 @@ export function RevealImage({
           alt={alt}
           fill
           priority={priority}
+          unoptimized={unoptimized}
           sizes={sizes}
           className={`object-cover ${imgClassName ?? ""}`}
         />

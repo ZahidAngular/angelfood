@@ -57,12 +57,6 @@ html.lenis body {
   color: var(--color-cream);
 }
 
-/* Hide native cursor on precise pointers — custom cursor takes over */
-@media (hover: hover) and (pointer: fine) {
-  * {
-    cursor: none !important;
-  }
-}
 
 /* Display helpers */
 .font-display {

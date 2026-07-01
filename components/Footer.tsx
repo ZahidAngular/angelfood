@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { Mail, Phone, ArrowUpRight } from "lucide-react";
 import { NAV_LINKS } from "@/lib/site";
 import { Reveal } from "./Reveal";
@@ -24,7 +26,7 @@ function FacebookIcon({ size = 18 }: { size?: number }) {
 
 export function Footer() {
   return (
-    <footer id="contact" className="bg-green text-cream">
+    <footer className="bg-green text-cream">
       {/* Newsletter band */}
       <div className="border-b border-cream/15">
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-16 sm:px-8 lg:grid-cols-2 lg:py-24">
@@ -63,9 +65,13 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <span className="font-display text-3xl font-extrabold tracking-tight">
-              Angel<span className="text-gold">Food</span>
-            </span>
+            <Image
+              src="/images/logo.png"
+              alt="Angel Food"
+              width={120}
+              height={120}
+              className="h-24 w-auto [filter:brightness(0)_invert(1)]"
+            />
             <p className="mt-4 max-w-xs text-cream/70">
               Aotearoa&apos;s original vegan cheese company, leading the way since
               2006. Doing good should taste incredible.
@@ -99,7 +105,7 @@ export function Footer() {
             <ul className="mt-5 space-y-3">
               {NAV_LINKS.map((l) => (
                 <li key={l.href}>
-                  <a
+                  <Link
                     href={l.href}
                     className="group inline-flex items-center gap-1 text-cream/80 transition-colors hover:text-cream"
                   >
@@ -108,7 +114,7 @@ export function Footer() {
                       size={14}
                       className="opacity-0 transition-opacity group-hover:opacity-100"
                     />
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -142,9 +148,18 @@ export function Footer() {
         <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-cream/15 pt-8 text-sm text-cream/55 sm:flex-row sm:items-center">
           <p>© {new Date().getFullYear()} Angel Food. Made with kindness in Aotearoa.</p>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
-            <a href="#" className="hover:text-cream">Privacy policy</a>
-            <a href="#" className="hover:text-cream">Terms of use</a>
-            <a href="#" className="hover:text-cream">Terms of trade</a>
+            <Link href="/privacy-policy" className="hover:text-cream">
+              Privacy policy
+            </Link>
+            <Link href="/terms-of-website-use" className="hover:text-cream">
+              Terms of website use
+            </Link>
+            <Link href="/terms-and-conditions-of-trade" className="hover:text-cream">
+              Terms &amp; conditions of trade
+            </Link>
+            <Link href="/social-media-giveaway-terms" className="hover:text-cream">
+              Social media giveaway Ts &amp; Cs
+            </Link>
           </div>
         </div>
       </div>

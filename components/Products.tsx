@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   motion,
   useScroll,
@@ -54,16 +55,14 @@ export function Products() {
           className="flex items-center gap-6 px-5 sm:gap-8 sm:px-8"
         >
           {/* Intro panel */}
-          <div className="flex h-[78vh] w-[86vw] shrink-0 flex-col justify-center sm:w-[42vw] lg:w-[34vw]">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-coral">
-              ✦ The range
+          <div className="flex h-[78vh] w-[70vw] shrink-0 flex-col justify-center sm:w-[30vw] lg:w-[22vw]">
+            <p className="font-display text-[clamp(1.6rem,2.4vw,2.4rem)] font-bold leading-tight tracking-tight text-ink">
+              Scroll to meet
+              <br />
+              the range →
             </p>
-            <h2 className="mt-5 font-display text-[clamp(2.6rem,7vw,5.5rem)] font-extrabold leading-[0.9] tracking-[-0.03em] text-ink">
-              Cheese for every craving.
-            </h2>
-            <p className="mt-6 max-w-sm text-lg text-ink-soft">
-              Seven dairy-free heroes built for real life. Keep scrolling —
-              they&apos;re this way. →
+            <p className="mt-4 max-w-xs text-ink-soft">
+              Seven dairy-free heroes built for real life.
             </p>
           </div>
 
@@ -83,13 +82,12 @@ export function Products() {
                 Find Angel Food at a supermarket near you across Aotearoa.
               </p>
               <Magnetic strength={0.4} className="mt-7 inline-block">
-                <a
-                  href="#stockists"
-                  data-cursor="find"
+                <Link
+                  href="/where-to-buy"
                   className="inline-block rounded-full bg-gold px-7 py-3.5 font-semibold text-ink"
                 >
                   Where to buy →
-                </a>
+                </Link>
               </Magnetic>
             </div>
           </div>

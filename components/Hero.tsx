@@ -3,8 +3,10 @@
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowDown } from "lucide-react";
 import { Magnetic } from "./Magnetic";
+import { RotatingBadge } from "./RotatingBadge";
 
 type Floater = {
   src: string;
@@ -69,6 +71,14 @@ export function Hero() {
         <Floater key={i} {...f} progress={scrollYProgress} index={i} />
       ))}
 
+      {/* Spinning sticker badge — doubles as a scroll cue */}
+      <motion.div
+        style={{ opacity: fade }}
+        className="absolute bottom-[5%] left-1/2 z-30 hidden h-28 w-28 -translate-x-1/2 md:block"
+      >
+        <RotatingBadge />
+      </motion.div>
+
       {/* Headline */}
       <motion.div
         style={{ y: textY, opacity: fade }}
@@ -111,9 +121,8 @@ export function Hero() {
           className="mt-9 flex flex-wrap items-center gap-4"
         >
           <Magnetic strength={0.5}>
-            <a
-              href="#products"
-              data-cursor="taste"
+            <Link
+              href="/products"
               className="group inline-flex items-center gap-2 rounded-full bg-green px-8 py-4 text-base font-semibold text-cream"
             >
               Explore the range
@@ -121,15 +130,15 @@ export function Hero() {
                 size={18}
                 className="transition-transform group-hover:translate-y-1"
               />
-            </a>
+            </Link>
           </Magnetic>
           <Magnetic strength={0.5}>
-            <a
-              href="#story"
+            <Link
+              href="/about"
               className="inline-flex items-center gap-2 rounded-full border border-green/30 px-8 py-4 text-base font-semibold text-green"
             >
               Our story
-            </a>
+            </Link>
           </Magnetic>
         </motion.div>
       </motion.div>
@@ -158,7 +167,7 @@ function Line({
   className?: string;
 }) {
   return (
-    <span className="block overflow-hidden">
+    <span className="block overflow-hidden pb-[0.16em] -mb-[0.16em]">
       <motion.span
         initial={{ y: "110%" }}
         animate={{ y: "0%" }}
@@ -181,14 +190,17 @@ function Floater({
   index,
 }: Floater & { progress: MotionValue<number>; index: number }) {
   const y = useTransform(progress, [0, 1], [0, depth]);
+  // Spin each product as the hero scrolls away — alternating directions.
+  const spin = index % 2 ? -110 : 95;
+  const rot = useTransform(progress, [0, 1], [rotate, rotate + spin]);
   return (
     <motion.div
-      style={{ y }}
+      style={{ y, rotate: rot }}
       className={`pointer-events-none absolute z-10 ${className}`}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.6, rotate: rotate - 12 }}
-        animate={{ opacity: 1, scale: 1, rotate }}
+        initial={{ opacity: 0, scale: 0.55 }}
+        animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1, delay, ease: [0.16, 1, 0.3, 1] }}
       >
         <motion.div

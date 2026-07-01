@@ -4,13 +4,14 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { MEALS } from "@/lib/site";
 import { Reveal } from "./Reveal";
+import { Parallax } from "./Parallax";
 
 export function Meals() {
   return (
     <section className="bg-cream py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="mb-12 flex flex-col items-start justify-between gap-5 md:flex-row md:items-end">
-          <div>
+          <Parallax amount={40}>
             <Reveal>
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-coral">
                 ✦ Beyond cheese
@@ -21,7 +22,7 @@ export function Meals() {
                 Ready-to-go plant goodness.
               </h2>
             </Reveal>
-          </div>
+          </Parallax>
           <Reveal delay={0.1}>
             <p className="max-w-sm text-ink-soft">
               Wholesome vegan meals for the nights you&apos;d rather not cook —

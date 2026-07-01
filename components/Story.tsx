@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "./Reveal";
 import { RevealImage } from "./RevealImage";
 
@@ -25,20 +27,20 @@ export function Story() {
         <div>
           <Reveal>
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-coral">
-              ✦ Our story
+              ✦ The heart of Angel Food
             </p>
           </Reveal>
           <Reveal delay={0.05}>
             <h2 className="mt-4 font-display text-[clamp(2rem,5vw,3.6rem)] font-extrabold leading-[1] tracking-tight text-ink">
-              It started with a craving for something kinder.
+              Kia ora, I&apos;m Alice.
             </h2>
           </Reveal>
           <Reveal delay={0.1}>
             <p className="mt-6 text-lg leading-relaxed text-ink-soft">
-              When Alice went vegan in 2004, she missed the creamy, melty cheese
-              she&apos;d grown up with. So instead of going without, she made her
-              own — and Angel Food became Aotearoa&apos;s first dedicated vegan
-              cheese company.
+              I founded Angel Food in 2006, two years into my vegan journey. I
+              loved the lifestyle — but I missed the creamy, melty cheese I&apos;d
+              grown up with. So instead of going without, I made my own, and Angel
+              Food became Aotearoa&apos;s first dedicated vegan cheese company.
             </p>
           </Reveal>
           <Reveal delay={0.15}>
@@ -53,6 +55,20 @@ export function Story() {
               nationwide, one thing hasn&apos;t changed: we&apos;re a little
               company that&apos;s big on doing good.
             </p>
+          </Reveal>
+          <Reveal delay={0.25}>
+            <p className="mt-8 font-display text-xl font-semibold tracking-tight text-ink">
+              Ngā mihi mahana,{" "}
+              <span className="text-green">Alice Shopland</span>
+            </p>
+          </Reveal>
+          <Reveal delay={0.3}>
+            <Link
+              href="/about"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-green px-7 py-4 text-base font-semibold text-cream transition-transform hover:scale-[1.04]"
+            >
+              Learn more <ArrowUpRight size={18} />
+            </Link>
           </Reveal>
         </div>
       </div>
