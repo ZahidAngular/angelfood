@@ -1,3 +1,8 @@
+export const SOCIAL_LINKS = {
+  instagram: "https://instagram.com/angelfoodcheese",
+  facebook: "https://facebook.com/AngelFoodCheese",
+};
+
 export const NAV_LINKS = [
   { label: "Products", href: "/products" },
   { label: "Recipes", href: "/recipes" },

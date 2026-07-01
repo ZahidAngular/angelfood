@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { ScrollToTop } from "@/components/ScrollToTop";
+import { CustomCursor } from "@/components/CustomCursor";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress";
@@ -31,6 +33,11 @@ export const metadata: Metadata = {
     "Angel Food",
     "plant based",
   ],
+  icons: {
+    icon: "/images/logo.png",
+    shortcut: "/images/logo.png",
+    apple: "/images/logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -42,7 +49,9 @@ export default function RootLayout({
     <html lang="en" className={`${bricolage.variable} ${jakarta.variable}`}>
       <body className="grain">
         <SmoothScroll>
+          <ScrollToTop />
           <ScrollProgress />
+          <CustomCursor />
           <Navbar />
           {children}
           <Footer />

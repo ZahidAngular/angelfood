@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Enables `dark:` utilities, scoped to a `.dark` class on <html> (toggled by ThemeToggle) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Brand palette — warm, organic, premium */
   --color-cream: #f6efe1;
@@ -12,6 +15,13 @@
   --color-gold: #e7a330;
   --color-coral: #e16348;
   --color-line: #e1d6c0;
+  /* Constant dark label colour for text sitting on gold/coral/accent chips —
+     never flips in dark mode, so those badges stay readable either way. */
+  --color-ink-on-accent: #181511;
+  /* Brand-green used as accent TEXT/borders on the page's own surface —
+     the deep forest green reads fine on light cream, but needs to brighten
+     in dark mode so it doesn't vanish against a near-black background. */
+  --color-accent: #14422c;
 
   --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
@@ -22,6 +32,25 @@
 :root {
   --background: #f6efe1;
   --foreground: #181511;
+}
+
+/* Dark mode — flips surfaces + body text; brand accents (green/gold/coral)
+   stay the same since they already read well on both. */
+.dark {
+  --color-cream: #14140f;
+  --color-cream-deep: #1d1c15;
+  --color-paper: #201f17;
+  --color-ink: #f2ede0;
+  --color-ink-soft: #b8b0a0;
+  --color-line: #34331f;
+  --color-accent: #4fae7e;
+  --background: #14140f;
+  --foreground: #f2ede0;
+}
+
+html,
+body {
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 * {

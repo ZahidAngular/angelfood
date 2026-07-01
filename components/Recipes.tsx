@@ -11,7 +11,7 @@ import { Parallax } from "./Parallax";
 export function RecipeCard({ recipe: r, index }: { recipe: Recipe; index: number }) {
   return (
     <Reveal delay={(index % 4) * 0.07}>
-      <Link href={`/recipes/${r.slug}`} className="group block">
+      <Link href={`/recipes/${r.slug}`} className="group block" data-cursor="Cook this">
         <motion.div
           whileHover={{ y: -8 }}
           transition={{ type: "spring", stiffness: 300, damping: 22 }}
@@ -26,7 +26,7 @@ export function RecipeCard({ recipe: r, index }: { recipe: Recipe; index: number
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/10 to-transparent" />
-          <span className="absolute left-4 top-4 rounded-full bg-cream/90 px-3 py-1 text-xs font-bold uppercase tracking-wider text-green">
+          <span className="absolute left-4 top-4 rounded-full bg-cream/90 px-3 py-1 text-xs font-bold uppercase tracking-wider text-accent">
             {r.tag}
           </span>
           <div className="absolute inset-x-0 bottom-0 p-5">
@@ -64,7 +64,7 @@ export function Recipes() {
           <Reveal delay={0.1}>
             <Link
               href="/recipes"
-              className="inline-flex shrink-0 items-center gap-2 rounded-full border border-green/30 px-6 py-3.5 font-semibold text-green transition-colors hover:bg-paper"
+              className="inline-flex shrink-0 items-center gap-2 rounded-full border border-accent/30 px-6 py-3.5 font-semibold text-accent transition-colors hover:bg-paper"
             >
               All recipes <ArrowUpRight size={18} />
             </Link>

@@ -2,46 +2,36 @@
 
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
+import { ChefHat } from "lucide-react";
 
+/**
+ * A "meet the chef" accent that trails the mouse over recipe/food touchpoints.
+ * The native cursor stays visible everywhere — this only adds a small,
+ * chef-hat badge near elements explicitly opted in via `data-cursor`.
+ */
 export function CustomCursor() {
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
-  const sx = useSpring(x, { stiffness: 500, damping: 40, mass: 0.6 });
-  const sy = useSpring(y, { stiffness: 500, damping: 40, mass: 0.6 });
+  const sx = useSpring(x, { stiffness: 420, damping: 32, mass: 0.5 });
+  const sy = useSpring(y, { stiffness: 420, damping: 32, mass: 0.5 });
 
-  const [hover, setHover] = useState(false);
-  const [hidden, setHidden] = useState(true);
+  const [active, setActive] = useState(false);
   const [label, setLabel] = useState("");
 
   useEffect(() => {
-    // Skip on touch / coarse pointers
     if (window.matchMedia("(pointer: coarse)").matches) return;
-    setHidden(false);
 
     const move = (e: MouseEvent) => {
       x.set(e.clientX);
       y.set(e.clientY);
-      const t = e.target as HTMLElement;
-      const interactive = t.closest(
-        "a, button, [data-cursor], input, [role='button']"
-      ) as HTMLElement | null;
-      setHover(!!interactive);
-      setLabel(interactive?.getAttribute("data-cursor") || "");
+      const target = (e.target as HTMLElement)?.closest("[data-cursor]");
+      setActive(!!target);
+      setLabel(target?.getAttribute("data-cursor") || "");
     };
-    const leave = () => setHidden(true);
-    const enter = () => setHidden(false);
 
     window.addEventListener("mousemove", move);
-    document.addEventListener("mouseleave", leave);
-    document.addEventListener("mouseenter", enter);
-    return () => {
-      window.removeEventListener("mousemove", move);
-      document.removeEventListener("mouseleave", leave);
-      document.removeEventListener("mouseenter", enter);
-    };
+    return () => window.removeEventListener("mousemove", move);
   }, [x, y]);
-
-  if (hidden) return null;
 
   return (
     <motion.div
@@ -49,14 +39,22 @@ export function CustomCursor() {
       className="pointer-events-none fixed left-0 top-0 z-[100] hidden md:block"
     >
       <motion.div
+        initial={false}
         animate={{
-          width: hover ? (label ? 96 : 56) : 14,
-          height: hover ? (label ? 96 : 56) : 14,
+          opacity: active ? 1 : 0,
+          scale: active ? 1 : 0.5,
         }}
-        transition={{ type: "spring", stiffness: 260, damping: 24 }}
-        className="flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-green text-[11px] font-bold uppercase tracking-wider text-cream mix-blend-difference"
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="flex -translate-x-1/2 -translate-y-[130%] flex-col items-center gap-1.5"
       >
-        {label}
+        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gold text-ink-on-accent shadow-[0_10px_24px_-8px_rgba(20,66,44,0.5)]">
+          <ChefHat size={20} />
+        </span>
+        {label && (
+          <span className="whitespace-nowrap rounded-full bg-green px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-cream">
+            {label}
+          </span>
+        )}
       </motion.div>
     </motion.div>
   );

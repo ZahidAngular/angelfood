@@ -84,7 +84,7 @@ export function Products() {
               <Magnetic strength={0.4} className="mt-7 inline-block">
                 <Link
                   href="/where-to-buy"
-                  className="inline-block rounded-full bg-gold px-7 py-3.5 font-semibold text-ink"
+                  className="inline-block rounded-full bg-gold px-7 py-3.5 font-semibold text-ink-on-accent"
                 >
                   Where to buy →
                 </Link>
@@ -114,14 +114,14 @@ function ProductCard({
       className="group relative flex h-[78vh] max-h-[680px] w-[82vw] shrink-0 flex-col overflow-hidden rounded-[2.5rem] border border-line bg-paper p-8 sm:w-[40vw] lg:w-[30vw]"
       whileHover={{ y: -10 }}
       transition={{ type: "spring", stiffness: 280, damping: 22 }}
-      data-cursor=""
+      data-cursor="Taste it"
     >
       <div className="flex items-center justify-between">
         <span className="font-display text-7xl font-extrabold text-line">
           0{index + 1}
         </span>
         <span
-          className="rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-paper"
+          className="rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-ink-on-accent"
           style={{ background: p.accent }}
         >
           {p.tag}

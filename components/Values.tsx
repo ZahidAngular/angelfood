@@ -30,7 +30,7 @@ export function Values() {
             return (
               <Reveal key={v.title} delay={i * 0.1}>
                 <div className="group h-full rounded-3xl border border-cream/15 bg-cream/[0.04] p-8 transition-colors hover:bg-cream/[0.08]">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gold text-ink transition-transform duration-300 group-hover:-rotate-6">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gold text-ink-on-accent transition-transform duration-300 group-hover:-rotate-6">
                     <Icon size={26} />
                   </div>
                   <h3 className="mt-6 font-display text-2xl font-bold tracking-tight">

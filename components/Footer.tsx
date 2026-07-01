@@ -1,30 +1,39 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Mail, Phone, ArrowUpRight } from "lucide-react";
+import { Mail, Phone, ArrowUpRight, Loader2, Check } from "lucide-react";
 import { NAV_LINKS } from "@/lib/site";
+import { submitLead } from "@/lib/formService";
 import { Reveal } from "./Reveal";
+import { SocialLinks } from "./SocialIcons";
 
-function InstagramIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="2" width="20" height="20" rx="5" />
-      <circle cx="12" cy="12" r="4" />
-      <line x1="17.5" y1="6.5" x2="17.5" y2="6.5" />
-    </svg>
-  );
-}
-
-function FacebookIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12Z" />
-    </svg>
-  );
-}
+type Status = "idle" | "submitting" | "success" | "error";
 
 export function Footer() {
+  const [status, setStatus] = useState<Status>("idle");
+
+  async function handleSubscribe(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const email = String(new FormData(form).get("email") || "");
+
+    setStatus("submitting");
+    try {
+      await submitLead({
+        fullName: "",
+        email,
+        phone: "",
+        comment: "Newsletter signup",
+      });
+      setStatus("success");
+      form.reset();
+    } catch {
+      setStatus("error");
+    }
+  }
+
   return (
     <footer className="bg-green text-cream">
       {/* Newsletter band */}
@@ -40,23 +49,39 @@ export function Footer() {
             </p>
           </Reveal>
           <Reveal delay={0.1}>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="flex flex-col gap-3 sm:flex-row"
-            >
-              <input
-                type="email"
-                required
-                placeholder="you@email.com"
-                className="w-full rounded-full border border-cream/20 bg-cream/[0.06] px-6 py-4 text-cream placeholder:text-cream/50 outline-none transition-colors focus:border-gold"
-              />
-              <button
-                type="submit"
-                className="rounded-full bg-gold px-7 py-4 font-semibold text-ink transition-transform hover:scale-[1.04]"
+            {status === "success" ? (
+              <p className="flex items-center gap-2 font-medium text-gold">
+                <Check size={18} /> You&apos;re in — welcome to the good stuff!
+              </p>
+            ) : (
+              <form
+                onSubmit={handleSubscribe}
+                className="flex flex-col gap-3 sm:flex-row"
               >
-                Subscribe
-              </button>
-            </form>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="you@email.com"
+                  className="w-full rounded-full border border-cream/20 bg-cream/[0.06] px-6 py-4 text-cream placeholder:text-cream/50 outline-none transition-colors focus:border-gold"
+                />
+                <button
+                  type="submit"
+                  disabled={status === "submitting"}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gold px-7 py-4 font-semibold text-ink-on-accent transition-transform hover:scale-[1.04] disabled:opacity-60 disabled:hover:scale-100"
+                >
+                  {status === "submitting" && (
+                    <Loader2 size={16} className="animate-spin" />
+                  )}
+                  {status === "submitting" ? "Joining…" : "Subscribe"}
+                </button>
+              </form>
+            )}
+            {status === "error" && (
+              <p className="mt-2 text-sm font-medium text-coral">
+                Something went wrong — please try again.
+              </p>
+            )}
           </Reveal>
         </div>
       </div>
@@ -77,24 +102,10 @@ export function Footer() {
               2006. Doing good should taste incredible.
             </p>
             <div className="mt-6 flex gap-3">
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Instagram"
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-cream/20 transition-colors hover:bg-gold hover:text-ink"
-              >
-                <InstagramIcon size={18} />
-              </a>
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Facebook"
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-cream/20 transition-colors hover:bg-gold hover:text-ink"
-              >
-                <FacebookIcon size={18} />
-              </a>
+              <SocialLinks
+                size={18}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-cream/20 transition-colors hover:bg-gold hover:text-ink-on-accent"
+              />
             </div>
           </div>
 

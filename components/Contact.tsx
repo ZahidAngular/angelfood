@@ -1,12 +1,42 @@
 "use client";
 
-import { Mail, Phone, ArrowUpRight } from "lucide-react";
+import { useState } from "react";
+import { Mail, Phone, ArrowUpRight, Loader2, Check } from "lucide-react";
 import { WHOLESALE } from "@/lib/site";
+import { submitLead } from "@/lib/formService";
 import { Reveal } from "./Reveal";
 import { Parallax } from "./Parallax";
 import { Magnetic } from "./Magnetic";
 
+type Status = "idle" | "submitting" | "success" | "error";
+
 export function Contact() {
+  const [status, setStatus] = useState<Status>("idle");
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+
+    setStatus("submitting");
+    setError("");
+
+    try {
+      await submitLead({
+        fullName: String(data.get("name") || ""),
+        email: String(data.get("email") || ""),
+        phone: String(data.get("phone") || ""),
+        comment: String(data.get("message") || ""),
+      });
+      setStatus("success");
+      form.reset();
+    } catch {
+      setStatus("error");
+      setError("Something went wrong sending your message — please try again.");
+    }
+  }
+
   return (
     <section id="contact" className="bg-cream py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
@@ -33,52 +63,75 @@ export function Contact() {
             </Reveal>
 
             <Reveal delay={0.15}>
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="mt-9 space-y-4"
-              >
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <input
-                    required
-                    placeholder="Your name"
-                    className="w-full rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-green"
-                  />
-                  <input
-                    type="email"
-                    required
-                    placeholder="Email address"
-                    className="w-full rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-green"
-                  />
+              {status === "success" ? (
+                <div className="mt-9 flex items-center gap-3 rounded-2xl border border-accent/20 bg-cream-deep px-6 py-5 text-accent">
+                  <Check size={20} />
+                  <p className="font-medium">
+                    Thanks — your message is in! We&apos;ll be in touch soon.
+                  </p>
                 </div>
-                <textarea
-                  required
-                  rows={4}
-                  placeholder="Your message"
-                  className="w-full resize-none rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-green"
-                />
-                <Magnetic strength={0.35} className="inline-block">
-                  <button
-                    type="submit"
-                    data-cursor="send"
-                    className="rounded-full bg-green px-8 py-4 font-semibold text-cream transition-transform hover:scale-[1.03]"
-                  >
-                    Send message
-                  </button>
-                </Magnetic>
-              </form>
+              ) : (
+                <form onSubmit={handleSubmit} className="mt-9 space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <input
+                      name="name"
+                      required
+                      placeholder="Your name"
+                      className="w-full rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-accent"
+                    />
+                    <input
+                      name="email"
+                      type="email"
+                      required
+                      placeholder="Email address"
+                      className="w-full rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-accent"
+                    />
+                  </div>
+                  <input
+                    name="phone"
+                    type="tel"
+                    required
+                    placeholder="Phone number"
+                    className="w-full rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-accent"
+                  />
+                  <textarea
+                    name="message"
+                    required
+                    rows={4}
+                    placeholder="Your message"
+                    className="w-full resize-none rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-accent"
+                  />
+                  {status === "error" && (
+                    <p className="text-sm font-medium text-coral">{error}</p>
+                  )}
+                  <Magnetic strength={0.35} className="inline-block">
+                    <button
+                      type="submit"
+                      disabled={status === "submitting"}
+                      data-cursor="send"
+                      className="inline-flex items-center gap-2 rounded-full bg-green px-8 py-4 font-semibold text-cream transition-transform hover:scale-[1.03] disabled:opacity-60 disabled:hover:scale-100"
+                    >
+                      {status === "submitting" && (
+                        <Loader2 size={18} className="animate-spin" />
+                      )}
+                      {status === "submitting" ? "Sending…" : "Send message"}
+                    </button>
+                  </Magnetic>
+                </form>
+              )}
             </Reveal>
 
             <Reveal delay={0.2}>
               <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-ink-soft">
                 <a
                   href="mailto:info@angelfood.co.nz"
-                  className="inline-flex items-center gap-2 font-medium transition-colors hover:text-green"
+                  className="inline-flex items-center gap-2 font-medium transition-colors hover:text-accent"
                 >
                   <Mail size={18} /> info@angelfood.co.nz
                 </a>
                 <a
                   href="tel:0800115002"
-                  className="inline-flex items-center gap-2 font-medium transition-colors hover:text-green"
+                  className="inline-flex items-center gap-2 font-medium transition-colors hover:text-accent"
                 >
                   <Phone size={18} /> 0800 115002
                 </a>
@@ -113,7 +166,7 @@ export function Contact() {
                 <a
                   href="mailto:info@angelfood.co.nz?subject=Wholesale%20account%20enquiry"
                   data-cursor="apply"
-                  className="inline-flex items-center gap-2 rounded-full bg-gold px-7 py-4 font-semibold text-ink transition-transform hover:scale-[1.03]"
+                  className="inline-flex items-center gap-2 rounded-full bg-gold px-7 py-4 font-semibold text-ink-on-accent transition-transform hover:scale-[1.03]"
                 >
                   Apply for a wholesale account <ArrowUpRight size={18} />
                 </a>
