@@ -64,7 +64,7 @@ export function Contact() {
 
             <Reveal delay={0.15}>
               {status === "success" ? (
-                <div className="mt-9 flex items-center gap-3 rounded-2xl border border-accent/20 bg-cream-deep px-6 py-5 text-accent">
+                <div className="mt-9 flex items-center gap-3 rounded-2xl border border-green/20 bg-cream-deep px-6 py-5 text-green">
                   <Check size={20} />
                   <p className="font-medium">
                     Thanks — your message is in! We&apos;ll be in touch soon.
@@ -77,14 +77,14 @@ export function Contact() {
                       name="name"
                       required
                       placeholder="Your name"
-                      className="w-full rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-accent"
+                      className="w-full rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-green"
                     />
                     <input
                       name="email"
                       type="email"
                       required
                       placeholder="Email address"
-                      className="w-full rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-accent"
+                      className="w-full rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-green"
                     />
                   </div>
                   <input
@@ -92,14 +92,14 @@ export function Contact() {
                     type="tel"
                     required
                     placeholder="Phone number"
-                    className="w-full rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-accent"
+                    className="w-full rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-green"
                   />
                   <textarea
                     name="message"
                     required
                     rows={4}
                     placeholder="Your message"
-                    className="w-full resize-none rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-accent"
+                    className="w-full resize-none rounded-2xl border border-line bg-paper px-5 py-4 text-ink outline-none transition-colors placeholder:text-ink-soft/60 focus:border-green"
                   />
                   {status === "error" && (
                     <p className="text-sm font-medium text-coral">{error}</p>
@@ -125,13 +125,13 @@ export function Contact() {
               <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-ink-soft">
                 <a
                   href="mailto:info@angelfood.co.nz"
-                  className="inline-flex items-center gap-2 font-medium transition-colors hover:text-accent"
+                  className="inline-flex items-center gap-2 font-medium transition-colors hover:text-green"
                 >
                   <Mail size={18} /> info@angelfood.co.nz
                 </a>
                 <a
                   href="tel:0800115002"
-                  className="inline-flex items-center gap-2 font-medium transition-colors hover:text-accent"
+                  className="inline-flex items-center gap-2 font-medium transition-colors hover:text-green"
                 >
                   <Phone size={18} /> 0800 115002
                 </a>
@@ -166,7 +166,7 @@ export function Contact() {
                 <a
                   href="mailto:info@angelfood.co.nz?subject=Wholesale%20account%20enquiry"
                   data-cursor="apply"
-                  className="inline-flex items-center gap-2 rounded-full bg-gold px-7 py-4 font-semibold text-ink-on-accent transition-transform hover:scale-[1.03]"
+                  className="inline-flex items-center gap-2 rounded-full bg-gold px-7 py-4 font-semibold text-ink transition-transform hover:scale-[1.03]"
                 >
                   Apply for a wholesale account <ArrowUpRight size={18} />
                 </a>

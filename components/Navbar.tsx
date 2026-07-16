@@ -46,7 +46,7 @@ export function Navbar() {
               width={120}
               height={120}
               priority
-              className={`w-auto transition-all duration-500 dark:[filter:brightness(0)_invert(1)] ${
+              className={`w-auto transition-all duration-500 ${
                 scrolled ? "h-16" : "h-24"
               }`}
             />
@@ -63,9 +63,9 @@ export function Navbar() {
                 <Link
                   key={l.href}
                   href={l.href}
-                  className={`group relative font-medium transition-all duration-500 hover:text-accent ${
+                  className={`group relative font-medium transition-all duration-500 hover:text-green ${
                     scrolled ? "text-sm" : "text-base"
-                  } ${active ? "text-accent" : "text-ink-soft"}`}
+                  } ${active ? "text-green" : "text-ink-soft"}`}
                 >
                   {l.label}
                   <span
@@ -82,7 +82,7 @@ export function Navbar() {
             <div className="hidden items-center gap-1.5 lg:flex">
               <SocialLinks
                 size={16}
-                className="flex h-9 w-9 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-cream-deep hover:text-accent"
+                className="flex h-9 w-9 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-cream-deep hover:text-green"
               />
             </div>
             <Link
@@ -95,17 +95,17 @@ export function Navbar() {
             </Link>
             <button
               aria-label="Cart"
-              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-line text-accent transition-colors hover:bg-paper"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-line text-green transition-colors hover:bg-paper"
             >
               <ShoppingBag size={18} />
-              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-ink-on-accent">
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-ink">
                 0
               </span>
             </button>
             <button
               aria-label="Menu"
               onClick={() => setOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-accent md:hidden"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-green md:hidden"
             >
               <Menu size={18} />
             </button>
@@ -155,13 +155,13 @@ export function Navbar() {
               <div className="flex gap-3">
                 <SocialLinks
                   size={18}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-cream/30 text-cream transition-colors hover:bg-gold hover:text-ink-on-accent"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-cream/30 text-cream transition-colors hover:bg-gold hover:text-ink"
                 />
               </div>
               <Link
                 href="/where-to-buy"
                 onClick={() => setOpen(false)}
-                className="rounded-full bg-gold px-6 py-4 text-center text-base font-semibold text-ink-on-accent"
+                className="rounded-full bg-gold px-6 py-4 text-center text-base font-semibold text-ink"
               >
                 Find a store near you
               </Link>

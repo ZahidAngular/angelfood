@@ -47,7 +47,7 @@ export function CustomCursor() {
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
         className="flex -translate-x-1/2 -translate-y-[130%] flex-col items-center gap-1.5"
       >
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gold text-ink-on-accent shadow-[0_10px_24px_-8px_rgba(20,66,44,0.5)]">
+        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gold text-ink shadow-[0_10px_24px_-8px_rgba(20,66,44,0.5)]">
           <ChefHat size={20} />
         </span>
         {label && (

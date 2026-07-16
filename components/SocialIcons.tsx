@@ -29,7 +29,7 @@ export function FacebookIcon({ size = 18 }: { size?: number }) {
 
 export function SocialLinks({
   size = 18,
-  className = "flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 transition-colors hover:bg-gold hover:text-ink-on-accent",
+  className = "flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 transition-colors hover:bg-gold hover:text-ink",
 }: {
   size?: number;
   className?: string;

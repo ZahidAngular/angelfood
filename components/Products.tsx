@@ -44,7 +44,7 @@ export function Products() {
   return (
     <section
       ref={sectionRef}
-      id="products"
+      id="cheeses"
       className="relative bg-cream-deep"
       style={{ height: `${distance + vh}px` }}
     >
@@ -84,7 +84,7 @@ export function Products() {
               <Magnetic strength={0.4} className="mt-7 inline-block">
                 <Link
                   href="/where-to-buy"
-                  className="inline-block rounded-full bg-gold px-7 py-3.5 font-semibold text-ink-on-accent"
+                  className="inline-block rounded-full bg-gold px-7 py-3.5 font-semibold text-ink"
                 >
                   Where to buy →
                 </Link>
@@ -121,7 +121,7 @@ function ProductCard({
           0{index + 1}
         </span>
         <span
-          className="rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-ink-on-accent"
+          className="rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-ink"
           style={{ background: p.accent }}
         >
           {p.tag}

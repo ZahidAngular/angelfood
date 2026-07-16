@@ -88,7 +88,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
-          className="inline-flex items-center gap-2 rounded-full border border-line bg-paper/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-accent backdrop-blur"
+          className="inline-flex items-center gap-2 rounded-full border border-line bg-paper/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-green backdrop-blur"
         >
           <span className="h-1.5 w-1.5 rounded-full bg-coral" />
           Aotearoa&apos;s original vegan cheese co. · since 2006
@@ -96,7 +96,7 @@ export function Hero() {
 
         <h1 className="mt-6 font-display text-[clamp(3rem,11vw,11rem)] font-extrabold leading-[0.82] tracking-[-0.03em] text-ink">
           <Line delay={0.35}>Better</Line>
-          <Line delay={0.45} className="text-accent">
+          <Line delay={0.45} className="text-green">
             vegan
           </Line>
           <Line delay={0.55}>
@@ -111,7 +111,7 @@ export function Hero() {
           className="mt-8 max-w-md text-lg leading-relaxed text-ink-soft sm:text-xl"
         >
           Dairy-free cheese that never asks you to compromise — because{" "}
-          <em className="not-italic text-accent">doing good should taste incredible.</em>
+          <em className="not-italic text-green">doing good should taste incredible.</em>
         </motion.p>
 
         <motion.div
@@ -136,7 +136,7 @@ export function Hero() {
           <Magnetic strength={0.5}>
             <Link
               href="/about"
-              className="inline-flex items-center gap-2 rounded-full border border-accent/30 px-8 py-4 text-base font-semibold text-accent"
+              className="inline-flex items-center gap-2 rounded-full border border-green/30 px-8 py-4 text-base font-semibold text-green"
             >
               Our story
             </Link>

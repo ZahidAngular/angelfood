@@ -49,7 +49,7 @@ export function Stockists() {
         <Reveal delay={0.2}>
           <Link
             href="/contact"
-            className="mt-10 inline-flex items-center gap-2 rounded-full bg-gold px-7 py-4 text-base font-semibold text-ink-on-accent transition-transform hover:scale-[1.04]"
+            className="mt-10 inline-flex items-center gap-2 rounded-full bg-gold px-7 py-4 text-base font-semibold text-ink transition-transform hover:scale-[1.04]"
           >
             <MapPin size={18} /> Find a store near you
           </Link>
@@ -70,7 +70,7 @@ function LogoCard({
 }) {
   return (
     <div className="flex h-full flex-col rounded-3xl bg-paper p-6 sm:p-8">
-      <span className="mb-5 inline-block self-start rounded-full bg-cream-deep px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-accent">
+      <span className="mb-5 inline-block self-start rounded-full bg-cream-deep px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-green">
         {label}
       </span>
       <div className="relative my-auto h-20 w-full sm:h-28">

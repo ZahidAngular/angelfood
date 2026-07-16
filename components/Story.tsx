@@ -44,7 +44,7 @@ export function Story() {
             </p>
           </Reveal>
           <Reveal delay={0.15}>
-            <blockquote className="mt-8 border-l-2 border-gold pl-6 font-display text-2xl font-semibold leading-snug tracking-tight text-accent">
+            <blockquote className="mt-8 border-l-2 border-gold pl-6 font-display text-2xl font-semibold leading-snug tracking-tight text-green">
               “Food isn&apos;t just fuel. It&apos;s joy, culture, collaboration
               and community.”
             </blockquote>
@@ -59,7 +59,7 @@ export function Story() {
           <Reveal delay={0.25}>
             <p className="mt-8 font-display text-xl font-semibold tracking-tight text-ink">
               Ngā mihi mahana,{" "}
-              <span className="text-accent">Alice Shopland</span>
+              <span className="text-green">Alice Shopland</span>
             </p>
           </Reveal>
           <Reveal delay={0.3}>

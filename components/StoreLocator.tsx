@@ -163,7 +163,7 @@ export function StoreLocator() {
             className="flex flex-col gap-3 border-b border-line p-4 sm:flex-row sm:items-center sm:gap-4 sm:p-5"
           >
             <div className="flex flex-1 items-center gap-3 rounded-full bg-cream px-5 py-3">
-              <Search size={18} className="shrink-0 text-accent" />
+              <Search size={18} className="shrink-0 text-green" />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -181,13 +181,13 @@ export function StoreLocator() {
               <button
                 type="button"
                 onClick={nearMe}
-                className="inline-flex items-center gap-2 rounded-full border border-accent/30 px-5 py-3 text-sm font-semibold uppercase tracking-wide text-accent transition-colors hover:bg-cream"
+                className="inline-flex items-center gap-2 rounded-full border border-green/30 px-5 py-3 text-sm font-semibold uppercase tracking-wide text-green transition-colors hover:bg-cream"
               >
                 <LocateFixed size={16} /> Near me
               </button>
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 rounded-full bg-gold px-5 py-3 text-sm font-semibold uppercase tracking-wide text-ink-on-accent transition-transform hover:scale-[1.03]"
+                className="inline-flex items-center gap-2 rounded-full bg-gold px-5 py-3 text-sm font-semibold uppercase tracking-wide text-ink transition-transform hover:scale-[1.03]"
               >
                 <Package size={16} /> Find a product
               </Link>

@@ -68,7 +68,7 @@ export function Footer() {
                 <button
                   type="submit"
                   disabled={status === "submitting"}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gold px-7 py-4 font-semibold text-ink-on-accent transition-transform hover:scale-[1.04] disabled:opacity-60 disabled:hover:scale-100"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gold px-7 py-4 font-semibold text-ink transition-transform hover:scale-[1.04] disabled:opacity-60 disabled:hover:scale-100"
                 >
                   {status === "submitting" && (
                     <Loader2 size={16} className="animate-spin" />
@@ -104,7 +104,7 @@ export function Footer() {
             <div className="mt-6 flex gap-3">
               <SocialLinks
                 size={18}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-cream/20 transition-colors hover:bg-gold hover:text-ink-on-accent"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-cream/20 transition-colors hover:bg-gold hover:text-ink"
               />
             </div>
           </div>

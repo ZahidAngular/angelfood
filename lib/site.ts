@@ -85,6 +85,41 @@ export const MEALS = [
   { name: "Creamy Butter Curry", image: "/images/butter-curry.png" },
 ];
 
+export const MEATS: Product[] = [
+  {
+    name: "Vegan Sausages",
+    blurb:
+      "Snag-worthy and smoky off the grill — the sausage sizzle just went plant-based.",
+    tag: "Grill",
+    image: "/images/meats/sausages.jpg",
+    accent: "var(--color-gold)",
+  },
+  {
+    name: "Crumbed Nuggets",
+    blurb:
+      "Golden, crunchy and dunkable. Kid-approved, adult-devoured.",
+    tag: "Crispy",
+    image: "/images/meats/nuggets.jpg",
+    accent: "var(--color-coral)",
+  },
+  {
+    name: "Plant-Based Meatballs",
+    blurb:
+      "Hearty and herby — simmer them in your favourite sauce or pile onto a sub.",
+    tag: "Simmer",
+    image: "/images/meats/meatballs.jpg",
+    accent: "var(--color-green-bright)",
+  },
+  {
+    name: "Smoky Bacon Strips",
+    blurb:
+      "Crispy-edged and deeply smoky — the rasher your fry-up was missing.",
+    tag: "Sizzle",
+    image: "/images/meats/bacon.jpg",
+    accent: "var(--color-gold)",
+  },
+];
+
 export const VALUES = [
   {
     title: "Kindness",
