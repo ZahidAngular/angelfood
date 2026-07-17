@@ -10,6 +10,8 @@ import { Magnetic } from "./Magnetic";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
+const CREDIT_APP_URL = "mailto:info@angelfood.co.nz?subject=Wholesale%20credit%20application";
+
 export function Contact() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
@@ -149,22 +151,30 @@ export function Contact() {
                 Want to stock or cook with Angel Food?
               </h3>
               <p className="mt-4 text-cream/80">
-                Our products come in catering sizes — available through these
-                wholesale partners across Aotearoa:
-              </p>
-              <ul className="mt-6 grid grid-cols-2 gap-3">
-                {WHOLESALE.map((w) => (
-                  <li
-                    key={w}
-                    className="rounded-2xl border border-cream/15 bg-cream/[0.05] px-4 py-3 text-center font-display font-semibold tracking-tight"
-                  >
+                Use the contact form below or{" "}
+                <a
+                  href={CREDIT_APP_URL}
+                  className="font-semibold text-gold underline underline-offset-2 hover:text-cream"
+                >
+                  click here
+                </a>{" "}
+                to apply for a wholesale account. Our products are available
+                in catering sizes from{" "}
+                {WHOLESALE.map((w, i) => (
+                  <span key={w}>
                     {w}
-                  </li>
+                    {i < WHOLESALE.length - 2
+                      ? ", "
+                      : i === WHOLESALE.length - 2
+                        ? " and "
+                        : ""}
+                  </span>
                 ))}
-              </ul>
+                .
+              </p>
               <Magnetic strength={0.35} className="mt-8 inline-block">
                 <a
-                  href="mailto:info@angelfood.co.nz?subject=Wholesale%20account%20enquiry"
+                  href={CREDIT_APP_URL}
                   data-cursor="apply"
                   className="inline-flex items-center gap-2 rounded-full bg-gold px-7 py-4 font-semibold text-ink transition-transform hover:scale-[1.03]"
                 >
