@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import {
   motion,
   useScroll,
@@ -11,7 +10,6 @@ import {
   MotionValue,
 } from "framer-motion";
 import { PRODUCTS } from "@/lib/site";
-import { Magnetic } from "./Magnetic";
 
 export function Products() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -48,49 +46,16 @@ export function Products() {
       className="relative bg-cream-deep"
       style={{ height: `${distance + vh}px` }}
     >
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
+      <div className="sticky top-0 flex h-screen items-center overflow-hidden pt-20 sm:pt-28">
         <motion.div
           ref={trackRef}
           style={{ x }}
           className="flex items-center gap-6 px-5 sm:gap-8 sm:px-8"
         >
-          {/* Intro panel */}
-          <div className="flex h-[78vh] w-[70vw] shrink-0 flex-col justify-center sm:w-[30vw] lg:w-[22vw]">
-            <p className="font-display text-[clamp(1.6rem,2.4vw,2.4rem)] font-bold leading-tight tracking-tight text-ink">
-              Scroll to meet
-              <br />
-              the range →
-            </p>
-            <p className="mt-4 max-w-xs text-ink-soft">
-              Seven dairy-free heroes built for real life.
-            </p>
-          </div>
-
           {/* Product panels */}
           {PRODUCTS.map((p, i) => (
             <ProductCard key={p.name} product={p} index={i} progress={scrollYProgress} />
           ))}
-
-          {/* CTA panel */}
-          <div className="flex h-[70vh] w-[80vw] shrink-0 flex-col justify-between rounded-[2.5rem] bg-green p-10 text-cream sm:w-[36vw] lg:w-[28vw]">
-            <span className="text-6xl">🧀</span>
-            <div>
-              <h3 className="font-display text-[clamp(2rem,4vw,3rem)] font-bold leading-[0.95] tracking-tight">
-                Hungry yet?
-              </h3>
-              <p className="mt-4 text-cream/80">
-                Find Angel Food at a supermarket near you across Aotearoa.
-              </p>
-              <Magnetic strength={0.4} className="mt-7 inline-block">
-                <Link
-                  href="/where-to-buy"
-                  className="inline-block rounded-full bg-gold px-7 py-3.5 font-semibold text-ink"
-                >
-                  Where to buy →
-                </Link>
-              </Magnetic>
-            </div>
-          </div>
         </motion.div>
       </div>
     </section>

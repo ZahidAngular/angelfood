@@ -9,7 +9,7 @@ import { Parallax } from "./Parallax";
 export function Meats() {
   return (
     <section id="meats" className="bg-cream-deep py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+      <div className="mx-auto w-full px-5 sm:px-8 lg:px-12">
         <div className="mb-12 flex flex-col items-start justify-between gap-5 md:flex-row md:items-end">
           <Parallax amount={40}>
             <Reveal>
@@ -31,24 +31,22 @@ export function Meats() {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-6">
           {MEATS.map((p, i) => (
-            <Reveal key={p.name} delay={(i % 4) * 0.07}>
+            <Reveal key={p.name} delay={(i % 4) * 0.07} className="h-full">
               <motion.div
                 whileHover={{ y: -8 }}
                 transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                className="group overflow-hidden rounded-3xl border border-line bg-paper p-5"
+                className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-line bg-paper p-5 sm:p-6"
                 data-cursor="Taste it"
               >
-                <div className="flex items-center justify-between">
+                <div className="relative flex h-72 items-center justify-center overflow-hidden rounded-2xl sm:h-96">
                   <span
-                    className="rounded-full px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-ink"
+                    className="absolute right-0 top-0 z-10 rounded-full px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-ink"
                     style={{ background: p.accent }}
                   >
                     {p.tag}
                   </span>
-                </div>
-                <div className="relative mt-3 flex h-44 items-center justify-center overflow-hidden rounded-2xl">
                   <Image
                     src={p.image}
                     alt={`Angel Food ${p.name}`}
@@ -57,10 +55,10 @@ export function Meats() {
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                 </div>
-                <h3 className="mt-4 text-center font-display text-lg font-bold tracking-tight text-ink">
+                <h3 className="mt-4 font-display text-lg font-bold tracking-tight text-ink sm:text-xl">
                   {p.name}
                 </h3>
-                <p className="mt-1.5 text-center text-sm leading-relaxed text-ink-soft">
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
                   {p.blurb}
                 </p>
               </motion.div>

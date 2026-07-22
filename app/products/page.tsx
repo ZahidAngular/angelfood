@@ -26,7 +26,7 @@ export default function ProductsPage() {
       />
       <nav
         aria-label="Product categories"
-        className="sticky top-24 z-30 flex justify-center gap-3 border-b border-line bg-cream/90 py-4 backdrop-blur"
+        className="sticky top-24 z-30 flex justify-center gap-3 py-4"
       >
         {CATEGORIES.map((c) => (
           <a

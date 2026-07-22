@@ -9,7 +9,7 @@ import { Parallax } from "./Parallax";
 export function Meals() {
   return (
     <section id="meals" className="bg-cream py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+      <div className="mx-auto w-full px-5 sm:px-8 lg:px-12">
         <div className="mb-12 flex flex-col items-start justify-between gap-5 md:flex-row md:items-end">
           <Parallax amount={40}>
             <Reveal>
@@ -31,26 +31,30 @@ export function Meals() {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-6">
           {MEALS.map((m, i) => (
-            <Reveal key={m.name} delay={(i % 4) * 0.07}>
+            <Reveal key={m.name} delay={(i % 4) * 0.07} className="h-full">
               <motion.div
                 whileHover={{ y: -8 }}
                 transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                className="group overflow-hidden rounded-3xl border border-line bg-paper p-5"
+                className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-line bg-paper p-5 sm:p-6"
+                data-cursor="Taste it"
               >
-                <div className="relative flex h-44 items-center justify-center">
+                <div className="relative flex h-72 items-center justify-center overflow-hidden rounded-2xl sm:h-96">
                   <Image
                     src={m.image}
                     alt={`Angel Food ${m.name}`}
-                    width={260}
-                    height={260}
-                    className="h-full w-auto object-contain transition-transform duration-500 group-hover:scale-110"
+                    fill
+                    sizes="(min-width: 1024px) 22vw, 45vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                 </div>
-                <h3 className="mt-4 text-center font-display text-lg font-bold tracking-tight text-ink">
+                <h3 className="mt-4 font-display text-lg font-bold tracking-tight text-ink sm:text-xl">
                   {m.name}
                 </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                  {m.blurb}
+                </p>
               </motion.div>
             </Reveal>
           ))}

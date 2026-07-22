@@ -23,7 +23,7 @@ export const PRODUCTS: Product[] = [
   {
     name: "Grated",
     blurb:
-      "The MVP in your fridge for Friday pizza, taco Tuesday, and all your toastie cravings.",
+      "The MVP in your fridge for Friday pizza, taco Tuesday, and all your toastie cravings. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Melts",
     image: "/images/grated.png",
     accent: "var(--color-gold)",
@@ -31,7 +31,7 @@ export const PRODUCTS: Product[] = [
   {
     name: "Cream Cheese",
     blurb:
-      "Our award-winning star for cheesecakes and bagels. Creamy, spreadable, luxurious.",
+      "Our award-winning star for cheesecakes and bagels. Creamy, spreadable, luxurious. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Spread",
     image: "/images/cream-cheese.png",
     accent: "var(--color-green-bright)",
@@ -39,7 +39,7 @@ export const PRODUCTS: Product[] = [
   {
     name: "Sour Cream",
     blurb:
-      "The creamy-tangy dollop on your nachos and the swirl in your pumpkin soup.",
+      "The creamy-tangy dollop on your nachos and the swirl in your pumpkin soup. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Spoon",
     image: "/images/sour-cream.png",
     accent: "var(--color-coral)",
@@ -47,7 +47,7 @@ export const PRODUCTS: Product[] = [
   {
     name: "Feta",
     blurb:
-      "Bursting with the salty-creamy-tangy vibe you'd expect. A treat on pizza, in muffins and salads.",
+      "Bursting with the salty-creamy-tangy vibe you'd expect. A treat on pizza, in muffins and salads. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Crumble",
     image: "/images/feta.png",
     accent: "var(--color-green-bright)",
@@ -55,7 +55,7 @@ export const PRODUCTS: Product[] = [
   {
     name: "Cheddar Block",
     blurb:
-      "The block-in-a-tub that will save your sandwiches and cosy up to your crackers.",
+      "The block-in-a-tub that will save your sandwiches and cosy up to your crackers. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Slice",
     image: "/images/cheddar.png",
     accent: "var(--color-gold)",
@@ -63,7 +63,7 @@ export const PRODUCTS: Product[] = [
   {
     name: "Mozza Block",
     blurb:
-      "Tip it out of the tub and slice it or grate it onto your pizza or into your quesadilla.",
+      "Tip it out of the tub and slice it or grate it onto your pizza or into your quesadilla. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Stretch",
     image: "/images/mozza.png",
     accent: "var(--color-coral)",
@@ -71,7 +71,7 @@ export const PRODUCTS: Product[] = [
   {
     name: "Parmesan",
     blurb:
-      "The finishing touch for pasta — also great on baked beans, mash and fresh tomato.",
+      "The finishing touch for pasta — also great on baked beans, mash and fresh tomato. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Finish",
     image: "/images/parmesan.png",
     accent: "var(--color-gold)",
@@ -79,10 +79,30 @@ export const PRODUCTS: Product[] = [
 ];
 
 export const MEALS = [
-  { name: "Vege Lasagna", image: "/images/lasagna.png" },
-  { name: "Vege Korma", image: "/images/korma.png" },
-  { name: "Tofu & Greens", image: "/images/tofu-greens.png" },
-  { name: "Creamy Butter Curry", image: "/images/butter-curry.png" },
+  {
+    name: "Vege Lasagna",
+    blurb:
+      "Slow-cooked lentil ragu, tofu ricotta, velvety béchamel, and tender pasta sheets — baked to perfection. Plant-based, vegan, dairy-free.",
+    image: "/images/lasagna.png",
+  },
+  {
+    name: "Vege Korma",
+    blurb:
+      "Creamy coconut cashew korma with tender veges and aromatic spices, with cumin rice and roasted broccoli. Plant-based, vegan, dairy-free.",
+    image: "/images/korma.png",
+  },
+  {
+    name: "Tofu & Greens",
+    blurb:
+      "Fresh and nourishing with marinated tofu, vibrant spinach, fragrant jasmine rice and sesame ginger dressing. Plant-based, vegan, dairy-free.",
+    image: "/images/tofu-greens.png",
+  },
+  {
+    name: "Creamy Butter Curry",
+    blurb:
+      "Plant-based chicken in a silky tomato-butter curry loaded with aromatic spices on jasmine rice. Plant-based, vegan, dairy-free.",
+    image: "/images/butter-curry.png",
+  },
 ];
 
 export const MEATS: Product[] = [

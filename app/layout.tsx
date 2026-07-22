@@ -6,7 +6,6 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import { CustomCursor } from "@/components/CustomCursor";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { ScrollProgress } from "@/components/ScrollProgress";
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -50,7 +49,6 @@ export default function RootLayout({
       <body className="grain">
         <SmoothScroll>
           <ScrollToTop />
-          <ScrollProgress />
           <CustomCursor />
           <Navbar />
           {children}
