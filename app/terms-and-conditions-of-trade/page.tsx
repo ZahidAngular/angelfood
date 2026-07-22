@@ -7,48 +7,62 @@ export const metadata: Metadata = {
 
 export default function TermsOfTradePage() {
   return (
-    <LegalPage
-      title="Terms & conditions of trade."
-      intro="The terms that apply to wholesale and trade orders with Angel Food Limited."
-    >
+    <LegalPage title="Terms & conditions of trade.">
       <p>
-        These terms apply to the supply of goods by Angel Food Limited
-        (&ldquo;Angel Food&rdquo;) to its trade and wholesale customers
-        (&ldquo;the Customer&rdquo;).
+        <strong>Angel Food Ltd Terms Of Trade</strong>
       </p>
 
-      <h2>Orders &amp; pricing</h2>
+      <h2>1. Credit terms</h2>
       <p>
-        Prices are as quoted at the time of order and may change with notice.
-        Orders are accepted at Angel Food&apos;s discretion and subject to
-        availability.
+        Credit is made available to customers at the sole discretion of
+        Angel Food Ltd and is subject to a continuing history of prompt
+        payment of invoices.
+      </p>
+      <p>New customers may be required to pre-pay for their first order.</p>
+
+      <h2>2. Ownership of goods</h2>
+      <p>
+        All goods supplied remain the property of Angel Food Ltd until
+        payment has been made in full.
       </p>
 
-      <h2>Payment</h2>
+      <h2>3. Condition of goods</h2>
       <p>
-        Unless otherwise agreed in writing, invoices are payable by the due date
-        stated. Title in the goods remains with Angel Food until payment is
-        received in full; risk passes to the Customer on delivery.
+        Angel Food Ltd will act in good faith to deliver goods in prime
+        condition. In the unlikely event that we supply substandard goods,
+        please advise us as soon as possible so that we can discuss credit
+        or replacement. Angel Food Ltd reserves the right to inspect the
+        goods in question.
       </p>
 
-      <h2>Delivery</h2>
+      <h2>4. Payment</h2>
       <p>
-        Delivery dates are estimates only. Angel Food is not liable for delays
-        outside its reasonable control.
+        Invoices are payable on the 20th of the month following unless
+        agreed otherwise in writing.
+      </p>
+      <p>
+        Payment can be made by direct credit, to the bank account specified
+        on your invoice.
+      </p>
+      <p>We do not accept cheques.</p>
+      <p>
+        If you think one of our invoices is incorrect, please contact us
+        before payment is due.
+      </p>
+      <p>
+        If a customer&apos;s accounts are overdue, Angel Food Ltd reserves
+        the right to request advance payment for future orders. Overdue
+        invoices may incur interest of 1.5% per month, compounded monthly
+        plus an additional $10 administration fee for each reminder notice
+        or follow-up phone call. The customer is liable for any additional
+        costs of collection, including charges added by any debt collection
+        agency.
       </p>
 
-      <h2>Returns &amp; quality</h2>
+      <h2>5. Acceptance</h2>
       <p>
-        Please inspect goods on delivery and notify us of any shortage or damage
-        promptly. Your rights under the Consumer Guarantees Act 1993 and Fair
-        Trading Act 1986 are not affected.
-      </p>
-
-      <h2>Governing law</h2>
-      <p>
-        These terms are governed by the laws of New Zealand. For wholesale
-        enquiries, contact{" "}
-        <a href="mailto:info@angelfood.co.nz">info@angelfood.co.nz</a>.
+        By placing an order with Angel Food Ltd or its authorised agents,
+        the customer is deemed to have accepted these terms and conditions.
       </p>
     </LegalPage>
   );

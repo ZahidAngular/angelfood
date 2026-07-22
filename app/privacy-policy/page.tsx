@@ -5,42 +5,43 @@ export const metadata: Metadata = { title: "Privacy Policy — Angel Food" };
 
 export default function PrivacyPolicyPage() {
   return (
-    <LegalPage
-      title="Privacy policy."
-      intro="How Angel Food Limited collects, uses and protects your personal information."
-    >
+    <LegalPage title="Privacy policy.">
+      <p>We may collect personal information from you, including:</p>
+      <ul>
+        <li>Name</li>
+        <li>Contact information</li>
+        <li>Interactions with us</li>
+      </ul>
+
+      <p>We collect your personal information in order to:</p>
+      <ul>
+        <li>
+          Inform our customers about new products, and recipes, and other
+          information relevant to our product lines.
+        </li>
+      </ul>
+
       <p>
-        Angel Food Limited respects your privacy. This policy explains what
-        personal information we collect, how we use it, and the choices you have.
+        <strong>
+          Angel Food will not knowingly share your information with a third
+          party.
+        </strong>
       </p>
 
-      <h2>What we collect</h2>
       <p>
-        We may collect personal information such as your name, contact details
-        and records of your interactions with us — for example, when you contact
-        us, place a wholesale enquiry, or sign up to hear from us.
+        You have the right to ask for a copy of any personal information we
+        hold about you, and to ask for it to be corrected if you think it is
+        wrong. If you&apos;d like to ask for a copy of your information, or to
+        have it corrected, please contact us by:
       </p>
-
-      <h2>How we use it</h2>
-      <p>
-        We use your information to respond to enquiries and to inform our
-        customers about new products, recipes, and other information relevant to
-        our product lines. <strong>Angel Food will not knowingly share your
-        information with a third party.</strong>
-      </p>
-
-      <h2>Your rights</h2>
-      <p>
-        You have the right to ask for a copy of any personal information we hold
-        about you, and to ask for it to be corrected if you think it is wrong.
-      </p>
-
-      <h2>Contact us</h2>
-      <p>
-        To make a request or ask a question about your privacy, email{" "}
-        <a href="mailto:info@angelfood.co.nz">info@angelfood.co.nz</a> or call{" "}
-        <a href="tel:0800115002">0800 115002</a>.
-      </p>
+      <ul>
+        <li>
+          Email: <a href="mailto:info@angelfood.co.nz">info@angelfood.co.nz</a>
+        </li>
+        <li>
+          Telephone: <a href="tel:0800115002">0800 115002</a>
+        </li>
+      </ul>
     </LegalPage>
   );
 }
