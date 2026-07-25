@@ -1,5 +1,6 @@
 import { Hero } from "@/components/Hero";
 import { Marquee } from "@/components/Marquee";
+import { CategoryShowcase } from "@/components/CategoryShowcase";
 import { SpinShowcase } from "@/components/SpinShowcase";
 import { Story } from "@/components/Story";
 import { Values } from "@/components/Values";
@@ -11,6 +12,7 @@ export default function Home() {
     <main>
       <Hero />
       <Marquee />
+      <CategoryShowcase />
       <SpinShowcase />
       <Story />
       <Values />

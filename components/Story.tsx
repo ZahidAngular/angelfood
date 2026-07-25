@@ -15,7 +15,7 @@ export function Story() {
             src="/images/founder.jpeg"
             alt="Alice Shopland, founder of Angel Food"
             className="aspect-[4/5] border border-line bg-cream-deep"
-            imgClassName="object-top"
+            imgClassName="object-[75%_0%]"
             parallax={12}
           />
           <div className="absolute bottom-5 left-5 z-10 rounded-2xl bg-cream/90 px-5 py-3 backdrop-blur">
