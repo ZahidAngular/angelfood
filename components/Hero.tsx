@@ -18,7 +18,7 @@ type Floater = {
 
 const FLOATERS: Floater[] = [
   {
-    src: "/images/cream-cheese.png",
+    src: "/images/lasagna.png",
     className: "right-[4%] top-[14%] w-[26vw] max-w-[340px]",
     depth: 120,
     delay: 0.5,
@@ -32,7 +32,7 @@ const FLOATERS: Floater[] = [
     rotate: 8,
   },
   {
-    src: "/images/feta.png",
+    src: "/images/meats/meatballs.png",
     className: "right-[2%] bottom-[8%] w-[19vw] max-w-[250px]",
     depth: 70,
     delay: 0.8,
@@ -147,12 +147,11 @@ export function Hero() {
       {/* scroll cue */}
       <motion.div
         style={{ opacity: fade }}
-        className="absolute inset-x-0 bottom-7 z-20 mx-auto flex w-full max-w-7xl items-center justify-between px-5 text-xs uppercase tracking-[0.2em] text-ink-soft sm:px-8"
+        className="absolute inset-x-0 bottom-7 z-20 mx-auto flex w-full max-w-7xl items-center px-5 text-xs uppercase tracking-[0.2em] text-ink-soft sm:px-8"
       >
         <span className="flex items-center gap-2">
           <ArrowDown size={14} className="animate-bounce" /> Scroll to taste
         </span>
-        <span className="hidden sm:block">Proudly made in NZ</span>
       </motion.div>
     </section>
   );

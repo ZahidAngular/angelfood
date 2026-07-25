@@ -1,5 +1,5 @@
 export const SOCIAL_LINKS = {
-  instagram: "https://instagram.com/angelfoodcheese",
+  instagram: "https://www.instagram.com/angelfoodforgood",
   facebook: "https://facebook.com/AngelFoodCheese",
 };
 
@@ -148,7 +148,7 @@ export const VALUES = [
   },
   {
     title: "Sustainability",
-    body: "Choosing plants over dairy means less land, less water, and far fewer greenhouse gases. Small swaps, real impact.",
+    body: "Choosing plants over meat and dairy means less land, less water, and far fewer greenhouse gases. Small swaps, real impact.",
     icon: "leaf",
   },
   {
@@ -162,7 +162,7 @@ export const IMPACT = [
   { value: "2006", label: "Leading the way since" },
   { value: "100%", label: "Plant-based, always" },
   { value: "7+", label: "Award-winning cheeses" },
-  { value: "NZ", label: "Proudly made in Aotearoa" },
+  { value: "NZ", label: "Proudly based in Aotearoa" },
 ];
 
 export const RETAILERS = [

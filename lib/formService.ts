@@ -2,7 +2,7 @@
 const RECAPTCHA_SITE_KEY = "6LcSZSAkAAAAAFxJ_WfOQl4itrBsLPDcVkGGRmtI";
 
 
-const ENABLE_RECAPTCHA = false;
+const ENABLE_RECAPTCHA = true;
 
 const LEAD_API_URL = "https://webapi.webappconsulting.com.au/api/contactus/save";
 const WEBSITE_ID = "27";

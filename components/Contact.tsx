@@ -144,14 +144,14 @@ export function Contact() {
           {/* Right — wholesale */}
           <Reveal delay={0.15} className="lg:pt-16">
             <div className="rounded-[2.5rem] bg-green p-8 text-cream sm:p-10">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-gold">
+              <h3 className="font-display text-[clamp(1.8rem,3.5vw,2.6rem)] font-bold leading-tight tracking-tight">
                 Wholesale &amp; food service
-              </p>
-              <h3 className="mt-4 font-display text-[clamp(1.8rem,3.5vw,2.6rem)] font-bold leading-tight tracking-tight">
-                Want to stock or cook with Angel Food?
               </h3>
+              <p className="mt-4 font-bold">
+                Want to stock or cook with Angel Food?
+              </p>
               <p className="mt-4 text-cream/80">
-                Use the contact form below or{" "}
+                Use the contact form or{" "}
                 <a
                   href={CREDIT_APP_URL}
                   className="font-semibold text-gold underline underline-offset-2 hover:text-cream"

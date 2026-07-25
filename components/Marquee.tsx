@@ -2,7 +2,6 @@ const ITEMS = [
   "Dairy-free",
   "Award-winning",
   "100% plant-based",
-  "Made in Aotearoa",
   "No compromise",
   "Since 2006",
   "Big on doing good",

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, ShoppingBag } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { NAV_LINKS } from "@/lib/site";
 import { SocialLinks } from "./SocialIcons";
 
@@ -93,15 +93,6 @@ export function Navbar() {
             >
               Find a store
             </Link>
-            <button
-              aria-label="Cart"
-              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-line text-green transition-colors hover:bg-paper"
-            >
-              <ShoppingBag size={18} />
-              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-ink">
-                0
-              </span>
-            </button>
             <button
               aria-label="Menu"
               onClick={() => setOpen(true)}
