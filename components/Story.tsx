@@ -12,10 +12,10 @@ export function Story() {
         {/* Image */}
         <div className="relative">
           <RevealImage
-            src="/images/founder.jpeg"
+            src="/images/founder.png"
             alt="Alice Shopland, founder of Angel Food"
             className="aspect-[4/5] border border-line bg-cream-deep"
-            imgClassName="object-[75%_0%]"
+            imgClassName="object-center"
             parallax={12}
           />
           <div className="absolute bottom-5 left-5 z-10 rounded-2xl bg-cream/90 px-5 py-3 backdrop-blur">
