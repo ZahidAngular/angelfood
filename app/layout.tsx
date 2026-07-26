@@ -24,7 +24,7 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Angel Food — Better Vegan Cheese",
   description:
-    "Aotearoa's original vegan cheese company, leading the way since 2006. Dairy-free cheese that doesn't ask you to compromise — because doing good should taste incredible.",
+    "Aotearoa's original vegan cheese company — started a food revolution in 2006. Dairy-free cheese that doesn't ask you to compromise — because doing good should taste incredible.",
   keywords: [
     "vegan cheese",
     "dairy free",

@@ -159,7 +159,7 @@ export const VALUES = [
 ];
 
 export const IMPACT = [
-  { value: "2006", label: "Leading the way since" },
+  { value: "2006", label: "Started a food revolution" },
   { value: "100%", label: "Plant-based, always" },
   { value: "7+", label: "Award-winning cheeses" },
   { value: "NZ", label: "Proudly based in Aotearoa" },

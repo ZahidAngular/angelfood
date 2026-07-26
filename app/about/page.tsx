@@ -15,7 +15,7 @@ export default function AboutPage() {
       <PageHeader
         eyebrow="Our story"
         title="A little company, big on doing good."
-        intro="Aotearoa's original vegan cheese company, leading the way since 2006."
+        intro="Aotearoa's original vegan cheese company — started a food revolution in 2006."
       />
       <Story />
       <Values />

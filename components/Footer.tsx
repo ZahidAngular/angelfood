@@ -98,8 +98,8 @@ export function Footer() {
               className="h-24 w-auto [filter:brightness(0)_invert(1)]"
             />
             <p className="mt-4 max-w-xs text-cream/70">
-              Aotearoa&apos;s original vegan cheese company, leading the way since
-              2006. Doing good should taste incredible.
+              Aotearoa&apos;s original vegan cheese company — started a food
+              revolution in 2006. Doing good should taste incredible.
             </p>
             <div className="mt-6 flex gap-3">
               <SocialLinks
@@ -157,7 +157,7 @@ export function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-cream/15 pt-8 text-sm text-cream/55 sm:flex-row sm:items-center">
-          <p>© {new Date().getFullYear()} Angel Food. Made with kindness in Aotearoa.</p>
+          <p>© 2026 Angel Food | Made with kindness | Based in Aotearoa.</p>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
             <Link href="/privacy-policy" className="hover:text-cream">
               Privacy policy
