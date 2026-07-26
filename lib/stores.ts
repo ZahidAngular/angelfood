@@ -14,11 +14,21 @@ const API_BASE =
 /** How long (seconds) a fetched stockist list stays fresh. */
 const REVALIDATE_SECONDS = 3600;
 
+/**
+ * Per-chain display config.
+ * - `color` — vivid brand colour used for chips, list/legend dots, popup badge.
+ * - `ring`  — the map pin's border. Same as `color` except PAK'nSAVE, whose
+ *   yellow tile needs a dark ring for contrast (black-on-yellow is on-brand).
+ * - `mark`  — square logo shown inside the map pin. Four Square and Woolworths
+ *   are the logos you supplied; New World is its badge cropped from the
+ *   supplied wordmark; PAK'nSAVE is its stickman rebuilt as vector (the
+ *   supplied logo was a wide wordmark with no square icon).
+ */
 export const BANNERS = [
-  { id: 1, name: "PAK'nSAVE", color: "#e7a330" },
-  { id: 2, name: "Four Square", color: "#e16348" },
-  { id: 3, name: "New World", color: "#c8102e" },
-  { id: 4, name: "Woolworths", color: "#2c7a4f" },
+  { id: 1, name: "PAK'nSAVE", color: "#e7a330", ring: "#1c1c1c", mark: "/images/logos/marks/paknsave.svg" },
+  { id: 2, name: "Four Square", color: "#2f8f46", ring: "#2f8f46", mark: "/images/logos/marks/foursquare.svg" },
+  { id: 3, name: "New World", color: "#c8102e", ring: "#c8102e", mark: "/images/logos/marks/newworld.svg" },
+  { id: 4, name: "Woolworths", color: "#178841", ring: "#178841", mark: "/images/logos/marks/woolworths.webp" },
 ] as const;
 
 export type BannerName = (typeof BANNERS)[number]["name"];

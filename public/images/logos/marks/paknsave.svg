@@ -1,0 +1,17 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="10" fill="#FFD500"/>
+  <!-- PAK'nSAVE stickman: recreated as vector from the brand favicon -->
+  <g fill="none" stroke="#1a1a1a" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- head -->
+    <ellipse cx="45" cy="26" rx="11.5" ry="13.5" transform="rotate(-6 45 26)"/>
+    <!-- spine -->
+    <path d="M44 40 L41 86"/>
+    <!-- bent left arm (triangle to hip) -->
+    <path d="M43 52 L20 72 L43 64"/>
+    <!-- extended right arm -->
+    <path d="M45 56 L86 68"/>
+    <!-- legs -->
+    <path d="M41 86 L33 98"/>
+    <path d="M41 86 L49 98"/>
+  </g>
+</svg>

@@ -117,12 +117,61 @@ html.lenis body {
 .af-pin,
 .af-cluster {
   cursor: pointer;
+}
+/* Transition the inner bubble, NEVER the marker root: Leaflet positions the
+   root via `transform: translate3d(...)`, so a transition there makes every
+   marker slide/"float" to its new spot whenever the map re-renders (e.g. when
+   a product filter changes the result set). */
+.af-cluster span {
   transition: transform 0.18s var(--ease-out-expo);
 }
-.af-pin:hover,
 .af-cluster:hover {
-  transform: scale(1.14);
   z-index: 900 !important;
+}
+.af-cluster:hover span {
+  transform: scale(1.14);
+}
+
+/* Branded logo pin: white rounded tile + brand ring + pointer tail */
+.af-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  background: var(--color-paper);
+  border: 2.5px solid var(--ring, #14422c);
+  border-radius: 13px;
+  box-shadow: 0 7px 16px -3px rgba(20, 66, 44, 0.4);
+  transition: transform 0.18s var(--ease-out-expo);
+  transform-origin: 50% 100%;
+}
+.af-mark img {
+  width: 27px;
+  height: 27px;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+/* the little downward tail */
+.af-mark::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 12px;
+  height: 12px;
+  background: var(--color-paper);
+  border-right: 2.5px solid var(--ring, #14422c);
+  border-bottom: 2.5px solid var(--ring, #14422c);
+  border-bottom-right-radius: 3px;
+  transform: translateX(-50%) rotate(45deg);
+}
+.af-pin:hover {
+  z-index: 900 !important;
+}
+.af-pin:hover .af-mark {
+  transform: scale(1.16);
 }
 
 /* popup shell */

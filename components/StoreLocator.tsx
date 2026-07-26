@@ -14,6 +14,8 @@ import {
   List,
   Map as MapIcon,
   Loader2,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import { BANNERS, type Store, type StoreData } from "@/lib/stores";
 
@@ -21,6 +23,12 @@ import { BANNERS, type Store, type StoreData } from "@/lib/stores";
 
 const BANNER_COLOR = Object.fromEntries(
   BANNERS.map((b) => [b.name, b.color])
+) as Record<string, string>;
+const BANNER_RING = Object.fromEntries(
+  BANNERS.map((b) => [b.name, b.ring])
+) as Record<string, string>;
+const BANNER_MARK = Object.fromEntries(
+  BANNERS.map((b) => [b.name, b.mark])
 ) as Record<string, string>;
 
 const NZ_CENTER: [number, number] = [-41.0, 173.5];
@@ -49,10 +57,13 @@ const escapeHtml = (s: string) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!)
   );
 
-function pinSvg(color: string, dimmed = false) {
-  return `<span style="display:block;width:26px;height:26px;border-radius:50% 50% 50% 0;background:${color};border:2.5px solid #fffdf7;transform:rotate(-45deg);box-shadow:0 6px 14px rgba(20,66,44,.35);opacity:${
-    dimmed ? 0.5 : 1
-  }"><span style="position:absolute;top:8px;left:8px;width:8px;height:8px;border-radius:50%;background:#fffdf7"></span></span>`;
+/** A white rounded pin carrying the store's brand logo, with a pointer tail. */
+function brandedPin(store: Store) {
+  const ring = BANNER_RING[store.banner] ?? "#14422c";
+  const mark = BANNER_MARK[store.banner];
+  return `<span class="af-mark" style="--ring:${ring}"><img src="${mark}" alt="${escapeHtml(
+    store.banner
+  )}" draggable="false"/></span>`;
 }
 
 function popupHtml(store: Store, dist: number | null, origin: Center | null) {
@@ -101,6 +112,7 @@ export function StoreLocator({ data }: { data: StoreData }) {
   const [locating, setLocating] = useState(false);
   const [mobileView, setMobileView] = useState<"list" | "map">("list");
   const [visible, setVisible] = useState(40);
+  const [fullscreen, setFullscreen] = useState(false);
 
   /* ---------------- geocode autocomplete ---------------- */
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -203,6 +215,31 @@ export function StoreLocator({ data }: { data: StoreData }) {
     };
   }, []);
 
+  /* ---------------- fullscreen: lock scroll, ESC to exit, resize map ---------------- */
+  useEffect(() => {
+    if (!fullscreen) return;
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setFullscreen(false);
+    };
+    window.addEventListener("keydown", onKey);
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    // Leaflet must re-measure once the container has resized to the viewport.
+    const map = mapRef.current;
+    const t = setTimeout(() => map?.invalidateSize(), 260);
+
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+      clearTimeout(t);
+      // re-measure again after collapsing back to the inline layout
+      setTimeout(() => mapRef.current?.invalidateSize(), 260);
+    };
+  }, [fullscreen]);
+
   /* ---------------- open a store popup ---------------- */
   const openStore = useCallback(
     (store: Store, dist: number | null, fly = true) => {
@@ -217,7 +254,7 @@ export function StoreLocator({ data }: { data: StoreData }) {
         maxWidth: 360,
         minWidth: 272,
         autoPanPadding: [24, 24],
-        offset: [0, -18],
+        offset: [0, -46],
       })
         .setLatLng([store.lat, store.lng])
         .setContent(popupHtml(store, dist, center))
@@ -258,9 +295,10 @@ export function StoreLocator({ data }: { data: StoreData }) {
         L.marker([store.lat, store.lng], {
           icon: L.divIcon({
             className: "af-pin",
-            html: pinSvg(BANNER_COLOR[store.banner] ?? "#2c7a4f"),
-            iconSize: [26, 26],
-            iconAnchor: [13, 26],
+            html: brandedPin(store),
+            iconSize: [42, 50],
+            iconAnchor: [21, 49],
+            popupAnchor: [0, -46],
           }),
           title: store.name,
           riseOnHover: true,
@@ -476,7 +514,13 @@ export function StoreLocator({ data }: { data: StoreData }) {
 
         {/* `isolate` traps the map's and the overlays' z-index inside this card
             so nothing paints over the fixed navbar while scrolling. */}
-        <div className="isolate overflow-hidden rounded-[2rem] border border-line bg-paper shadow-[0_30px_80px_-40px_rgba(20,66,44,0.4)]">
+        <div
+          className={`isolate flex flex-col overflow-hidden border-line bg-paper ${
+            fullscreen
+              ? "fixed inset-0 z-[2000] rounded-none border-0"
+              : "rounded-[2rem] border shadow-[0_30px_80px_-40px_rgba(20,66,44,0.4)]"
+          }`}
+        >
           {/* ---------- mobile view switch ---------- */}
           <div className="flex gap-2 border-b border-line p-3 lg:hidden">
             {(["list", "map"] as const).map((v) => (
@@ -495,10 +539,14 @@ export function StoreLocator({ data }: { data: StoreData }) {
             ))}
           </div>
 
-          <div className="grid lg:grid-cols-[minmax(0,26rem)_1fr] xl:grid-cols-[minmax(0,30rem)_1fr]">
+          <div
+            className={`grid min-h-0 lg:grid-cols-[minmax(0,26rem)_1fr] xl:grid-cols-[minmax(0,32rem)_1fr] ${
+              fullscreen ? "flex-1" : ""
+            }`}
+          >
             {/* ============ LEFT: filters + results ============ */}
             <aside
-              className={`flex min-w-0 flex-col border-line lg:border-r ${
+              className={`flex min-h-0 min-w-0 flex-col border-line lg:border-r ${
                 mobileView === "list" ? "" : "hidden lg:flex"
               }`}
             >
@@ -594,7 +642,7 @@ export function StoreLocator({ data }: { data: StoreData }) {
                         key={b.id}
                         onClick={() => toggleBanner(b.name)}
                         aria-pressed={on}
-                        className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-semibold transition-all ${
+                        className={`inline-flex items-center gap-2 rounded-full border py-1.5 pl-1.5 pr-3.5 text-sm font-semibold transition-all ${
                           on
                             ? "border-transparent text-cream shadow-sm"
                             : "border-line bg-paper text-ink-soft hover:bg-cream"
@@ -602,9 +650,11 @@ export function StoreLocator({ data }: { data: StoreData }) {
                         style={on ? { background: b.color } : undefined}
                       >
                         <span
-                          className="h-2.5 w-2.5 rounded-full"
-                          style={{ background: on ? "#fffdf7" : b.color }}
-                        />
+                          className="grid h-6 w-6 place-items-center rounded-full bg-paper shadow-sm ring-1 ring-black/5"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={b.mark} alt="" className="h-4 w-4 object-contain" />
+                        </span>
                         {b.name}
                       </button>
                     );
@@ -691,7 +741,13 @@ export function StoreLocator({ data }: { data: StoreData }) {
                 )}
               </div>
 
-              <div className="max-h-[34rem] flex-1 overflow-y-auto border-t border-line lg:max-h-[38rem]">
+              <div
+                className={`flex-1 overflow-y-auto border-t border-line ${
+                  fullscreen
+                    ? "min-h-0"
+                    : "max-h-[34rem] lg:max-h-[38rem]"
+                }`}
+              >
                 {filtered.length === 0 ? (
                   <div className="px-5 py-14 text-center">
                     <StoreIcon size={28} className="mx-auto mb-3 text-line" />
@@ -770,42 +826,60 @@ export function StoreLocator({ data }: { data: StoreData }) {
             <div
               className={`relative min-w-0 ${
                 mobileView === "map" ? "" : "hidden lg:block"
+              } ${
+                fullscreen
+                  ? "h-full min-h-[20rem]"
+                  : "h-[30rem] sm:h-[36rem] lg:h-full lg:min-h-[46rem]"
               }`}
             >
-              <div
-                ref={mapEl}
-                className="h-[30rem] w-full bg-cream-deep sm:h-[36rem] lg:h-full lg:min-h-[46rem]"
-              />
+              {/* This node's className MUST stay static: Leaflet imperatively
+                  adds its own classes (leaflet-container, …) here, and React
+                  would strip them if the className were state-driven. All
+                  sizing lives on the parent wrapper above instead. */}
+              <div ref={mapEl} className="h-full w-full bg-cream-deep" />
 
               {/* legend */}
               <div className="pointer-events-none absolute left-3 top-3 z-[500] rounded-2xl border border-line/70 bg-paper/92 px-3.5 py-2.5 shadow-lg backdrop-blur-sm">
                 <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-soft">
                   Stocked at
                 </p>
-                <ul className="space-y-1">
+                <ul className="space-y-1.5">
                   {BANNERS.map((b) => (
                     <li key={b.id} className="flex items-center gap-2 text-xs font-medium text-ink">
                       <span
-                        className="h-2.5 w-2.5 rounded-full"
-                        style={{ background: b.color }}
-                      />
+                        className="grid h-5 w-5 place-items-center rounded-md bg-paper shadow-sm"
+                        style={{ border: `1.5px solid ${b.ring}` }}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={b.mark} alt="" className="h-3.5 w-3.5 object-contain" />
+                      </span>
                       {b.name}
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {center && (
+              <div className="absolute right-3 top-3 z-[500] flex flex-col items-end gap-2">
                 <button
-                  onClick={() => {
-                    const map = mapRef.current;
-                    if (map) map.flyTo([center.lat, center.lng], 12, { duration: 0.7 });
-                  }}
-                  className="absolute right-3 top-3 z-[500] inline-flex items-center gap-2 rounded-full bg-paper/92 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-green shadow-lg backdrop-blur-sm transition-colors hover:bg-paper"
+                  onClick={() => setFullscreen((f) => !f)}
+                  aria-pressed={fullscreen}
+                  className="inline-flex items-center gap-2 rounded-full bg-paper/92 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-green shadow-lg backdrop-blur-sm transition-colors hover:bg-paper"
                 >
-                  <Navigation size={14} /> Recentre
+                  {fullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+                  {fullscreen ? "Exit" : "Fullscreen"}
                 </button>
-              )}
+                {center && (
+                  <button
+                    onClick={() => {
+                      const map = mapRef.current;
+                      if (map) map.flyTo([center.lat, center.lng], 12, { duration: 0.7 });
+                    }}
+                    className="inline-flex items-center gap-2 rounded-full bg-paper/92 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-green shadow-lg backdrop-blur-sm transition-colors hover:bg-paper"
+                  >
+                    <Navigation size={14} /> Recentre
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
