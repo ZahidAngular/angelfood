@@ -2,6 +2,7 @@
 
 import "leaflet/dist/leaflet.css";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Search,
   LocateFixed,
@@ -94,6 +95,26 @@ function popupHtml(store: Store, dist: number | null, origin: Center | null) {
     </div>`;
 }
 
+/**
+ * Renders children into <body> when `active`, otherwise inline. Fullscreen
+ * needs this: an ancestor (Lenis' smooth-scroll wrapper) has a `transform`,
+ * which makes it the containing block for any `position: fixed` descendant —
+ * so a fixed overlay left in place can neither cover the viewport nor rise
+ * above the fixed navbar. Portaling to <body> escapes that transform.
+ */
+function MaybePortal({
+  active,
+  children,
+}: {
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  if (active && typeof document !== "undefined") {
+    return createPortal(children, document.body);
+  }
+  return <>{children}</>;
+}
+
 /* ------------------------------------------------------------------ */
 /* Component                                                           */
 /* ------------------------------------------------------------------ */
@@ -125,7 +146,14 @@ export function StoreLocator({ data }: { data: StoreData }) {
   const LRef = useRef<any>(null);
   const clusterLayer = useRef<any>(null);
   const overlayLayer = useRef<any>(null);
-  const [ready, setReady] = useState(false);
+  // Preserves the map centre/zoom across the remount that entering/leaving
+  // fullscreen triggers (the map is portaled to a new container).
+  const savedViewRef = useRef<{ center: [number, number]; zoom: number } | null>(null);
+  // A monotonic counter bumped once each time a map is (re)created. Unlike a
+  // boolean `ready`, a single increasing setter call can't be coalesced by
+  // React's batching when the map is torn down and rebuilt in the same tick —
+  // so the draw/overlay/fit effects reliably re-run after a fullscreen remount.
+  const [mapEpoch, setMapEpoch] = useState(0);
 
   /* ---------------- derived: filtered + sorted ---------------- */
   const filtered = useMemo(() => {
@@ -171,7 +199,10 @@ export function StoreLocator({ data }: { data: StoreData }) {
   /** Suggestions for a query the user has since shortened are stale — drop them. */
   const shownSuggestions = query.trim().length >= 3 ? suggestions : [];
 
-  /* ---------------- init map ---------------- */
+  /* ---------------- init map ----------------
+     Re-runs when `fullscreen` flips because the card (and this map's DOM
+     container) is portaled to a new parent, which remounts the node. We save
+     the view on teardown and restore it so the swap is seamless. */
   useEffect(() => {
     let cancelled = false;
 
@@ -180,11 +211,12 @@ export function StoreLocator({ data }: { data: StoreData }) {
       if (cancelled || !mapEl.current || mapRef.current) return;
       LRef.current = L;
 
+      const saved = savedViewRef.current;
       const map = L.map(mapEl.current, {
         scrollWheelZoom: false,
         zoomControl: false,
         attributionControl: true,
-      }).setView(NZ_CENTER, 5);
+      }).setView(saved ? saved.center : NZ_CENTER, saved ? saved.zoom : 5);
       mapRef.current = map;
 
       L.tileLayer(
@@ -202,18 +234,23 @@ export function StoreLocator({ data }: { data: StoreData }) {
       clusterLayer.current = L.layerGroup().addTo(map);
       overlayLayer.current = L.layerGroup().addTo(map);
 
-      setReady(true);
+      setMapEpoch((e) => e + 1);
     })();
 
     return () => {
       cancelled = true;
       if (mapRef.current) {
+        try {
+          const c = mapRef.current.getCenter();
+          savedViewRef.current = { center: [c.lat, c.lng], zoom: mapRef.current.getZoom() };
+        } catch {
+          /* map not fully initialised — nothing to preserve */
+        }
         mapRef.current.remove();
         mapRef.current = null;
       }
-      setReady(false);
     };
-  }, []);
+  }, [fullscreen]);
 
   /* ---------------- fullscreen: lock scroll, ESC to exit, resize map ---------------- */
   useEffect(() => {
@@ -334,21 +371,21 @@ export function StoreLocator({ data }: { data: StoreData }) {
   }, [filtered, openStore]);
 
   useEffect(() => {
-    if (!ready) return;
-    draw();
     const map = mapRef.current;
+    if (!map) return;
+    draw();
     map.on("zoomend moveend", draw);
     return () => {
       map?.off("zoomend moveend", draw);
     };
-  }, [ready, draw]);
+  }, [mapEpoch, draw]);
 
   /* ---------------- centre marker + radius ring ---------------- */
   useEffect(() => {
     const L = LRef.current;
     const map = mapRef.current;
     const layer = overlayLayer.current;
-    if (!ready || !L || !map || !layer) return;
+    if (!L || !map || !layer) return;
 
     layer.clearLayers();
     if (!center) return;
@@ -373,7 +410,7 @@ export function StoreLocator({ data }: { data: StoreData }) {
     })
       .bindTooltip(center.label, { direction: "top", offset: [0, -12] })
       .addTo(layer);
-  }, [ready, center, radius]);
+  }, [mapEpoch, center, radius]);
 
   /* ---------------- fit bounds when results change ---------------- */
   const fitKey = `${filtered.length}:${center?.lat ?? ""}:${radius}:${product}:${region}:${banners.join()}`;
@@ -381,7 +418,7 @@ export function StoreLocator({ data }: { data: StoreData }) {
   useEffect(() => {
     const L = LRef.current;
     const map = mapRef.current;
-    if (!ready || !L || !map || lastFit.current === fitKey) return;
+    if (!L || !map || lastFit.current === fitKey) return;
     lastFit.current = fitKey;
 
     if (center) {
@@ -398,7 +435,7 @@ export function StoreLocator({ data }: { data: StoreData }) {
         { duration: 0.8, maxZoom: 13 }
       );
     }
-  }, [ready, fitKey, center, radius, filtered]);
+  }, [mapEpoch, fitKey, center, radius, filtered]);
 
   /* ---------------- geocoding (Nominatim, same as the Angular app) ---------------- */
   useEffect(() => {
@@ -513,14 +550,17 @@ export function StoreLocator({ data }: { data: StoreData }) {
         )}
 
         {/* `isolate` traps the map's and the overlays' z-index inside this card
-            so nothing paints over the fixed navbar while scrolling. */}
-        <div
-          className={`isolate flex flex-col overflow-hidden border-line bg-paper ${
-            fullscreen
-              ? "fixed inset-0 z-[2000] rounded-none border-0"
-              : "rounded-[2rem] border shadow-[0_30px_80px_-40px_rgba(20,66,44,0.4)]"
-          }`}
-        >
+            so nothing paints over the fixed navbar while scrolling. When
+            fullscreen, the card is portaled to <body> (see MaybePortal) so its
+            `fixed inset-0` escapes the smooth-scroll wrapper's transform. */}
+        <MaybePortal active={fullscreen}>
+          <div
+            className={`isolate flex flex-col overflow-hidden border-line bg-paper ${
+              fullscreen
+                ? "fixed inset-0 z-[2000] rounded-none border-0"
+                : "rounded-[2rem] border shadow-[0_30px_80px_-40px_rgba(20,66,44,0.4)]"
+            }`}
+          >
           {/* ---------- mobile view switch ---------- */}
           <div className="flex gap-2 border-b border-line p-3 lg:hidden">
             {(["list", "map"] as const).map((v) => (
@@ -882,7 +922,8 @@ export function StoreLocator({ data }: { data: StoreData }) {
               </div>
             </div>
           </div>
-        </div>
+          </div>
+        </MaybePortal>
 
         <p className="mt-4 text-center text-xs text-ink-soft/70">
           Stockist list updates hourly from Angel Food&apos;s live store data
