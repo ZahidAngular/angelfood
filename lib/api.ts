@@ -1,7 +1,7 @@
 import { getToken } from "./auth";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5085/api";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://angelfood-api.webappconsulting.com.au/api";
 
 export class ApiError extends Error {
   status: number;
@@ -21,7 +21,9 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     ...((options.headers as Record<string, string>) || {}),
   };
 
-  const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
+  // Data changes constantly (dashboard edits, new recipes) — never let
+  // Next.js cache a server-side fetch and serve a stale build-time snapshot.
+  const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers, cache: "no-store" });
 
   if (res.status === 204) {
     return undefined as T;
