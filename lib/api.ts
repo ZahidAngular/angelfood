@@ -45,9 +45,16 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return data as T;
 }
 
-export type SignupRequest = { fullName: string; email: string; password: string };
 export type LoginRequest = { email: string; password: string };
-export type AuthResponse = { id: number; fullName: string; email: string; token: string };
+export type LoginRole = { roleId?: number; roleName?: string };
+export type LoginUser = {
+  userId?: number;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  role?: LoginRole | null;
+};
+export type LoginResponse = { isAuthenticated: boolean; token: string; user: LoginUser };
 
 export type UserProfile = {
   id: number;
@@ -94,11 +101,134 @@ export type PagedResult<T> = {
   totalPages: number;
 };
 
+// Wire shape used by the /api/Recipe endpoints: ingredients are a flat list
+// (one row per ingredient line) instead of the grouped shape the form uses.
+type WireIngredient = {
+  ingredientId?: number;
+  recipeId?: number;
+  heading?: string | null;
+  items?: string;
+  description: string;
+};
+
+type RecipeWire = {
+  id: number;
+  title: string;
+  description: string | null;
+  ingredients: WireIngredient[];
+  instructions: string;
+  notes: string | null;
+  imageUrl: string | null;
+  userId?: number;
+  createdAt: string;
+  updatedAt: string | null;
+};
+
+function ingredientsToGroups(ingredients: WireIngredient[]): IngredientGroup[] {
+  const groups: IngredientGroup[] = [];
+  for (const ing of ingredients) {
+    const heading = ing.heading ?? "";
+    const last = groups[groups.length - 1];
+    if (last && (last.heading ?? "") === heading) {
+      last.items.push(ing.description);
+    } else {
+      groups.push({ heading: ing.heading ?? undefined, items: [ing.description] });
+    }
+  }
+  return groups.length ? groups : [{ heading: "", items: [] }];
+}
+
+function groupsToIngredients(groups: IngredientGroup[]): WireIngredient[] {
+  const result: WireIngredient[] = [];
+  for (const g of groups) {
+    for (const item of g.items) {
+      result.push({ ingredientId: 0, recipeId: 0, heading: g.heading || "", items: item, description: item });
+    }
+  }
+  return result;
+}
+
+function fromWire(wire: RecipeWire): Recipe {
+  return {
+    id: wire.id,
+    title: wire.title,
+    description: wire.description,
+    ingredientGroups: ingredientsToGroups(wire.ingredients ?? []),
+    instructions: wire.instructions,
+    notes: wire.notes,
+    imageUrl: wire.imageUrl,
+    userId: wire.userId ?? 0,
+    createdAt: wire.createdAt,
+    updatedAt: wire.updatedAt,
+  };
+}
+
+// A 1x1 transparent PNG, used when no photo is picked: the API rejects
+// create/update with "No files were uploaded." if the file field is absent.
+const PLACEHOLDER_IMAGE = new Blob(
+  [Uint8Array.from(atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="), (c) => c.charCodeAt(0))],
+  { type: "image/png" }
+);
+
+// The API only accepts multipart/form-data for create/update (no
+// application/json option), and binds nested arrays via indexed keys.
+// It also requires a "Files" field to be present even when there's no photo.
+function toFormData(data: RecipeInput, id: number | undefined, file: File | undefined): FormData {
+  const now = new Date().toISOString();
+  const fd = new FormData();
+  fd.append("Id", String(id ?? 0));
+  fd.append("Title", data.title);
+  fd.append("Description", data.description ?? "");
+  fd.append("Instructions", data.instructions);
+  fd.append("Notes", data.notes ?? "");
+  fd.append("ImageUrl", data.imageUrl ?? "");
+  fd.append("CreatedAt", now);
+  fd.append("UpdatedAt", now);
+  groupsToIngredients(data.ingredientGroups).forEach((ing, i) => {
+    fd.append(`Ingredients[${i}].IngredientId`, String(ing.ingredientId ?? 0));
+    fd.append(`Ingredients[${i}].RecipeId`, String(ing.recipeId ?? 0));
+    fd.append(`Ingredients[${i}].Heading`, ing.heading ?? "");
+    fd.append(`Ingredients[${i}].Items`, ing.items ?? "");
+    fd.append(`Ingredients[${i}].Description`, ing.description);
+  });
+  fd.append("Files", file ?? PLACEHOLDER_IMAGE, file?.name ?? "blank.png");
+  return fd;
+}
+
+// PUT /api/Recipe only accepts application/json (confirmed via the live
+// swagger.json — its requestBody.content has no multipart/form-data option,
+// unlike POST). It also has no file-upload field, so an update can't change
+// the photo — only create (multipart) can.
+function toJsonBody(data: RecipeInput, id: number) {
+  const now = new Date().toISOString();
+  return {
+    id,
+    title: data.title,
+    description: data.description ?? "",
+    ingredients: groupsToIngredients(data.ingredientGroups),
+    instructions: data.instructions,
+    notes: data.notes ?? "",
+    imageUrl: data.imageUrl ?? "",
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+// POST /api/Recipe does not reliably return the new recipe's id (it appears
+// to return a rows-affected style count instead), so we can't trust it for a
+// follow-up lookup. Instead, re-fetch the list and find the newest recipe
+// matching a marker title, which is unique enough for this purpose.
+async function findLatestByTitle(title: string): Promise<RecipeWire | null> {
+  const all = await request<RecipeWire[]>("/Recipe");
+  const matches = all.filter((r) => r.title === title);
+  if (matches.length === 0) return null;
+  matches.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  return matches[0];
+}
+
 export const authApi = {
-  signup: (data: SignupRequest) =>
-    request<AuthResponse>("/Auth/Signup", { method: "POST", body: JSON.stringify(data) }),
   login: (data: LoginRequest) =>
-    request<AuthResponse>("/Auth/Login", { method: "POST", body: JSON.stringify(data) }),
+    request<LoginResponse>("/Auth/", { method: "POST", body: JSON.stringify(data) }),
 };
 
 export const userApi = {
@@ -113,36 +243,65 @@ export const userApi = {
 };
 
 export const recipeApi = {
-  getAll: () => request<Recipe[]>("/Recipe/GetAllRecipes"),
-  getPaginated: (pageNumber = 1, pageSize = 10) =>
-    request<PagedResult<Recipe>>(
-      `/Recipe/GetRecipesPaginated?pageNumber=${pageNumber}&pageSize=${pageSize}`
-    ),
-  getById: (id: number) => request<Recipe>(`/Recipe/GetRecipeById/${id}`),
-  create: (data: RecipeInput) =>
-    request<Recipe>("/Recipe/CreateRecipe", { method: "POST", body: JSON.stringify(data) }),
-  update: (id: number, data: RecipeInput) =>
-    request<Recipe>(`/Recipe/UpdateRecipe/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  remove: (id: number) =>
-    request<{ message: string }>(`/Recipe/DeleteRecipe/${id}`, { method: "DELETE" }),
-  uploadImage: (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    return request<{ imageUrl: string }>("/Recipe/UploadImage", {
-      method: "POST",
-      body: formData,
-    });
+  getAll: async (): Promise<Recipe[]> => {
+    const wire = await request<RecipeWire[]>("/Recipe");
+    return wire.map(fromWire);
   },
+  // The API has no server-side pagination (GET /api/Recipe takes no
+  // parameters), so we fetch everything and paginate on the client.
+  getPaginated: async (pageNumber = 1, pageSize = 10): Promise<PagedResult<Recipe>> => {
+    const all = await recipeApi.getAll();
+    const totalCount = all.length;
+    const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+    const start = (pageNumber - 1) * pageSize;
+    return {
+      items: all.slice(start, start + pageSize),
+      totalCount,
+      pageNumber,
+      pageSize,
+      totalPages,
+    };
+  },
+  getById: async (id: number): Promise<Recipe> => {
+    const wire = await request<RecipeWire>(`/Recipe/${id}`);
+    return fromWire(wire);
+  },
+  // POST doesn't reliably return the new recipe's id, so we look it up by
+  // title afterward (see findLatestByTitle) instead of trusting the response.
+  create: async (data: RecipeInput, file?: File): Promise<Recipe> => {
+    await request<unknown>("/Recipe", {
+      method: "POST",
+      body: toFormData(data, undefined, file),
+    });
+    const wire = await findLatestByTitle(data.title);
+    if (!wire) throw new ApiError("Recipe was created but could not be found.", 500);
+    return fromWire(wire);
+  },
+  // No file param: the update endpoint (PUT, application/json) has no file
+  // field, and there's no working DELETE to clean up a disposable upload
+  // (confirmed 405), so photo changes aren't possible on edit yet.
+  update: async (id: number, data: RecipeInput): Promise<Recipe> => {
+    await request<unknown>("/Recipe", {
+      method: "PUT",
+      body: JSON.stringify(toJsonBody(data, id)),
+    });
+    return recipeApi.getById(id);
+  },
+  remove: (id: number) =>
+    request<{ message: string }>(`/Recipe/${id}`, { method: "DELETE" }),
 };
+
+const S3_BUCKET_URL = "https://angelfood-bucket.s3.ap-southeast-2.amazonaws.com/";
 
 export function resolveImageUrl(path: string | null | undefined): string | null {
   if (!path) return null;
-  if (path.startsWith("http")) return path;
+  // Full URLs (S3, http) and local blob: previews are already usable as-is.
+  if (path.startsWith("http") || path.startsWith("blob:")) return path;
   // Backend-uploaded images live under /uploads on the API server.
-  // Anything else (e.g. /images/...) is a local Next.js public asset.
   if (path.startsWith("/uploads/")) {
     const origin = API_BASE_URL.replace(/\/api$/, "");
     return `${origin}${path}`;
   }
-  return path;
+  // Recipe photos come back as a relative S3 key, e.g. "recipes/xxx.png".
+  return `${S3_BUCKET_URL}${path}`;
 }

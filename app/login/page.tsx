@@ -5,12 +5,8 @@ import { useRouter } from "next/navigation";
 import { authApi, ApiError } from "@/lib/api";
 import { isLoggedIn, saveSession } from "@/lib/auth";
 
-type Mode = "login" | "signup";
-
 export default function LoginPage() {
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>("login");
-  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -27,15 +23,18 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      const result =
-        mode === "login"
-          ? await authApi.login({ email, password })
-          : await authApi.signup({ fullName, email, password });
+      const result = await authApi.login({ email, password });
 
+      if (!result.isAuthenticated) {
+        setError("Invalid email or password.");
+        return;
+      }
+
+      const fullName = [result.user.firstName, result.user.lastName].filter(Boolean).join(" ");
       saveSession(result.token, {
-        id: result.id,
-        fullName: result.fullName,
-        email: result.email,
+        id: result.user.userId ?? 0,
+        fullName: fullName || result.user.email || email,
+        email: result.user.email ?? email,
       });
       router.push("/dashboard");
     } catch (err) {
@@ -56,47 +55,7 @@ export default function LoginPage() {
         </div>
 
         <div className="rounded-3xl border border-line bg-paper p-8 shadow-[0_10px_40px_-20px_rgba(20,66,44,0.3)]">
-          <div className="mb-6 flex rounded-full bg-cream-deep p-1">
-            <button
-              type="button"
-              onClick={() => {
-                setMode("login");
-                setError(null);
-              }}
-              className={`flex-1 rounded-full py-2 text-sm font-semibold transition-colors ${
-                mode === "login" ? "bg-green text-cream" : "text-ink-soft"
-              }`}
-            >
-              Log in
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode("signup");
-                setError(null);
-              }}
-              className={`flex-1 rounded-full py-2 text-sm font-semibold transition-colors ${
-                mode === "signup" ? "bg-green text-cream" : "text-ink-soft"
-              }`}
-            >
-              Sign up
-            </button>
-          </div>
-
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {mode === "signup" && (
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-ink-soft">Full name</label>
-                <input
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="rounded-xl border border-line bg-paper px-4 py-3 text-sm outline-none transition-colors focus:border-green"
-                  placeholder="Jane Smith"
-                />
-              </div>
-            )}
-
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-ink-soft">Email</label>
               <input
@@ -131,7 +90,7 @@ export default function LoginPage() {
               disabled={loading}
               className="mt-2 rounded-full bg-green px-6 py-3 text-sm font-semibold text-cream transition-all hover:scale-[1.02] disabled:opacity-60"
             >
-              {loading ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}
+              {loading ? "Please wait…" : "Log in"}
             </button>
           </form>
         </div>

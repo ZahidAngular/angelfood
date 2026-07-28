@@ -25,8 +25,8 @@ export function Meats() {
           </Parallax>
           <Reveal delay={0.1}>
             <p className="max-w-sm text-ink-soft">
-              Sausages, nuggets, meatballs and bacon — all the sizzle and
-              crunch you love, minus the animal.
+              Fish fingers, burger patties, pulled pork and meatballs — all
+              your favourites, deliciously plant-based.
             </p>
           </Reveal>
         </div>

@@ -41,7 +41,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <main className="min-h-screen bg-cream pb-16 pt-32">
+    <main className="min-h-screen bg-cream pb-16 pt-44 sm:pt-48">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-5 sm:px-8 lg:flex-row">
         <aside className="lg:w-64 lg:shrink-0">
           <div className="rounded-3xl border border-line bg-paper p-5 lg:sticky lg:top-32">

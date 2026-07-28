@@ -107,19 +107,19 @@ export const MEALS = [
 
 export const MEATS: Product[] = [
   {
-    name: "Vegan Sausages",
+    name: "Plant-Based Fish Fingers",
     blurb:
-      "Snag-worthy and smoky off the grill — the sausage sizzle just went plant-based.",
-    tag: "Grill",
-    image: "/images/meats/sausages.jpg",
+      "Golden and crispy — serve with chips, tuck into tacos or dip into your favourite sauce.",
+    tag: "Sizzle",
+    image: "/images/meats/fish-fingers.jpg",
     accent: "var(--color-gold)",
   },
   {
-    name: "Crumbed Nuggets",
+    name: "Plant-Based Burger Patties",
     blurb:
-      "Golden, crunchy and dunkable. Kid-approved, adult-devoured.",
-    tag: "Crispy",
-    image: "/images/meats/nuggets.jpg",
+      "Juicy and satisfying — stack in a bun with all the classic burger fixings.",
+    tag: "Grill",
+    image: "/images/meats/burger-patties.jpg",
     accent: "var(--color-coral)",
   },
   {
@@ -131,11 +131,11 @@ export const MEATS: Product[] = [
     accent: "var(--color-green-bright)",
   },
   {
-    name: "Smoky Bacon Strips",
+    name: "Plant-Based Pulled Pork",
     blurb:
-      "Crispy-edged and deeply smoky — the rasher your fry-up was missing.",
-    tag: "Sizzle",
-    image: "/images/meats/bacon.jpg",
+      "Tender and smoky — pile into buns, tacos or loaded fries for an easy crowd-pleaser.",
+    tag: "Shred",
+    image: "/images/meats/pulled-pork.jpg",
     accent: "var(--color-gold)",
   },
 ];

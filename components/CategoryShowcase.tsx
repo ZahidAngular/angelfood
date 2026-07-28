@@ -30,10 +30,10 @@ const CATEGORIES: Category[] = [
     count: "4 plant-based classics",
     href: "/products#meats",
     images: [
-      "/images/meats/sausages.jpg",
-      "/images/meats/nuggets.jpg",
+      "/images/meats/fish-fingers.jpg",
+      "/images/meats/burger-patties.jpg",
       "/images/meats/meatballs.png",
-      "/images/meats/bacon.jpg",
+      "/images/meats/pulled-pork.jpg",
     ],
   },
   {
