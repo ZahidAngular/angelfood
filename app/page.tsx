@@ -6,8 +6,11 @@ import { Story } from "@/components/Story";
 import { Values } from "@/components/Values";
 import { Recipes } from "@/components/Recipes";
 import { Stockists } from "@/components/Stockists";
+import { recipeApi, type Recipe } from "@/lib/api";
 
-export default function Home() {
+export default async function Home() {
+  const recipes: Recipe[] = await recipeApi.getAll().catch(() => []);
+
   return (
     <main>
       <Hero />
@@ -16,7 +19,7 @@ export default function Home() {
       <SpinShowcase />
       <Story />
       <Values />
-      <Recipes />
+      <Recipes recipes={recipes} />
       <Stockists />
     </main>
   );

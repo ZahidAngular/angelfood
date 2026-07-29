@@ -13,7 +13,7 @@ import {
 } from "@/lib/api";
 import { getSessionUser } from "@/lib/auth";
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 200;
 
 const EMPTY_GROUP: IngredientGroup = { heading: "", items: [] };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { MEATS } from "@/lib/site";
 import { Reveal } from "./Reveal";
@@ -34,34 +35,41 @@ export function Meats() {
         <div className="grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-6">
           {MEATS.map((p, i) => (
             <Reveal key={p.name} delay={(i % 4) * 0.07} className="h-full">
-              <motion.div
-                whileHover={{ y: -8 }}
-                transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-line bg-paper p-5 sm:p-6"
-                data-cursor="Taste it"
+              <Link
+                href="/ingredients-nutrition-info"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block h-full"
               >
-                <div className="relative flex h-72 items-center justify-center overflow-hidden rounded-2xl sm:h-96">
-                  <span
-                    className="absolute right-0 top-0 z-10 rounded-full px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-ink"
-                    style={{ background: p.accent }}
-                  >
-                    {p.tag}
-                  </span>
-                  <Image
-                    src={p.image}
-                    alt={`Angel Food ${p.name}`}
-                    fill
-                    sizes="(min-width: 1024px) 22vw, 45vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                </div>
-                <h3 className="mt-4 font-display text-lg font-bold tracking-tight text-ink sm:text-xl">
-                  {p.name}
-                </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
-                  {p.blurb}
-                </p>
-              </motion.div>
+                <motion.div
+                  whileHover={{ y: -8 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                  className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-line bg-paper p-5 sm:p-6"
+                  data-cursor="Ingredients & nutrition"
+                >
+                  <div className="relative flex h-72 items-center justify-center overflow-hidden rounded-2xl sm:h-96">
+                    <span
+                      className="absolute right-0 top-0 z-10 rounded-full px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-ink"
+                      style={{ background: p.accent }}
+                    >
+                      {p.tag}
+                    </span>
+                    <Image
+                      src={p.image}
+                      alt={`Angel Food ${p.name}`}
+                      fill
+                      sizes="(min-width: 1024px) 22vw, 45vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                  </div>
+                  <h3 className="mt-4 font-display text-lg font-bold tracking-tight text-ink sm:text-xl">
+                    {p.name}
+                  </h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                    {p.blurb}
+                  </p>
+                </motion.div>
+              </Link>
             </Reveal>
           ))}
         </div>

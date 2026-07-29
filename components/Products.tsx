@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   motion,
   useScroll,
@@ -9,7 +10,7 @@ import {
   useSpring,
   MotionValue,
 } from "framer-motion";
-import { PRODUCTS } from "@/lib/site";
+import { PRODUCTS, getNutritionSlug } from "@/lib/site";
 
 export function Products() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -73,13 +74,14 @@ function ProductCard({
 }) {
   // gentle counter-parallax on the image as the track moves
   const imgX = useTransform(progress, [0, 1], [index % 2 ? 26 : -26, index % 2 ? -26 : 26]);
+  const nutritionSlug = getNutritionSlug(p.name);
 
-  return (
+  const card = (
     <motion.article
       className="group relative flex h-[78vh] max-h-[680px] w-[82vw] shrink-0 flex-col overflow-hidden rounded-[2.5rem] border border-line bg-paper p-8 sm:w-[40vw] lg:w-[30vw]"
       whileHover={{ y: -10 }}
       transition={{ type: "spring", stiffness: 280, damping: 22 }}
-      data-cursor="Taste it"
+      data-cursor={nutritionSlug ? "Ingredients & nutrition" : "Taste it"}
     >
       <div className="flex items-center justify-between">
         <span className="font-display text-7xl font-extrabold text-line">
@@ -118,5 +120,18 @@ function ProductCard({
         </p>
       </div>
     </motion.article>
+  );
+
+  return nutritionSlug ? (
+    <Link
+      href={`/ingredients-nutrition-info#${nutritionSlug}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="shrink-0"
+    >
+      {card}
+    </Link>
+  ) : (
+    card
   );
 }

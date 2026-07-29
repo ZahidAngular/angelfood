@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ImagePlus } from "lucide-react";
-import { resolveImageUrl, type Recipe } from "@/lib/api";
+import { resolveImageUrl, recipeSlug, type Recipe } from "@/lib/api";
 import { Reveal } from "./Reveal";
 
 export function PublicRecipeCard({ recipe, index }: { recipe: Recipe; index: number }) {
@@ -12,7 +12,7 @@ export function PublicRecipeCard({ recipe, index }: { recipe: Recipe; index: num
 
   return (
     <Reveal delay={(index % 4) * 0.07}>
-      <Link href={`/recipes/${recipe.id}`} className="group block" data-cursor="Cook this">
+      <Link href={`/recipes/${recipeSlug(recipe.title)}`} className="group block" data-cursor="Cook this">
         <motion.div
           whileHover={{ y: -8 }}
           transition={{ type: "spring", stiffness: 300, damping: 22 }}

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { RECIPES, type Recipe } from "@/lib/site";
+import type { Recipe as ApiRecipe } from "@/lib/api";
+import { PublicRecipeCard } from "./PublicRecipeCard";
 import { Reveal } from "./Reveal";
 import { Parallax } from "./Parallax";
 
@@ -43,8 +45,10 @@ export function RecipeCard({ recipe: r, index }: { recipe: Recipe; index: number
   );
 }
 
-/** Home teaser — first 8 recipes with a heading + link to the full page. */
-export function Recipes() {
+/** Home teaser — latest 8 recipes from the live database, with a heading + link to the full page. */
+export function Recipes({ recipes }: { recipes: ApiRecipe[] }) {
+  const latest = recipes.slice(-8).reverse();
+
   return (
     <section id="recipes" className="bg-cream py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
@@ -71,11 +75,13 @@ export function Recipes() {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
-          {RECIPES.slice(0, 8).map((r, i) => (
-            <RecipeCard key={r.slug} recipe={r} index={i} />
-          ))}
-        </div>
+        {latest.length > 0 && (
+          <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
+            {latest.map((r, i) => (
+              <PublicRecipeCard key={r.id} recipe={r} index={i} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -140,6 +140,96 @@ export const MEATS: Product[] = [
   },
 ];
 
+export type NutritionEntry = {
+  /** Matches the `name` field on a Product/meal entry above. */
+  product: string;
+  slug: string;
+  ingredients: string;
+  nutritionImage?: string;
+};
+
+// Verbatim from angelfood.co.nz/ingredients-nutrition-info — ingredients text
+// copied word-for-word, nutrition panel images downloaded as-is (the old site
+// presents nutrition facts as an image, not a data table, for every product).
+export const NUTRITION_INFO: NutritionEntry[] = [
+  {
+    product: "Cheddar Block",
+    slug: "cheddar-block",
+    ingredients:
+      "INGREDIENTS: Water, Modified Starch (1404, 1414, 1450), Coconut Oil, Salt, Natural Flavour, Mineral Salt (Calcium phosphate), Yeast Extract, Acidity Regulator (Lactic acid, Citric acid), Preservative (Potassium sorbate), Colour (Carotene 160a).",
+    nutritionImage: "/images/nutrition/cheddar-block.png",
+  },
+  {
+    product: "Mozza Block",
+    slug: "mozza-block",
+    ingredients:
+      "INGREDIENTS: Water, Modified Starch (1404, 1414, 1450), Coconut Oil, Salt, Sugar, Mineral Salt (Calcium phosphate), Yeast Extract, Acidity Regulator (Lactic acid, Citric acid), Preservative (Potassium sorbate), Colour (Carotene 160a).",
+    nutritionImage: "/images/nutrition/mozza-block.png",
+  },
+  {
+    product: "Grated",
+    slug: "grated-cheese",
+    ingredients:
+      "INGREDIENTS: Water, Modified Starch (1404, 1414, 1450), Coconut Oil, Native Potato Starch, Salt, Natural Flavour, Mineral Salt (Calcium phosphate), Yeast Extract, Acidity Regulator (Citric acid, Lactic acid), Preservative (Potassium sorbate), Colour (Carotene 160a).",
+  },
+  {
+    product: "Feta",
+    slug: "feta",
+    ingredients:
+      "INGREDIENTS: Water, Coconut Oil, Modified Starch (1401, 1420, 1450), Salt, Pea Fibre, Sugar, Acidity Regulator (575, 270), Mineral Salt (Calcium phosphate), Natural Flavours, Preservative (202).",
+    nutritionImage: "/images/nutrition/feta.png",
+  },
+  {
+    product: "Parmesan",
+    slug: "parmesan",
+    ingredients:
+      "INGREDIENTS: Coconut Flour, Salt, Sunflower Oil, Yeast Extract, Natural Flavour, Acidity Regulator (Citric acid), White Pepper, Antioxidant (Natural Herb Extract).",
+    nutritionImage: "/images/nutrition/parmesan.png",
+  },
+  {
+    product: "Sour Cream",
+    slug: "sour-cream",
+    ingredients:
+      "INGREDIENTS: Water, Coconut Oil, Vegetable Oil, Maltodextrin, Modified Starch (1450), Mineral Salt (Calcium phosphate), Sugar, Acidity Regulator (Lactic acid, Citric acid), Natural Flavours, Antioxidant (331), Salt, Vegetable Gum (Carrageenan), Preservative (Potassium sorbate), Colour (Carotene 160a).",
+  },
+  {
+    product: "Tofu & Greens",
+    slug: "tofu-and-greens-bowl",
+    ingredients:
+      "INGREDIENTS: Turmeric Rice (Cooked Basmati Rice, Water, Oil, Ginger Garlic Paste, Turmeric Powder, Onion Powder, Garlic Powder, Coconut Milk, Salt), Crispy Tofu (Firm Tofu, Paprika, Salt, Sugar, Soy Milk, Oil), Garlic Spinach (Spinach, Oil, Vegan Butter [Plant Oils, Water, Salt], Garlic, Salt).",
+  },
+  {
+    product: "Vege Lasagna",
+    slug: "plant-based-lasagna",
+    ingredients:
+      "INGREDIENTS: Diced tomatoes, Tofu ricotta (tofu, coconut milk, nutritional yeast, olive oil, herbs, onion powder, salt), Lasagna sheets (durum wheat semolina), Marinara (tomatoes, tomato paste, onions, garlic, lentils, olive oil, parsley, oregano, sugar, salt), Spinach, Vegan cheese (Water, Modified Starch (1404, 1414, 1450), Coconut Oil, Salt, Natural Flavour, Mineral Salt (Calcium Phosphate), Yeast Extract, Acidity Regulator (Lactic acid, Citric acid), Preservative (Potassium sorbate), Colour (Carotene 160a).), Soy milk, Garlic, Salt, Herbs and spices.",
+  },
+  {
+    product: "Vege Korma",
+    slug: "creamy-vege-korma",
+    ingredients:
+      "INGREDIENTS: Cooked basmati rice (rice, water, cumin seeds, salt), Korma sauce (tomato paste, soy milk, coconut cream, water, ginger and garlic paste, vegan butter (plant oils, water, salt), cashew paste, oil, curry powder, sugar, salt, cardamom, pandan extract, spinach), Mixed vegetables (chickpeas, green beans, cauliflower, peas), Roasted broccoli (broccoli, oil, salt), Herbs and spices.",
+  },
+  {
+    product: "Creamy Butter Curry",
+    slug: "creamy-butter-curry",
+    ingredients:
+      "INGREDIENTS: Cooked Basmati Rice (Water, Basmati Rice, Salt), Butter Sauce [Tomato Paste. Water, Soy Milk, Canola Oil, Cashew Paste (Cashews, Water), Ginger, Garlic, Vegan Butter (Plant Oils, Water, Salt), Brown Sugar, Paprika, Kashmiri Chilli, Fenugreek, Kitchen King Masala (Spices, Salt), Garam Masala (Spices), Cardamom Powder, Salt], Vegan Chicken (Soy Protein, Water, Vegetable Oils, Wheat Protein, Natural Flavours, Salt), Fenugreek Leaves.",
+    nutritionImage: "/images/nutrition/creamy-butter-curry.png",
+  },
+  {
+    product: "Cream Cheese",
+    slug: "cream-cheese",
+    ingredients:
+      "INGREDIENTS: Water, Coconut Oil, Modified Starch (1420, 1450), Sugar, Salt, Vegetable Gum (Carrageenan, Xanthan gum), Mineral Salt (Calcium phosphates), Acidity Regulator (Lactic acid, Citric acid), Emulsifier (450), Antioxidant (331), Natural Flavour, Preservative (Potassium sorbate), Colour (Carotene).",
+    nutritionImage: "/images/nutrition/cream-cheese.png",
+  },
+];
+
+export function getNutritionSlug(productName: string): string | undefined {
+  return NUTRITION_INFO.find((n) => n.product === productName)?.slug;
+}
+
 export const VALUES = [
   {
     title: "Kindness",

@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { MEALS } from "@/lib/site";
+import { MEALS, getNutritionSlug } from "@/lib/site";
 import { Reveal } from "./Reveal";
 import { Parallax } from "./Parallax";
 
@@ -32,13 +33,14 @@ export function Meals() {
         </div>
 
         <div className="grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-6">
-          {MEALS.map((m, i) => (
-            <Reveal key={m.name} delay={(i % 4) * 0.07} className="h-full">
+          {MEALS.map((m, i) => {
+            const nutritionSlug = getNutritionSlug(m.name);
+            const card = (
               <motion.div
                 whileHover={{ y: -8 }}
                 transition={{ type: "spring", stiffness: 300, damping: 22 }}
                 className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-line bg-paper p-5 sm:p-6"
-                data-cursor="Taste it"
+                data-cursor={nutritionSlug ? "Ingredients & nutrition" : "Taste it"}
               >
                 <div className="relative flex h-72 items-center justify-center overflow-hidden rounded-2xl sm:h-96">
                   <Image
@@ -56,8 +58,24 @@ export function Meals() {
                   {m.blurb}
                 </p>
               </motion.div>
-            </Reveal>
-          ))}
+            );
+            return (
+              <Reveal key={m.name} delay={(i % 4) * 0.07} className="h-full">
+                {nutritionSlug ? (
+                  <Link
+                    href={`/ingredients-nutrition-info#${nutritionSlug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block h-full"
+                  >
+                    {card}
+                  </Link>
+                ) : (
+                  card
+                )}
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>

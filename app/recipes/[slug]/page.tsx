@@ -2,18 +2,23 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { recipeApi, resolveImageUrl, type Recipe } from "@/lib/api";
+import { recipeApi, resolveImageUrl, recipeSlug, type Recipe } from "@/lib/api";
 import { Reveal } from "@/components/Reveal";
 import { RevealImage } from "@/components/RevealImage";
 import { PublicRecipeCard } from "@/components/PublicRecipeCard";
 
+async function findRecipeBySlug(slug: string): Promise<Recipe | null> {
+  const allRecipes = await recipeApi.getAll().catch(() => [] as Recipe[]);
+  return allRecipes.find((r) => recipeSlug(r.title) === slug) ?? null;
+}
+
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const { id } = await params;
-  const recipe = await recipeApi.getById(Number(id)).catch(() => null);
+  const { slug } = await params;
+  const recipe = await findRecipeBySlug(slug);
   if (!recipe) return {};
   return {
     title: `${recipe.title} — Angel Food Recipes`,
@@ -24,11 +29,12 @@ export async function generateMetadata({
 export default async function RecipeDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { id } = await params;
+  const { slug } = await params;
 
-  const recipe = await recipeApi.getById(Number(id)).catch(() => null);
+  const allRecipes = await recipeApi.getAll().catch(() => [] as Recipe[]);
+  const recipe = allRecipes.find((r) => recipeSlug(r.title) === slug) ?? null;
   if (!recipe) notFound();
 
   const steps = recipe.instructions
@@ -36,7 +42,6 @@ export default async function RecipeDetailPage({
     .map((s) => s.trim())
     .filter(Boolean);
 
-  const allRecipes = await recipeApi.getAll().catch(() => [] as Recipe[]);
   const related = allRecipes.filter((r) => r.id !== recipe.id).slice(0, 4);
 
   const image = resolveImageUrl(recipe.imageUrl);

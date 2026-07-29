@@ -307,3 +307,13 @@ export function resolveImageUrl(path: string | null | undefined): string | null 
   // Recipe photos come back as a relative S3 key, e.g. "recipes/xxx.png".
   return `${S3_BUCKET_URL}${path}`;
 }
+
+/** URL-friendly slug derived from a recipe title, e.g. "Colin's bolognese" -> "colins-bolognese". */
+export function recipeSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/['’]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}

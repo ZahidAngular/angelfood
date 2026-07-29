@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
-import { PublicRecipeCard } from "@/components/PublicRecipeCard";
+import { RecipesGrid } from "@/components/RecipesGrid";
 import { recipeApi, type Recipe } from "@/lib/api";
 
 export const metadata: Metadata = {
@@ -26,11 +26,7 @@ export default async function RecipesPage() {
               No recipes yet — check back soon!
             </p>
           ) : (
-            <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
-              {recipes.map((r, i) => (
-                <PublicRecipeCard key={r.id} recipe={r} index={i} />
-              ))}
-            </div>
+            <RecipesGrid recipes={recipes} />
           )}
         </div>
       </section>
