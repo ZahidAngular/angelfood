@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { recipeApi, resolveImageUrl, recipeSlug, type Recipe } from "@/lib/api";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { Reveal } from "@/components/Reveal";
 import { RevealImage } from "@/components/RevealImage";
 import { PublicRecipeCard } from "@/components/PublicRecipeCard";
@@ -20,9 +21,29 @@ export async function generateMetadata({
   const { slug } = await params;
   const recipe = await findRecipeBySlug(slug);
   if (!recipe) return {};
+
+  const title = `${recipe.title} — Angel Food Recipes`;
+  const description = recipe.description ?? undefined;
+  const image = resolveImageUrl(recipe.imageUrl);
+  const url = `/recipes/${slug}`;
+
   return {
-    title: `${recipe.title} — Angel Food Recipes`,
-    description: recipe.description ?? undefined,
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title,
+      description,
+      images: image ? [{ url: image, alt: recipe.title }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
   };
 }
 
@@ -46,8 +67,39 @@ export default async function RecipeDetailPage({
 
   const image = resolveImageUrl(recipe.imageUrl);
 
+  // Structured data so recipes can appear as rich results in search.
+  // Rendered as an invisible script tag — nothing changes on screen.
+  const recipeJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Recipe",
+    name: recipe.title,
+    description: recipe.description || undefined,
+    image: image ? [image] : undefined,
+    author: { "@type": "Organization", name: SITE_NAME },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/images/logo.png`,
+      },
+    },
+    datePublished: recipe.createdAt || undefined,
+    dateModified: recipe.updatedAt || undefined,
+    recipeIngredient: recipe.ingredientGroups.flatMap((g) => g.items),
+    recipeInstructions: steps.map((step) => ({
+      "@type": "HowToStep",
+      // Drop any "1." / "2." prefix — the schema already conveys ordering.
+      text: step.replace(/^\d+[.)]\s*/, ""),
+    })),
+  };
+
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(recipeJsonLd) }}
+      />
       <header className="relative overflow-hidden bg-cream pb-4 pt-40 sm:pt-48">
         <div className="pointer-events-none absolute -right-32 top-10 h-[26rem] w-[26rem] rounded-full bg-gold/20 blur-[120px]" />
         <div className="mx-auto max-w-5xl px-5 sm:px-8">

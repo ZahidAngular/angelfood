@@ -32,7 +32,7 @@ const FLOATERS: Floater[] = [
     rotate: 8,
   },
   {
-    src: "/images/meats/meatballs.png",
+    src: "/images/butter-curry.png",
     className: "right-[2%] bottom-[8%] w-[19vw] max-w-[250px]",
     depth: 70,
     delay: 0.8,
@@ -94,13 +94,13 @@ export function Hero() {
           Aotearoa&apos;s original vegan cheese co. · since 2006
         </motion.span>
 
-        <h1 className="mt-6 font-display text-[clamp(3rem,11vw,11rem)] font-extrabold leading-[0.82] tracking-[-0.03em] text-ink">
-          <Line delay={0.35}>Better</Line>
+        <h1 className="mt-6 font-display text-[clamp(2.5rem,7.5vw,7rem)] font-extrabold leading-[0.9] tracking-[-0.03em] text-ink">
+          <Line delay={0.35}>Your favourite</Line>
           <Line delay={0.45} className="text-green">
-            vegan
+            foods,
           </Line>
           <Line delay={0.55}>
-            cheese<span className="text-coral">.</span>
+            plant-based<span className="text-coral">.</span>
           </Line>
         </h1>
 
@@ -110,7 +110,7 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.9 }}
           className="mt-8 max-w-md text-lg leading-relaxed text-ink-soft sm:text-xl"
         >
-          Dairy-free cheese that never asks you to compromise — because{" "}
+          No FOMO, no compromise — because{" "}
           <em className="not-italic text-green">doing good should taste incredible.</em>
         </motion.p>
 

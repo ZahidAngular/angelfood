@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Contact — Angel Food",
   description:
     "Got questions or suggestions? Get in touch with Angel Food. Wholesale and food-service enquiries welcome.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {

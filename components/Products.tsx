@@ -1,28 +1,53 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useSpring,
-  MotionValue,
-} from "framer-motion";
+import { motion, useTransform, MotionValue, useMotionValue, animate } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PRODUCTS, getNutritionSlug } from "@/lib/site";
 
+const AUTOPLAY_MS = 4000;
+const GAP_PX = 24;
+
+/** How many full cards should be visible at once, by breakpoint. */
+function cardsPerRow(width: number) {
+  if (width >= 1024) return 4;
+  if (width >= 640) return 2;
+  return 1;
+}
+
 export function Products() {
-  const sectionRef = useRef<HTMLElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [distance, setDistance] = useState(0);
-  const [vh, setVh] = useState(0);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [maxScroll, setMaxScroll] = useState(0);
+  const [cardWidth, setCardWidth] = useState(0);
+  const x = useMotionValue(0);
+
+  const count = PRODUCTS.length;
+
+  const goTo = useCallback(
+    (i: number) => {
+      const next = ((i % count) + count) % count; // wrap both directions
+      setIndex(next);
+    },
+    [count]
+  );
 
   useEffect(() => {
     const measure = () => {
-      if (!trackRef.current) return;
-      setVh(window.innerHeight);
-      setDistance(trackRef.current.scrollWidth - window.innerWidth);
+      if (!viewportRef.current || !trackRef.current) return;
+      const perRow = cardsPerRow(window.innerWidth);
+      const vw = viewportRef.current.clientWidth;
+      setCardWidth((vw - GAP_PX * (perRow - 1)) / perRow);
+      // Read scrollWidth on the next frame, after the new card width applied.
+      requestAnimationFrame(() => {
+        if (!viewportRef.current || !trackRef.current) return;
+        setMaxScroll(Math.max(0, trackRef.current.scrollWidth - viewportRef.current.clientWidth));
+      });
     };
     measure();
     window.addEventListener("resize", measure);
@@ -33,31 +58,105 @@ export function Products() {
     };
   }, []);
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  });
-  const xRaw = useTransform(scrollYProgress, [0, 1], [0, -distance]);
-  const x = useSpring(xRaw, { stiffness: 120, damping: 28, mass: 0.4 });
+  // Slide the track so the active card's left edge sits at the viewport edge —
+  // but never scroll past the point where the track's end is fully in view,
+  // so the last card never leaves a blank gap behind it. Animated (not an
+  // instant jump) so the outgoing card slides off as the next slides in.
+  useEffect(() => {
+    const card = cardRefs.current[index];
+    if (!card) return;
+    const controls = animate(x, -Math.min(card.offsetLeft, maxScroll), {
+      type: "spring",
+      stiffness: 260,
+      damping: 32,
+    });
+    return () => controls.stop();
+  }, [index, maxScroll, cardWidth, x]);
+
+  // Autoplay — loops forever, pauses while a user is interacting.
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(() => goTo(index + 1), AUTOPLAY_MS);
+    return () => clearInterval(id);
+  }, [index, paused, goTo]);
 
   return (
-    <section
-      ref={sectionRef}
-      id="cheeses"
-      className="relative bg-cream-deep"
-      style={{ height: `${distance + vh}px` }}
-    >
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden pt-20 sm:pt-28">
-        <motion.div
-          ref={trackRef}
-          style={{ x }}
-          className="flex items-center gap-6 px-5 sm:gap-8 sm:px-8"
+    <section id="cheeses" className="relative bg-cream-deep py-24 sm:py-32">
+      <div className="flex items-center gap-3 px-5 sm:gap-5 sm:px-8 lg:px-12">
+        <button
+          type="button"
+          onClick={() => goTo(index - 1)}
+          aria-label="Previous product"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-paper text-ink-soft shadow-md transition-colors hover:border-green hover:bg-green hover:text-cream"
         >
-          {/* Product panels */}
+          <ChevronLeft size={20} />
+        </button>
+
+        <div
+          ref={viewportRef}
+          className="min-w-0 flex-1 overflow-hidden"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
+          <motion.div
+            ref={trackRef}
+            style={{ x, gap: GAP_PX }}
+            className="flex items-stretch"
+          >
+            {PRODUCTS.map((p, i) => (
+              <div key={p.name} ref={(el) => { cardRefs.current[i] = el; }}>
+                <ProductCard product={p} index={i} x={x} width={cardWidth} />
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => goTo(index + 1)}
+          aria-label="Next product"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-paper text-ink-soft shadow-md transition-colors hover:border-green hover:bg-green hover:text-cream"
+        >
+          <ChevronRight size={20} />
+        </button>
+      </div>
+
+      {/* Bottom controls — dots to jump straight to a product, plus arrows
+          again so navigation is reachable without reaching to the sides
+          (handy on phones, where the side arrows sit close to the screen edge). */}
+      <div className="mt-8 flex items-center justify-center gap-4 sm:mt-10">
+        <button
+          type="button"
+          onClick={() => goTo(index - 1)}
+          aria-label="Previous product"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line bg-paper text-ink-soft transition-colors hover:border-green hover:bg-green hover:text-cream"
+        >
+          <ChevronLeft size={16} />
+        </button>
+
+        <div className="flex items-center gap-2">
           {PRODUCTS.map((p, i) => (
-            <ProductCard key={p.name} product={p} index={i} progress={scrollYProgress} />
+            <button
+              key={p.name}
+              type="button"
+              onClick={() => goTo(i)}
+              aria-label={`Go to ${p.name}`}
+              aria-current={i === index ? "true" : undefined}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === index ? "w-6 bg-green" : "w-2 bg-ink-soft/30 hover:bg-ink-soft/50"
+              }`}
+            />
           ))}
-        </motion.div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => goTo(index + 1)}
+          aria-label="Next product"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line bg-paper text-ink-soft transition-colors hover:border-green hover:bg-green hover:text-cream"
+        >
+          <ChevronRight size={16} />
+        </button>
       </div>
     </section>
   );
@@ -66,19 +165,22 @@ export function Products() {
 function ProductCard({
   product: p,
   index,
-  progress,
+  x,
+  width,
 }: {
   product: (typeof PRODUCTS)[number];
   index: number;
-  progress: MotionValue<number>;
+  x: MotionValue<number>;
+  width: number;
 }) {
-  // gentle counter-parallax on the image as the track moves
-  const imgX = useTransform(progress, [0, 1], [index % 2 ? 26 : -26, index % 2 ? -26 : 26]);
+  // subtle counter-parallax on the image as the track slides
+  const imgX = useTransform(x, (v) => (index % 2 ? v * 0.02 : v * -0.02));
   const nutritionSlug = getNutritionSlug(p.name);
 
   const card = (
     <motion.article
-      className="group relative flex h-[78vh] max-h-[680px] w-[82vw] shrink-0 flex-col overflow-hidden rounded-[2.5rem] border border-line bg-paper p-8 sm:w-[40vw] lg:w-[30vw]"
+      style={width ? { width } : undefined}
+      className="group relative flex h-[70vh] w-[82vw] max-h-[560px] shrink-0 flex-col overflow-hidden rounded-[2rem] border border-line bg-paper p-6 lg:p-7"
       whileHover={{ y: -10 }}
       transition={{ type: "spring", stiffness: 280, damping: 22 }}
       data-cursor={nutritionSlug ? "Ingredients & nutrition" : "Taste it"}

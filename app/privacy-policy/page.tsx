@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/LegalPage";
 
-export const metadata: Metadata = { title: "Privacy Policy — Angel Food" };
+export const metadata: Metadata = {
+  title: "Privacy Policy — Angel Food",
+  alternates: { canonical: "/privacy-policy" },
+};
 
 export default function PrivacyPolicyPage() {
   return (

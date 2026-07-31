@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/LegalPage";
 
-export const metadata: Metadata = { title: "Terms of Website Use — Angel Food" };
+export const metadata: Metadata = {
+  title: "Terms of Website Use — Angel Food",
+  alternates: { canonical: "/terms-of-website-use" },
+};
 
 export default function TermsOfUsePage() {
   return (

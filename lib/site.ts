@@ -1,3 +1,14 @@
+/**
+ * Canonical origin for the site, used for metadata, sitemap and structured
+ * data. Set NEXT_PUBLIC_SITE_URL in the environment when the custom domain
+ * goes live; the fallback keeps preview deployments working.
+ */
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "https://angelfood.vercel.app";
+
+export const SITE_NAME = "Angel Food";
+
 export const SOCIAL_LINKS = {
   instagram: "https://www.instagram.com/angelfoodforgood",
   facebook: "https://facebook.com/AngelFoodCheese",
@@ -64,7 +75,7 @@ export const PRODUCTS: Product[] = [
     name: "Mozza Block",
     blurb:
       "Tip it out of the tub and slice it or grate it onto your pizza or into your quesadilla. Plant-based, vegan, dairy-free, gluten-free.",
-    tag: "Stretch",
+    tag: "Grate",
     image: "/images/mozza.png",
     accent: "var(--color-coral)",
   },

@@ -7,6 +7,13 @@ export const metadata: Metadata = {
   title: "Recipes — Angel Food",
   description:
     "Delicious plant-based recipes for every occasion — cheesecakes, fritters, soups, salads and more, all made with Angel Food vegan cheese.",
+  alternates: { canonical: "/recipes" },
+  openGraph: {
+    url: "/recipes",
+    title: "Recipes — Angel Food",
+    description:
+      "Delicious plant-based recipes for every occasion — cheesecakes, fritters, soups, salads and more, all made with Angel Food vegan cheese.",
+  },
 };
 
 export default async function RecipesPage() {

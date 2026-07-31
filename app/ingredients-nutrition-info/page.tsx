@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Ingredients and nutritional info — Angel Food",
   description:
     "Full ingredients lists and nutrition panels for every Angel Food product.",
+  alternates: { canonical: "/ingredients-nutrition-info" },
 };
 
 export default function IngredientsNutritionInfoPage() {

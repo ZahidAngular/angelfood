@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Where to Buy — Angel Food",
   description:
     "Find Angel Food vegan cheese on shelves across Aotearoa — PAK'nSAVE, New World, Woolworths, Four Square and more. Search by town, filter by product, and get directions.",
+  alternates: { canonical: "/where-to-buy" },
 };
 
 export default async function WhereToBuyPage() {
