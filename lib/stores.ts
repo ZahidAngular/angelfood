@@ -216,7 +216,10 @@ function toRetailName(canon: string): string | null {
   if (!canon) return null;
   if (/food service/i.test(canon)) return null;
   if (DISCONTINUED.test(canon)) return null;
-  return canon.replace(/\s*\d+(\.\d+)?\s*(g|kg)\s*$/i, "").trim();
+  return canon
+    .replace(/\s*\d+(\.\d+)?\s*(g|kg)\s*$/i, "")
+    .replace(/\s+(Block|Tub)\s*$/i, "")
+    .trim();
 }
 
 export const PRODUCT_CATEGORY_ORDER = [

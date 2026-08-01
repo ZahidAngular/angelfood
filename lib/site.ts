@@ -122,7 +122,7 @@ export const MEATS: Product[] = [
     blurb:
       "Golden and crispy — serve with chips, tuck into tacos or dip into your favourite sauce.",
     tag: "Sizzle",
-    image: "/images/meats/fish-fingers.jpg",
+    image: "/images/meats/fish-fingers.png",
     accent: "var(--color-gold)",
   },
   {
@@ -130,7 +130,7 @@ export const MEATS: Product[] = [
     blurb:
       "Juicy and satisfying — stack in a bun with all the classic burger fixings.",
     tag: "Grill",
-    image: "/images/meats/burger-patties.jpg",
+    image: "/images/meats/burger-patties.png",
     accent: "var(--color-coral)",
   },
   {
@@ -138,7 +138,7 @@ export const MEATS: Product[] = [
     blurb:
       "Hearty and herby — simmer them in your favourite sauce or pile onto a sub.",
     tag: "Simmer",
-    image: "/images/meats/meatballs.jpg",
+    image: "/images/meats/meatballs.png",
     accent: "var(--color-green-bright)",
   },
   {

@@ -25,8 +25,8 @@ export default function ProductsPage() {
       <HashScroll />
       <PageHeader
         eyebrow="The range"
-        title="Cheese for every craving."
-        intro="Seven dairy-free heroes built for real life — pizza nights, cheeseboards, toasties and everything in between."
+        title="Your favourite foods, plant-based."
+        intro="No FOMO, no compromise — because doing good should taste incredible."
       />
       <ProductCategoryNav />
       <Products />

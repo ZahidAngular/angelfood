@@ -6,6 +6,8 @@ import Link from "next/link";
 import { motion, useTransform, MotionValue, useMotionValue, animate } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PRODUCTS, getNutritionSlug } from "@/lib/site";
+import { Reveal } from "./Reveal";
+import { Parallax } from "./Parallax";
 
 const AUTOPLAY_MS = 4000;
 const GAP_PX = 24;
@@ -82,6 +84,29 @@ export function Products() {
 
   return (
     <section id="cheeses" className="relative bg-cream-deep py-24 sm:py-32">
+      <div className="mx-auto w-full px-5 sm:px-8 lg:px-12">
+        <div className="mb-12 flex flex-col items-start justify-between gap-5 md:flex-row md:items-end">
+          <Parallax amount={40}>
+            <Reveal>
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-coral">
+                ✦ Cheeses
+              </p>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <h2 className="mt-4 font-display text-[clamp(2rem,5.5vw,4rem)] font-extrabold leading-[0.98] tracking-tight text-ink">
+                Cheese for every craving.
+              </h2>
+            </Reveal>
+          </Parallax>
+          <Reveal delay={0.1}>
+            <p className="max-w-sm text-ink-soft">
+              Seven dairy-free heroes built for real life — pizza nights,
+              cheeseboards, toasties and everything in between.
+            </p>
+          </Reveal>
+        </div>
+      </div>
+
       <div className="flex items-center gap-3 px-5 sm:gap-5 sm:px-8 lg:px-12">
         <button
           type="button"
