@@ -94,25 +94,25 @@ export const MEALS = [
     name: "Vege Lasagna",
     blurb:
       "Slow-cooked lentil ragu, tofu ricotta, velvety béchamel, and tender pasta sheets — baked to perfection. Plant-based, vegan, dairy-free.",
-    image: "/images/lasagna.png",
+    image: "/images/meals/vege-lasagna.jpeg",
   },
   {
     name: "Vege Korma",
     blurb:
       "Creamy coconut cashew korma with tender veges and aromatic spices, with cumin rice and roasted broccoli. Plant-based, vegan, dairy-free.",
-    image: "/images/korma.png",
+    image: "/images/meals/vege-korma.jpeg",
   },
   {
     name: "Tofu & Greens",
     blurb:
       "Fresh and nourishing with marinated tofu, vibrant spinach, fragrant jasmine rice and sesame ginger dressing. Plant-based, vegan, dairy-free.",
-    image: "/images/tofu-greens.png",
+    image: "/images/meals/tofu-greens.jpeg",
   },
   {
     name: "Creamy Butter Curry",
     blurb:
       "Plant-based chicken in a silky tomato-butter curry loaded with aromatic spices on jasmine rice. Plant-based, vegan, dairy-free.",
-    image: "/images/butter-curry.png",
+    image: "/images/meals/butter-curry.jpeg",
   },
 ];
 

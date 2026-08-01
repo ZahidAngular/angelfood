@@ -18,7 +18,13 @@ import {
   Maximize2,
   Minimize2,
 } from "lucide-react";
-import { BANNERS, type Store, type StoreData } from "@/lib/stores";
+import {
+  BANNERS,
+  PRODUCT_CATEGORY_ORDER,
+  categorizeProduct,
+  type Store,
+  type StoreData,
+} from "@/lib/stores";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -412,30 +418,63 @@ export function StoreLocator({ data }: { data: StoreData }) {
       .addTo(layer);
   }, [mapEpoch, center, radius]);
 
-  /* ---------------- fit bounds when results change ---------------- */
+  /* ---------------- fit bounds when results change ----------------
+     On mobile the map pane is `hidden` until the user taps the "Map" tab,
+     which leaves Leaflet's container at 0×0. Flying/fitting against a
+     zero-size container produces NaN internally and crashes the whole page,
+     so this skips (without animation) whenever the pane isn't actually
+     visible, then catches up via the mobileView effect below once it is. */
   const fitKey = `${filtered.length}:${center?.lat ?? ""}:${radius}:${product}:${region}:${banners.join()}`;
   const lastFit = useRef("");
-  useEffect(() => {
-    const L = LRef.current;
-    const map = mapRef.current;
-    if (!L || !map || lastFit.current === fitKey) return;
-    lastFit.current = fitKey;
 
-    if (center) {
-      // NB: L.circle(...).getBounds() reads `this._map`, so it throws for a
-      // circle that was never added to the map. LatLng.toBounds needs no map;
-      // it takes the full box size, hence radius * 2.
-      map.flyToBounds(L.latLng(center.lat, center.lng).toBounds(radius * 2000), {
-        duration: 0.8,
-        maxZoom: 14,
-      });
-    } else if (filtered.length) {
-      map.flyToBounds(
-        L.latLngBounds(filtered.map((e) => [e.store.lat, e.store.lng])).pad(0.12),
-        { duration: 0.8, maxZoom: 13 }
-      );
-    }
-  }, [mapEpoch, fitKey, center, radius, filtered]);
+  const fitToResults = useCallback(
+    (animate: boolean) => {
+      const L = LRef.current;
+      const map = mapRef.current;
+      if (!L || !map) return;
+      const size = map.getSize();
+      if (!size || size.x === 0 || size.y === 0) return;
+
+      if (center) {
+        // NB: L.circle(...).getBounds() reads `this._map`, so it throws for a
+        // circle that was never added to the map. LatLng.toBounds needs no
+        // map; it takes the full box size, hence radius * 2.
+        const bounds = L.latLng(center.lat, center.lng).toBounds(radius * 2000);
+        if (animate) map.flyToBounds(bounds, { duration: 0.8, maxZoom: 14 });
+        else map.fitBounds(bounds, { animate: false, maxZoom: 14 });
+      } else if (filtered.length) {
+        const pts = filtered
+          .map((e): [number, number] => [e.store.lat, e.store.lng])
+          .filter(([lat, lng]) => Number.isFinite(lat) && Number.isFinite(lng));
+        const bounds = pts.length ? L.latLngBounds(pts).pad(0.12) : null;
+        // A NaN coordinate or degenerate bounds crashes Leaflet outright —
+        // guard rather than let it take the map (and the page) down.
+        if (!bounds || !bounds.isValid()) return;
+        if (animate) map.flyToBounds(bounds, { duration: 0.8, maxZoom: 13 });
+        else map.fitBounds(bounds, { animate: false, maxZoom: 13 });
+      }
+    },
+    [center, radius, filtered]
+  );
+
+  useEffect(() => {
+    if (lastFit.current === fitKey) return;
+    lastFit.current = fitKey;
+    fitToResults(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapEpoch, fitKey]);
+
+  // Catch up once the map pane actually becomes visible (mobile tab switch,
+  // or entering/leaving fullscreen), skipping the flight animation.
+  useEffect(() => {
+    if (mobileView !== "map") return;
+    const t = setTimeout(() => {
+      mapRef.current?.invalidateSize();
+      fitToResults(false);
+    }, 50);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mobileView, fullscreen]);
 
   /* ---------------- geocoding (Nominatim, same as the Angular app) ---------------- */
   useEffect(() => {
@@ -713,11 +752,19 @@ export function StoreLocator({ data }: { data: StoreData }) {
                       className="w-full rounded-xl border border-line bg-cream px-3.5 py-2.5 text-sm text-ink outline-none focus:border-green"
                     >
                       <option value="">Any product</option>
-                      {products.map((p) => (
-                        <option key={p} value={p}>
-                          {p}
-                        </option>
-                      ))}
+                      {PRODUCT_CATEGORY_ORDER.map((cat) => {
+                        const items = products.filter((p) => categorizeProduct(p) === cat);
+                        if (items.length === 0) return null;
+                        return (
+                          <optgroup key={cat} label={cat}>
+                            {items.map((p) => (
+                              <option key={p} value={p}>
+                                {p}
+                              </option>
+                            ))}
+                          </optgroup>
+                        );
+                      })}
                     </select>
                   </label>
 

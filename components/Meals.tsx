@@ -42,13 +42,13 @@ export function Meals() {
                 className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-line bg-paper p-5 sm:p-6"
                 data-cursor={nutritionSlug ? "Ingredients & nutrition" : "Taste it"}
               >
-                <div className="relative flex h-72 items-center justify-center overflow-hidden rounded-2xl sm:h-96">
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
                   <Image
                     src={m.image}
                     alt={`Angel Food ${m.name}`}
                     fill
                     sizes="(min-width: 1024px) 22vw, 45vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
                 <h3 className="mt-4 font-display text-lg font-bold tracking-tight text-ink sm:text-xl">

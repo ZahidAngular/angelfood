@@ -204,6 +204,38 @@ const canonProduct = (n: string | null | undefined) => {
   return t ? PRODUCT_ALIASES[t] ?? t : "";
 };
 
+/** Not a current retail product — drop it entirely. */
+const DISCONTINUED = /smoked cheddar/i;
+
+/**
+ * Retail display name: drops food-service-only lines and discontinued
+ * products, and strips the trailing pack size so e.g. "Sour Cream Tub 200g"
+ * and "Sour Cream Tub 240g" both collapse to "Sour Cream Tub".
+ */
+function toRetailName(canon: string): string | null {
+  if (!canon) return null;
+  if (/food service/i.test(canon)) return null;
+  if (DISCONTINUED.test(canon)) return null;
+  return canon.replace(/\s*\d+(\.\d+)?\s*(g|kg)\s*$/i, "").trim();
+}
+
+export const PRODUCT_CATEGORY_ORDER = [
+  "Dairy alternatives",
+  "Ready meals",
+  "Meat alternatives",
+] as const;
+export type ProductCategory = (typeof PRODUCT_CATEGORY_ORDER)[number];
+
+const READY_MEAL = /rice|lasagn|korma|curry|bowl/i;
+const MEAT_ALT = /chicken|beef|pork|bacon|fish finger|patt(y|ies)|meatball/i;
+
+/** Which section a product belongs to in the "Product" filter dropdown. */
+export function categorizeProduct(name: string): ProductCategory {
+  if (READY_MEAL.test(name)) return "Ready meals";
+  if (MEAT_ALT.test(name)) return "Meat alternatives";
+  return "Dairy alternatives";
+}
+
 /* ------------------------------------------------------------------ */
 /* Fetch                                                               */
 /* ------------------------------------------------------------------ */
@@ -267,7 +299,11 @@ export async function getStoreData(): Promise<StoreData> {
 
       const { cleaned, postcode, region, locality } = parseAddress(row.address);
       const inventory = [
-        ...new Set((row.inventory ?? []).map((p) => canonProduct(p.name)).filter(Boolean)),
+        ...new Set(
+          (row.inventory ?? [])
+            .map((p) => toRetailName(canonProduct(p.name)))
+            .filter((n): n is string => !!n)
+        ),
       ].sort();
 
       inventory.forEach((p) => products.add(p));
