@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { MEATS } from "@/lib/site";
+import { MEATS, getNutritionSlug } from "@/lib/site";
 import { Reveal } from "./Reveal";
 import { Parallax } from "./Parallax";
 
@@ -33,10 +33,12 @@ export function Meats() {
         </div>
 
         <div className="grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-6">
-          {MEATS.map((p, i) => (
+          {MEATS.map((p, i) => {
+            const nutritionSlug = getNutritionSlug(p.name);
+            return (
             <Reveal key={p.name} delay={(i % 4) * 0.07} className="h-full">
               <Link
-                href="/ingredients-nutrition-info"
+                href={nutritionSlug ? `/ingredients-nutrition-info/${nutritionSlug}` : "/ingredients-nutrition-info"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block h-full"
@@ -71,7 +73,8 @@ export function Meats() {
                 </motion.div>
               </Link>
             </Reveal>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

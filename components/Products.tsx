@@ -251,7 +251,7 @@ function ProductCard({
 
   return nutritionSlug ? (
     <Link
-      href={`/ingredients-nutrition-info#${nutritionSlug}`}
+      href={`/ingredients-nutrition-info/${nutritionSlug}`}
       target="_blank"
       rel="noopener noreferrer"
       className="shrink-0"

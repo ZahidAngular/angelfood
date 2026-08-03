@@ -63,7 +63,7 @@ export function Meals() {
               <Reveal key={m.name} delay={(i % 4) * 0.07} className="h-full">
                 {nutritionSlug ? (
                   <Link
-                    href={`/ingredients-nutrition-info#${nutritionSlug}`}
+                    href={`/ingredients-nutrition-info/${nutritionSlug}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block h-full"

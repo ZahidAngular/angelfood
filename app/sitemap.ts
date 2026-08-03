@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { recipeApi, recipeSlug, type Recipe } from "@/lib/api";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, NUTRITION_INFO } from "@/lib/site";
 
 const STATIC_ROUTES: {
   path: string;
@@ -38,5 +38,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticEntries, ...recipeEntries];
+  const nutritionEntries: MetadataRoute.Sitemap = NUTRITION_INFO.map((n) => ({
+    url: `${SITE_URL}/ingredients-nutrition-info/${n.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.5,
+  }));
+
+  return [...staticEntries, ...recipeEntries, ...nutritionEntries];
 }

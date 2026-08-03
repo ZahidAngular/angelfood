@@ -151,89 +151,361 @@ export const MEATS: Product[] = [
   },
 ];
 
+export type NutritionRow = {
+  label: string;
+  perServe: string;
+  per100g: string;
+};
+
+export type NutritionFacts = {
+  servingsPerPack: string;
+  servingSize?: string;
+  rows: NutritionRow[];
+};
+
 export type NutritionEntry = {
   /** Matches the `name` field on a Product/meal entry above. */
   product: string;
   slug: string;
+  category: "Cheeses" | "Meals" | "Meats";
   ingredients: string;
-  nutritionImage?: string;
+  nutrition: NutritionFacts;
 };
 
-// Verbatim from angelfood.co.nz/ingredients-nutrition-info — ingredients text
-// copied word-for-word, nutrition panel images downloaded as-is (the old site
-// presents nutrition facts as an image, not a data table, for every product).
+// Ingredients text and nutrition panel figures supplied directly by Angel
+// Food (NIPs for new website 08-2026.xlsx) — the canonical source, straight
+// from each product's pack.
 export const NUTRITION_INFO: NutritionEntry[] = [
   {
     product: "Cheddar Block",
     slug: "cheddar-block",
+    category: "Cheeses",
     ingredients:
       "INGREDIENTS: Water, Modified Starch (1404, 1414, 1450), Coconut Oil, Salt, Natural Flavour, Mineral Salt (Calcium phosphate), Yeast Extract, Acidity Regulator (Lactic acid, Citric acid), Preservative (Potassium sorbate), Colour (Carotene 160a).",
-    nutritionImage: "/images/nutrition/cheddar-block.png",
+    nutrition: {
+      servingsPerPack: "6.5",
+      servingSize: "30g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "349", per100g: "1160" },
+        { label: "Calories (cal)", perServe: "83", per100g: "278" },
+        { label: "Protein (g)", perServe: "Less than 1", per100g: "Less than 1" },
+        { label: "Gluten", perServe: "0mg", per100g: "0mg" },
+        { label: "Fat, Total (g)", perServe: "6.7", per100g: "22.4" },
+        { label: "Saturated (g)", perServe: "6.1", per100g: "20.3" },
+        { label: "Carbohydrate (g)", perServe: "5.8", per100g: "19.4" },
+        { label: "Sugars (g)", perServe: "Less than 1", per100g: "Less than 1" },
+        { label: "Sodium (mg)", perServe: "232", per100g: "775" },
+        { label: "Calcium (mg)", perServe: "99", per100g: "332" },
+      ],
+    },
   },
   {
     product: "Mozza Block",
     slug: "mozza-block",
+    category: "Cheeses",
     ingredients:
       "INGREDIENTS: Water, Modified Starch (1404, 1414, 1450), Coconut Oil, Salt, Sugar, Mineral Salt (Calcium phosphate), Yeast Extract, Acidity Regulator (Lactic acid, Citric acid), Preservative (Potassium sorbate), Colour (Carotene 160a).",
-    nutritionImage: "/images/nutrition/mozza-block.png",
+    nutrition: {
+      servingsPerPack: "6.5",
+      servingSize: "30g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "351", per100g: "1170" },
+        { label: "Calories (cal)", perServe: "84", per100g: "279" },
+        { label: "Protein (g)", perServe: "Less than 1", per100g: "Less than 1" },
+        { label: "Gluten", perServe: "0mg", per100g: "0mg" },
+        { label: "Fat, Total (g)", perServe: "6.6", per100g: "22.0" },
+        { label: "Saturated (g)", perServe: "6.0", per100g: "20.2" },
+        { label: "Carbohydrate (g)", perServe: "6.1", per100g: "20.3" },
+        { label: "Sugars (g)", perServe: "Less than 1", per100g: "1.0" },
+        { label: "Sodium (mg)", perServe: "181", per100g: "603" },
+        { label: "Calcium (mg)", perServe: "99", per100g: "331" },
+      ],
+    },
   },
   {
     product: "Grated",
     slug: "grated-cheese",
+    category: "Cheeses",
     ingredients:
       "INGREDIENTS: Water, Modified Starch (1404, 1414, 1450), Coconut Oil, Native Potato Starch, Salt, Natural Flavour, Mineral Salt (Calcium phosphate), Yeast Extract, Acidity Regulator (Citric acid, Lactic acid), Preservative (Potassium sorbate), Colour (Carotene 160a).",
+    nutrition: {
+      servingsPerPack: "8",
+      servingSize: "30g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "352", per100g: "1170" },
+        { label: "Calories (cal)", perServe: "84", per100g: "280" },
+        { label: "Protein (g)", perServe: "Less than 1", per100g: "Less than 1" },
+        { label: "Gluten", perServe: "0mg", per100g: "0mg" },
+        { label: "Fat, Total (g)", perServe: "6.5", per100g: "21.6" },
+        { label: "Saturated (g)", perServe: "5.9", per100g: "19.5" },
+        { label: "Carbohydrate (g)", perServe: "6.5", per100g: "21.8" },
+        { label: "Sugars (g)", perServe: "Less than 1", per100g: "Less than 1" },
+        { label: "Sodium (mg)", perServe: "224", per100g: "745" },
+        { label: "Calcium (mg)", perServe: "96", per100g: "319" },
+      ],
+    },
   },
   {
     product: "Feta",
     slug: "feta",
+    category: "Cheeses",
     ingredients:
       "INGREDIENTS: Water, Coconut Oil, Modified Starch (1401, 1420, 1450), Salt, Pea Fibre, Sugar, Acidity Regulator (575, 270), Mineral Salt (Calcium phosphate), Natural Flavours, Preservative (202).",
-    nutritionImage: "/images/nutrition/feta.png",
+    nutrition: {
+      servingsPerPack: "6.5",
+      servingSize: "30g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "321", per100g: "1070" },
+        { label: "Calories (cal)", perServe: "77", per100g: "256" },
+        { label: "Protein (g)", perServe: "Less than 1", per100g: "Less than 1" },
+        { label: "Gluten", perServe: "0g", per100g: "0g" },
+        { label: "Fat, Total (g)", perServe: "6.7", per100g: "22.2" },
+        { label: "Saturated (g)", perServe: "6.1", per100g: "20.4" },
+        { label: "Carbohydrate (g)", perServe: "4.1", per100g: "13.8" },
+        { label: "Sugars (g)", perServe: "Less than 1", per100g: "2.1" },
+        { label: "Sodium (mg)", perServe: "486", per100g: "1620" },
+      ],
+    },
   },
   {
     product: "Parmesan",
     slug: "parmesan",
+    category: "Cheeses",
     ingredients:
       "INGREDIENTS: Coconut Flour, Salt, Sunflower Oil, Yeast Extract, Natural Flavour, Acidity Regulator (Citric acid), White Pepper, Antioxidant (Natural Herb Extract).",
-    nutritionImage: "/images/nutrition/parmesan.png",
+    nutrition: {
+      servingsPerPack: "33",
+      servingSize: "3g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "44", per100g: "1470" },
+        { label: "Calories (cal)", perServe: "11", per100g: "351" },
+        { label: "Protein (g)", perServe: "Less than 1", per100g: "11.4" },
+        { label: "Gluten", perServe: "0mg", per100g: "0mg" },
+        { label: "Fat, Total (g)", perServe: "Less than 1", per100g: "20.8" },
+        { label: "Saturated (g)", perServe: "Less than 1", per100g: "11.6" },
+        { label: "Carbohydrate (g)", perServe: "Less than 1", per100g: "17" },
+        { label: "Sugars (g)", perServe: "Less than 1", per100g: "5.3" },
+        { label: "Dietary Fibre (g)", perServe: "Less than 1", per100g: "26.8" },
+        { label: "Sodium (mg)", perServe: "153", per100g: "5110" },
+      ],
+    },
   },
   {
     product: "Sour Cream",
     slug: "sour-cream",
+    category: "Cheeses",
     ingredients:
       "INGREDIENTS: Water, Coconut Oil, Vegetable Oil, Maltodextrin, Modified Starch (1450), Mineral Salt (Calcium phosphate), Sugar, Acidity Regulator (Lactic acid, Citric acid), Natural Flavours, Antioxidant (331), Salt, Vegetable Gum (Carrageenan), Preservative (Potassium sorbate), Colour (Carotene 160a).",
+    nutrition: {
+      servingsPerPack: "6.5",
+      servingSize: "30g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "363", per100g: "1210" },
+        { label: "Calories (cal)", perServe: "87", per100g: "289" },
+        { label: "Protein (g)", perServe: "Less than 1", per100g: "Less than 1" },
+        { label: "Gluten", perServe: "0g", per100g: "0g" },
+        { label: "Fat, Total (g)", perServe: "8.5", per100g: "28.4" },
+        { label: "Saturated (g)", perServe: "5.2", per100g: "17.2" },
+        { label: "Carbohydrate (g)", perServe: "2.8", per100g: "9.3" },
+        { label: "Sugars (g)", perServe: "Less than 1", per100g: "Less than 1" },
+        { label: "Sodium (mg)", perServe: "62", per100g: "207" },
+      ],
+    },
   },
   {
     product: "Tofu & Greens",
     slug: "tofu-and-greens-bowl",
+    category: "Meals",
     ingredients:
       "INGREDIENTS: Turmeric Rice (Cooked Basmati Rice, Water, Oil, Ginger Garlic Paste, Turmeric Powder, Onion Powder, Garlic Powder, Coconut Milk, Salt), Crispy Tofu (Firm Tofu, Paprika, Salt, Sugar, Soy Milk, Oil), Garlic Spinach (Spinach, Oil, Vegan Butter [Plant Oils, Water, Salt], Garlic, Salt).",
+    nutrition: {
+      servingsPerPack: "1",
+      servingSize: "400g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "2310", per100g: "578" },
+        { label: "Calories (cal)", perServe: "553", per100g: "138" },
+        { label: "Protein (g)", perServe: "23.2", per100g: "5.8" },
+        { label: "Fat, Total (g)", perServe: "15.8", per100g: "3.9" },
+        { label: "Saturated (g)", perServe: "4.1", per100g: "1" },
+        { label: "Carbohydrate (g)", perServe: "76", per100g: "19" },
+        { label: "Sugars (g)", perServe: "6.1", per100g: "1.5" },
+        { label: "Sodium (mg)", perServe: "780", per100g: "195" },
+      ],
+    },
   },
   {
     product: "Vege Lasagna",
     slug: "plant-based-lasagna",
+    category: "Meals",
     ingredients:
       "INGREDIENTS: Diced tomatoes, Tofu ricotta (tofu, coconut milk, nutritional yeast, olive oil, herbs, onion powder, salt), Lasagna sheets (durum wheat semolina), Marinara (tomatoes, tomato paste, onions, garlic, lentils, olive oil, parsley, oregano, sugar, salt), Spinach, Vegan cheese (Water, Modified Starch (1404, 1414, 1450), Coconut Oil, Salt, Natural Flavour, Mineral Salt (Calcium Phosphate), Yeast Extract, Acidity Regulator (Lactic acid, Citric acid), Preservative (Potassium sorbate), Colour (Carotene 160a).), Soy milk, Garlic, Salt, Herbs and spices.",
+    nutrition: {
+      servingsPerPack: "1",
+      servingSize: "400g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "2425", per100g: "606" },
+        { label: "Calories (cal)", perServe: "580", per100g: "145" },
+        { label: "Protein (g)", perServe: "22", per100g: "5.5" },
+        { label: "Fat, Total (g)", perServe: "21", per100g: "5.3" },
+        { label: "Saturated (g)", perServe: "4", per100g: "1" },
+        { label: "Carbohydrate (g)", perServe: "66", per100g: "16.5" },
+        { label: "Sugars (g)", perServe: "16", per100g: "4" },
+        { label: "Sodium (mg)", perServe: "1020", per100g: "255" },
+      ],
+    },
   },
   {
     product: "Vege Korma",
     slug: "creamy-vege-korma",
+    category: "Meals",
     ingredients:
       "INGREDIENTS: Cooked basmati rice (rice, water, cumin seeds, salt), Korma sauce (tomato paste, soy milk, coconut cream, water, ginger and garlic paste, vegan butter (plant oils, water, salt), cashew paste, oil, curry powder, sugar, salt, cardamom, pandan extract, spinach), Mixed vegetables (chickpeas, green beans, cauliflower, peas), Roasted broccoli (broccoli, oil, salt), Herbs and spices.",
+    nutrition: {
+      servingsPerPack: "1",
+      servingSize: "400g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "2905", per100g: "709" },
+        { label: "Calories (cal)", perServe: "694", per100g: "169" },
+        { label: "Protein (g)", perServe: "14", per100g: "3.4" },
+        { label: "Fat, Total (g)", perServe: "33", per100g: "8" },
+        { label: "Saturated (g)", perServe: "9", per100g: "2.2" },
+        { label: "Carbohydrate (g)", perServe: "79", per100g: "19.3" },
+        { label: "Sugars (g)", perServe: "15", per100g: "3.7" },
+        { label: "Sodium (mg)", perServe: "1200", per100g: "293" },
+      ],
+    },
   },
   {
     product: "Creamy Butter Curry",
     slug: "creamy-butter-curry",
+    category: "Meals",
     ingredients:
       "INGREDIENTS: Cooked Basmati Rice (Water, Basmati Rice, Salt), Butter Sauce [Tomato Paste. Water, Soy Milk, Canola Oil, Cashew Paste (Cashews, Water), Ginger, Garlic, Vegan Butter (Plant Oils, Water, Salt), Brown Sugar, Paprika, Kashmiri Chilli, Fenugreek, Kitchen King Masala (Spices, Salt), Garam Masala (Spices), Cardamom Powder, Salt], Vegan Chicken (Soy Protein, Water, Vegetable Oils, Wheat Protein, Natural Flavours, Salt), Fenugreek Leaves.",
-    nutritionImage: "/images/nutrition/creamy-butter-curry.png",
+    nutrition: {
+      servingsPerPack: "1",
+      servingSize: "400g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "2550", per100g: "638" },
+        { label: "Calories (cal)", perServe: "610", per100g: "153" },
+        { label: "Protein (g)", perServe: "25.2", per100g: "6.3" },
+        { label: "Fat, Total (g)", perServe: "24.6", per100g: "6.1" },
+        { label: "Saturated (g)", perServe: "3.9", per100g: "1" },
+        { label: "Carbohydrate (g)", perServe: "76.5", per100g: "19.1" },
+        { label: "Sugars (g)", perServe: "13.2", per100g: "3.3" },
+        { label: "Sodium (mg)", perServe: "2450", per100g: "612" },
+      ],
+    },
   },
   {
     product: "Cream Cheese",
     slug: "cream-cheese",
+    category: "Cheeses",
     ingredients:
       "INGREDIENTS: Water, Coconut Oil, Modified Starch (1420, 1450), Sugar, Salt, Vegetable Gum (Carrageenan, Xanthan gum), Mineral Salt (Calcium phosphates), Acidity Regulator (Lactic acid, Citric acid), Emulsifier (450), Antioxidant (331), Natural Flavour, Preservative (Potassium sorbate), Colour (Carotene).",
-    nutritionImage: "/images/nutrition/cream-cheese.png",
+    nutrition: {
+      servingsPerPack: "6.5",
+      servingSize: "30g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "411", per100g: "1370" },
+        { label: "Calories (cal)", perServe: "98", per100g: "327" },
+        { label: "Protein (g)", perServe: "Less than 1", per100g: "Less than 1" },
+        { label: "Gluten", perServe: "0mg", per100g: "0mg" },
+        { label: "Fat, Total (g)", perServe: "9.2", per100g: "30.8" },
+        { label: "Saturated (g)", perServe: "8.4", per100g: "28.2" },
+        { label: "Carbohydrate (g)", perServe: "4.0", per100g: "13.2" },
+        { label: "Sugars (g)", perServe: "Less than 1", per100g: "2.6" },
+        { label: "Sodium (mg)", perServe: "257", per100g: "855" },
+        { label: "Calcium (mg)", perServe: "128", per100g: "425" },
+      ],
+    },
+  },
+  {
+    product: "Plant-Based Fish Fingers",
+    slug: "fish-fingers",
+    category: "Meats",
+    ingredients:
+      "INGREDIENTS: Soy Protein (Water, King Oyster Mushroom, Coconut Oil, Soy Protein Concentrate, Soy Oil, Textured Soy Protein (Defatted Soy Flour, Wheat Gluten, Soy Protein Isolate, Corn Starch), Corn Starch, Spices, Sugar, Soy Protein Isolate, Thickener (461), Salt, Colour (170), Yeast Extract, Flavours), Breadcrumbs (Wheat Flour, Yeast, Salt, Colours (160a, 160c)), Water, Soy Oil, Coating (Wheat Flour, Corn Starch, Thickener (1404, 415), Raising Agent (500), Salt).",
+    nutrition: {
+      servingsPerPack: "2",
+      servingSize: "115g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "1230", per100g: "1070" },
+        { label: "Protein (g)", perServe: "11", per100g: "9.5" },
+        { label: "Fat, Total (g)", perServe: "20.3", per100g: "17.6" },
+        { label: "Saturated (g)", perServe: "8.6", per100g: "7.5" },
+        { label: "Carbohydrate (g)", perServe: "19.5", per100g: "17" },
+        { label: "Sugars (g)", perServe: "1.5", per100g: "1.3" },
+        { label: "Dietary Fibre (g)", perServe: "4", per100g: "3.5" },
+        { label: "Sodium (mg)", perServe: "723", per100g: "629" },
+      ],
+    },
+  },
+  {
+    product: "Plant-Based Burger Patties",
+    slug: "burger-patties",
+    category: "Meats",
+    ingredients:
+      "INGREDIENTS: Water, Soy Protein (Concentrate, Isolate), Pea Protein, Soy Oil, Thickener (461), Yeast Extract, Salt, Flavours, Spices, Vinegar, Malted Barley Extract, Sugar, Sugarcane Fibre, Colour (162).",
+    nutrition: {
+      servingsPerPack: "3",
+      servingSize: "85g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "569", per100g: "669" },
+        { label: "Protein (g)", perServe: "12.4", per100g: "14.6" },
+        { label: "Fat, Total (g)", perServe: "8.1", per100g: "9.5" },
+        { label: "Saturated (g)", perServe: "1.3", per100g: "1.5" },
+        { label: "Carbohydrate (g)", perServe: "2.6", per100g: "3.1" },
+        { label: "Sugars (g)", perServe: "0.2", per100g: "0.3" },
+        { label: "Dietary Fibre (g)", perServe: "1.8", per100g: "2.1" },
+        { label: "Sodium (mg)", perServe: "408", per100g: "480" },
+      ],
+    },
+  },
+  {
+    product: "Plant-Based Meatballs",
+    slug: "meatballs",
+    category: "Meats",
+    ingredients:
+      "INGREDIENTS: Water, Soy Protein (Concentrate, Isolate), Soybean Oil, Potato, Onion, Plant Protein (Soy Protein (Defatted, Isolate), Wheat Gluten, Starch), Soy Sauce (Water, Soybean (Defatted, Whole), Wheat, Salt, Sugar), Thickener (Methylcellulose), Tomato, Flavourings, Salt, Sugar, Yeast Extract, Spices, Colour (Beetroot Red), Iron and Vitamin B12.",
+    nutrition: {
+      servingsPerPack: "2",
+      servingSize: "100g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "829", per100g: "829" },
+        { label: "Protein (g)", perServe: "12", per100g: "12" },
+        { label: "Fat, Total (g)", perServe: "14", per100g: "14" },
+        { label: "Saturated (g)", perServe: "2.4", per100g: "2.4" },
+        { label: "Carbohydrate (g)", perServe: "3.9", per100g: "3.9" },
+        { label: "Sugars (g)", perServe: "0.7", per100g: "0.7" },
+        { label: "Dietary Fibre (g)", perServe: "4.7", per100g: "4.7" },
+        { label: "Sodium (mg)", perServe: "432", per100g: "432" },
+        { label: "Iron (mg)", perServe: "3.4 (30% RDI)", per100g: "3.4 (30% RDI)" },
+        { label: "Vitamin B12 (μg)", perServe: "1.8 (90% RDI)", per100g: "1.8 (90% RDI)" },
+      ],
+    },
+  },
+  {
+    product: "Plant-Based Pulled Pork",
+    slug: "pulled-pork",
+    category: "Meats",
+    ingredients:
+      "INGREDIENTS: Water, Soy Protein (Flour, Isolate), Wheat Gluten, Starch, Tomato, Soybean Oil, Onion Powder, Spices, Garlic Powder, Salt, Yeast Extract, Sugar, Gelling Agent (Konjac), Flavourings, Parsley, Iron and Vitamin B12.",
+    nutrition: {
+      servingsPerPack: "2",
+      servingSize: "100g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "500", per100g: "500" },
+        { label: "Protein (g)", perServe: "17", per100g: "17" },
+        { label: "Fat, Total (g)", perServe: "2.6", per100g: "2.6" },
+        { label: "Saturated (g)", perServe: "0.6", per100g: "0.6" },
+        { label: "Carbohydrate (g)", perServe: "6", per100g: "6" },
+        { label: "Sugars (g)", perServe: "0.7", per100g: "0.7" },
+        { label: "Dietary Fibre (g)", perServe: "2.6", per100g: "2.6" },
+        { label: "Sodium (mg)", perServe: "550", per100g: "550" },
+        { label: "Iron (mg)", perServe: "3.4 (30% RDI)", per100g: "3.4 (30% RDI)" },
+        { label: "Vitamin B12 (μg)", perServe: "1.8 (90% RDI)", per100g: "1.8 (90% RDI)" },
+      ],
+    },
   },
 ];
 
