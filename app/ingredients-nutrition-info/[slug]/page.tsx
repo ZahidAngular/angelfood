@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { NUTRITION_INFO } from "@/lib/site";
+import { NUTRITION_INFO, getProductMeta } from "@/lib/site";
 import { Reveal } from "@/components/Reveal";
 import { NutritionTable } from "@/components/NutritionTable";
 
@@ -40,6 +41,8 @@ export default async function NutritionDetailPage({
   const entry = NUTRITION_INFO.find((n) => n.slug === slug);
   if (!entry) notFound();
 
+  const meta = getProductMeta(entry.product);
+
   const more = NUTRITION_INFO.filter(
     (n) => n.category === entry.category && n.slug !== entry.slug
   ).slice(0, 4);
@@ -70,26 +73,47 @@ export default async function NutritionDetailPage({
       </header>
 
       <section className="bg-cream pb-24 pt-10 sm:pb-32">
-        <div className="mx-auto max-w-3xl px-5 sm:px-8">
-          <Reveal delay={0.1}>
-            <div>
-              <h2 className="font-display text-xl font-bold tracking-tight text-ink">
-                Ingredients
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-                {entry.ingredients}
-              </p>
-            </div>
-          </Reveal>
+        <div className="mx-auto max-w-5xl px-5 sm:px-8">
+          <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:gap-14">
+            {meta && (
+              <Reveal>
+                <div className="lg:sticky lg:top-32">
+                  <div className="relative aspect-square w-full overflow-hidden rounded-3xl border border-line bg-paper">
+                    <Image
+                      src={meta.image}
+                      alt={`Angel Food ${entry.product}`}
+                      fill
+                      sizes="(min-width: 1024px) 40vw, 90vw"
+                      className="object-contain p-6"
+                    />
+                  </div>
+                  <p className="mt-5 text-ink-soft">{meta.blurb}</p>
+                </div>
+              </Reveal>
+            )}
 
-          <Reveal delay={0.15}>
-            <div className="mt-8">
-              <h2 className="mb-3 font-display text-xl font-bold tracking-tight text-ink">
-                Nutrition information
-              </h2>
-              <NutritionTable facts={entry.nutrition} />
+            <div>
+              <Reveal delay={0.1}>
+                <div>
+                  <h2 className="font-display text-xl font-bold tracking-tight text-ink">
+                    Ingredients
+                  </h2>
+                  <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                    {entry.ingredients}
+                  </p>
+                </div>
+              </Reveal>
+
+              <Reveal delay={0.15}>
+                <div className="mt-8">
+                  <h2 className="mb-3 font-display text-xl font-bold tracking-tight text-ink">
+                    Nutrition information
+                  </h2>
+                  <NutritionTable facts={entry.nutrition} />
+                </div>
+              </Reveal>
             </div>
-          </Reveal>
+          </div>
         </div>
       </section>
 

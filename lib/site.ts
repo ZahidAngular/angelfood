@@ -513,6 +513,14 @@ export function getNutritionSlug(productName: string): string | undefined {
   return NUTRITION_INFO.find((n) => n.product === productName)?.slug;
 }
 
+/** Looks up the homepage photo + description for a product by name. */
+export function getProductMeta(
+  productName: string
+): { image: string; blurb: string } | undefined {
+  const all = [...PRODUCTS, ...MEALS, ...MEATS];
+  return all.find((p) => p.name === productName);
+}
+
 export const VALUES = [
   {
     title: "Kindness",
