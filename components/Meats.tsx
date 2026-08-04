@@ -1,80 +1,22 @@
-"use client";
-
-import Image from "next/image";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { MEATS, getNutritionSlug } from "@/lib/site";
-import { Reveal } from "./Reveal";
-import { Parallax } from "./Parallax";
+import { MEATS } from "@/lib/site";
+import { PackCard } from "./PackCard";
+import { RangeSectionHeader } from "./RangeSectionHeader";
 
 export function Meats() {
   return (
     <section id="meats" className="bg-cream-deep py-24 sm:py-32">
-      <div className="mx-auto w-full px-5 sm:px-8 lg:px-12">
-        <div className="mb-12 flex flex-col items-start justify-between gap-5 md:flex-row md:items-end">
-          <Parallax amount={40}>
-            <Reveal>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-coral">
-                ✦ Meats
-              </p>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <h2 className="mt-4 font-display text-[clamp(2rem,5.5vw,4rem)] font-extrabold leading-[0.98] tracking-tight text-ink">
-                Plant-based meat, done right.
-              </h2>
-            </Reveal>
-          </Parallax>
-          <Reveal delay={0.1}>
-            <p className="max-w-sm text-ink-soft">
-              Fish fingers, burger patties, pulled pork and meatballs — all
-              your favourites, deliciously plant-based.
-            </p>
-          </Reveal>
-        </div>
+      <div className="mx-auto w-full max-w-[110rem] px-5 sm:px-8 lg:px-12">
+        <RangeSectionHeader
+          eyebrow="Meats"
+          count={MEATS.length}
+          title="Plant-based meat, done right."
+          intro="Burgers, fish fingers, meatballs and pastrami — all your favourites, deliciously plant-based."
+        />
 
-        <div className="grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-6">
-          {MEATS.map((p, i) => {
-            const nutritionSlug = getNutritionSlug(p.name);
-            return (
-            <Reveal key={p.name} delay={(i % 4) * 0.07} className="h-full">
-              <Link
-                href={nutritionSlug ? `/ingredients-nutrition-info/${nutritionSlug}` : "/ingredients-nutrition-info"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block h-full"
-              >
-                <motion.div
-                  whileHover={{ y: -8 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                  className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-line bg-paper p-5 sm:p-6"
-                  data-cursor="Ingredients & nutrition"
-                >
-                  <div className="relative flex h-72 items-center justify-center overflow-hidden rounded-2xl sm:h-96">
-                    <span
-                      className="absolute right-0 top-0 z-10 rounded-full px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-ink"
-                      style={{ background: p.accent }}
-                    >
-                      {p.tag}
-                    </span>
-                    <Image
-                      src={p.image}
-                      alt={`Angel Food ${p.name}`}
-                      fill
-                      sizes="(min-width: 1024px) 22vw, 45vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                  </div>
-                  <h3 className="mt-4 font-display text-lg font-bold tracking-tight text-ink sm:text-xl">
-                    {p.name}
-                  </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
-                    {p.blurb}
-                  </p>
-                </motion.div>
-              </Link>
-            </Reveal>
-            );
-          })}
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+          {MEATS.map((product, i) => (
+            <PackCard key={product.name} product={product} index={i} />
+          ))}
         </div>
       </div>
     </section>

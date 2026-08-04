@@ -4,10 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useTransform, MotionValue, useMotionValue, animate } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { PRODUCTS, getNutritionSlug } from "@/lib/site";
-import { Reveal } from "./Reveal";
-import { Parallax } from "./Parallax";
+import { RangeSectionHeader } from "./RangeSectionHeader";
 
 const AUTOPLAY_MS = 4000;
 const GAP_PX = 24;
@@ -85,26 +84,12 @@ export function Products() {
   return (
     <section id="cheeses" className="relative bg-cream-deep py-24 sm:py-32">
       <div className="mx-auto w-full px-5 sm:px-8 lg:px-12">
-        <div className="mb-12 flex flex-col items-start justify-between gap-5 md:flex-row md:items-end">
-          <Parallax amount={40}>
-            <Reveal>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-coral">
-                ✦ Cheeses
-              </p>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <h2 className="mt-4 font-display text-[clamp(2rem,5.5vw,4rem)] font-extrabold leading-[0.98] tracking-tight text-ink">
-                Cheese for every craving.
-              </h2>
-            </Reveal>
-          </Parallax>
-          <Reveal delay={0.1}>
-            <p className="max-w-sm text-ink-soft">
-              Seven dairy-free heroes built for real life — pizza nights,
-              cheeseboards, toasties and everything in between.
-            </p>
-          </Reveal>
-        </div>
+        <RangeSectionHeader
+          eyebrow="Cheeses"
+          count={PRODUCTS.length}
+          title="Cheese for every craving."
+          intro="Seven dairy-free heroes built for real life — pizza nights, cheeseboards, toasties and everything in between."
+        />
       </div>
 
       <div className="flex items-center gap-3 px-5 sm:gap-5 sm:px-8 lg:px-12">
@@ -245,6 +230,16 @@ function ProductCard({
         <p className="mt-2 max-w-xs text-sm leading-relaxed text-ink-soft">
           {p.blurb}
         </p>
+
+        {nutritionSlug && (
+          <span className="mt-4 flex items-center gap-1.5 border-t border-line pt-4 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-green">
+            Ingredients & nutrition
+            <ArrowRight
+              size={13}
+              className="transition-transform group-hover:translate-x-1"
+            />
+          </span>
+        )}
       </div>
     </motion.article>
   );

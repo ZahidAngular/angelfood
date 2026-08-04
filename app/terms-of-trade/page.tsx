@@ -3,7 +3,7 @@ import { LegalPage } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions of Trade — Angel Food",
-  alternates: { canonical: "/terms-and-conditions-of-trade" },
+  alternates: { canonical: "/terms-of-trade" },
 };
 
 export default function TermsOfTradePage() {

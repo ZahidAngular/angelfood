@@ -2,7 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { recipeApi, resolveImageUrl, recipeSlug, type Recipe } from "@/lib/api";
+import {
+  recipeApi,
+  resolveImageUrl,
+  recipeSlug,
+  recipeMatchesSlug,
+  type Recipe,
+} from "@/lib/api";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { Reveal } from "@/components/Reveal";
 import { RevealImage } from "@/components/RevealImage";
@@ -10,7 +16,7 @@ import { PublicRecipeCard } from "@/components/PublicRecipeCard";
 
 async function findRecipeBySlug(slug: string): Promise<Recipe | null> {
   const allRecipes = await recipeApi.getAll().catch(() => [] as Recipe[]);
-  return allRecipes.find((r) => recipeSlug(r.title) === slug) ?? null;
+  return allRecipes.find((r) => recipeMatchesSlug(r.title, slug)) ?? null;
 }
 
 export async function generateMetadata({
@@ -25,7 +31,10 @@ export async function generateMetadata({
   const title = `${recipe.title} — Angel Food Recipes`;
   const description = recipe.description ?? undefined;
   const image = resolveImageUrl(recipe.imageUrl);
-  const url = `/recipes/${slug}`;
+  // Always the canonical slug, never the one that was requested — a recipe can
+  // be reached by two addresses, and this is what points search engines at the
+  // one that carries the rankings.
+  const url = `/recipes/${recipeSlug(recipe.title)}`;
 
   return {
     title,
@@ -55,7 +64,7 @@ export default async function RecipeDetailPage({
   const { slug } = await params;
 
   const allRecipes = await recipeApi.getAll().catch(() => [] as Recipe[]);
-  const recipe = allRecipes.find((r) => recipeSlug(r.title) === slug) ?? null;
+  const recipe = allRecipes.find((r) => recipeMatchesSlug(r.title, slug)) ?? null;
   if (!recipe) notFound();
 
   const steps = recipe.instructions

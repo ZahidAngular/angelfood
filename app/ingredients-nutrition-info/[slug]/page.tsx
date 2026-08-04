@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { NUTRITION_INFO, getProductMeta } from "@/lib/site";
 import { Reveal } from "@/components/Reveal";
 import { NutritionTable } from "@/components/NutritionTable";
+import { NutritionCard } from "@/components/NutritionCard";
 
 export function generateStaticParams() {
   return NUTRITION_INFO.map((entry) => ({ slug: entry.slug }));
@@ -78,13 +79,28 @@ export default async function NutritionDetailPage({
             {meta && (
               <Reveal>
                 <div className="lg:sticky lg:top-32">
-                  <div className="relative aspect-square w-full overflow-hidden rounded-3xl border border-line bg-paper">
+                  {/* The frame follows the artwork so the image fills it with
+                      no padding and no empty background: meal sleeves are 4:3
+                      and rounded (the arc clips the white in their corners),
+                      meat cartons are square, and cheeses are cut-outs that
+                      still need room around them. */}
+                  <div
+                    className={`relative w-full overflow-hidden border border-line bg-paper ${
+                      entry.category === "Meals"
+                        ? "aspect-[4/3] rounded-[14%/18%]"
+                        : "aspect-square rounded-3xl"
+                    }`}
+                  >
                     <Image
                       src={meta.image}
                       alt={`Angel Food ${entry.product}`}
                       fill
                       sizes="(min-width: 1024px) 40vw, 90vw"
-                      className="object-contain p-6"
+                      className={
+                        entry.category === "Cheeses"
+                          ? "object-contain p-6"
+                          : "object-cover"
+                      }
                     />
                   </div>
                   <p className="mt-5 text-ink-soft">{meta.blurb}</p>
@@ -118,28 +134,39 @@ export default async function NutritionDetailPage({
       </section>
 
       {more.length > 0 && (
-        <section className="bg-cream-deep py-20 sm:py-28">
+        <section className="border-t border-line bg-cream-deep py-20 sm:py-28">
           <div className="mx-auto max-w-5xl px-5 sm:px-8">
             <Reveal>
-              <h2 className="font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">
-                More {entry.category.toLowerCase()}
-              </h2>
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-coral">
+                    Explore the range
+                  </p>
+                  <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+                    More {entry.category.toLowerCase()}
+                  </h2>
+                  <p className="mt-2 max-w-lg text-ink-soft">
+                    Full ingredients list and nutrition panel for every product
+                    in the range.
+                  </p>
+                </div>
+                <Link
+                  href="/ingredients-nutrition-info"
+                  className="group inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.14em] text-green"
+                >
+                  View all
+                  <ArrowUpRight
+                    size={16}
+                    className="transition-transform group-hover:translate-x-0.5"
+                  />
+                </Link>
+              </div>
             </Reveal>
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+
+            <div className="mt-10 grid gap-4 sm:grid-cols-2">
               {more.map((n, i) => (
                 <Reveal key={n.slug} delay={i * 0.05}>
-                  <Link
-                    href={`/ingredients-nutrition-info/${n.slug}`}
-                    className="group flex items-center justify-between rounded-2xl border border-line bg-paper px-6 py-5 transition-colors hover:border-green"
-                  >
-                    <span className="font-display text-lg font-bold tracking-tight text-ink">
-                      {n.product}
-                    </span>
-                    <ArrowRight
-                      size={18}
-                      className="shrink-0 text-ink-soft transition-transform group-hover:translate-x-1 group-hover:text-green"
-                    />
-                  </Link>
+                  <NutritionCard entry={n} />
                 </Reveal>
               ))}
             </div>

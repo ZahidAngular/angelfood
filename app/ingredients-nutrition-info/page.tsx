@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
+import { NutritionCard } from "@/components/NutritionCard";
 import { NUTRITION_INFO } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -14,6 +13,12 @@ export const metadata: Metadata = {
 
 const CATEGORY_ORDER = ["Cheeses", "Meals", "Meats"] as const;
 
+const CATEGORY_INTRO: Record<(typeof CATEGORY_ORDER)[number], string> = {
+  Cheeses: "Our dairy-free cheese range — blocks, grated, spreads and crumbles.",
+  Meals: "Ready-to-heat plant-based meals, made with real ingredients.",
+  Meats: "Plant-based proteins for the grill, the pan and the oven.",
+};
+
 export default function IngredientsNutritionInfoPage() {
   return (
     <main>
@@ -23,7 +28,7 @@ export default function IngredientsNutritionInfoPage() {
         intro="Everything that goes into every Angel Food product — pick a product below for its full ingredients list and nutrition panel, straight from the pack."
       />
       <section className="bg-cream pb-24 pt-4 sm:pb-32">
-        <div className="mx-auto max-w-5xl space-y-14 px-5 sm:px-8">
+        <div className="mx-auto max-w-5xl space-y-16 px-5 sm:px-8">
           {CATEGORY_ORDER.map((category) => {
             const items = NUTRITION_INFO.filter((n) => n.category === category);
             if (items.length === 0) return null;
@@ -33,22 +38,14 @@ export default function IngredientsNutritionInfoPage() {
                   <p className="text-sm font-semibold uppercase tracking-[0.22em] text-coral">
                     ✦ {category}
                   </p>
+                  <p className="mt-2.5 max-w-xl text-ink-soft">
+                    {CATEGORY_INTRO[category]}
+                  </p>
                 </Reveal>
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                <div className="mt-7 grid gap-4 sm:grid-cols-2">
                   {items.map((entry, i) => (
                     <Reveal key={entry.slug} delay={(i % 4) * 0.05}>
-                      <Link
-                        href={`/ingredients-nutrition-info/${entry.slug}`}
-                        className="group flex items-center justify-between rounded-2xl border border-line bg-paper px-6 py-5 transition-colors hover:border-green"
-                      >
-                        <span className="font-display text-lg font-bold tracking-tight text-ink">
-                          {entry.product}
-                        </span>
-                        <ArrowRight
-                          size={18}
-                          className="shrink-0 text-ink-soft transition-transform group-hover:translate-x-1 group-hover:text-green"
-                        />
-                      </Link>
+                      <NutritionCard entry={entry} />
                     </Reveal>
                   ))}
                 </div>

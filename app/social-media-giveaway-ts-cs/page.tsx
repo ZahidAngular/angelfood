@@ -3,7 +3,7 @@ import { LegalPage } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Social Media Giveaway Ts & Cs — Angel Food",
-  alternates: { canonical: "/social-media-giveaway-terms" },
+  alternates: { canonical: "/social-media-giveaway-ts-cs" },
 };
 
 export default function GiveawayTermsPage() {

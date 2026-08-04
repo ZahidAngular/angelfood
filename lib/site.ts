@@ -28,6 +28,18 @@ export type Product = {
   tag: string;
   image: string;
   accent: string;
+  /** The strapline printed across the bottom of the pack. */
+  tagline?: string;
+  /** Line under the name on the pack, e.g. "With Cumin Rice & Broccoli". */
+  subtitle?: string;
+  /** Net weight as printed, e.g. "255g". */
+  weight?: string;
+  /** Health Star Rating as printed, e.g. "4.0". */
+  healthStar?: string;
+  /** Preparation claim from the pack, e.g. "Ready in minutes". */
+  ready?: string;
+  /** Nutrition claims carried in the roundels on the pack. */
+  claims?: string[];
 };
 
 export const PRODUCTS: Product[] = [
@@ -89,65 +101,113 @@ export const PRODUCTS: Product[] = [
   },
 ];
 
-export const MEALS = [
+// Straplines, subtitles and pack claims are taken from the retail sleeves.
+export const MEALS: Product[] = [
   {
     name: "Vege Lasagna",
+    tagline: "A true classic, reimagined",
+    subtitle: "Cheesy Plant-based",
     blurb:
-      "Slow-cooked lentil ragu, tofu ricotta, velvety béchamel, and tender pasta sheets — baked to perfection. Plant-based, vegan, dairy-free.",
+      "Slow-cooked lentil ragu, tofu ricotta, velvety béchamel and tender pasta sheets — baked to perfection.",
+    tag: "Bake",
     image: "/images/meals/vege-lasagna.jpeg",
+    accent: "var(--color-gold)",
+    weight: "400g",
+    ready: "Ready in 4 minutes",
+    claims: ["Plant based", "Dairy free", "No artificial colours"],
   },
   {
     name: "Vege Korma",
+    tagline: "Comforting & full of flavour",
+    subtitle: "With Cumin Rice & Broccoli",
     blurb:
-      "Creamy coconut cashew korma with tender veges and aromatic spices, with cumin rice and roasted broccoli. Plant-based, vegan, dairy-free.",
+      "Creamy coconut cashew korma with tender veges and aromatic spices.",
+    tag: "Simmer",
     image: "/images/meals/vege-korma.jpeg",
+    accent: "var(--color-green-bright)",
+    weight: "400g",
+    ready: "Ready in 4 minutes",
+    claims: ["Plant based", "Dairy free", "No artificial colours"],
   },
   {
     name: "Tofu & Greens",
+    tagline: "Clean, balanced & plant-powered",
+    subtitle: "With Spinach & Zingy Dressing",
     blurb:
-      "Fresh and nourishing with marinated tofu, vibrant spinach, fragrant jasmine rice and sesame ginger dressing. Plant-based, vegan, dairy-free.",
+      "Marinated tofu, vibrant spinach and fragrant jasmine rice drizzled in sesame ginger dressing.",
+    tag: "Fresh",
     image: "/images/meals/tofu-greens.jpeg",
+    accent: "var(--color-coral)",
+    weight: "400g",
+    ready: "Ready in 4 minutes",
+    claims: ["Plant based", "Dairy free", "No artificial colours"],
   },
   {
     name: "Creamy Butter Curry",
+    tagline: "All the comfort, none of the dairy",
+    subtitle: "With Plant Chicken & Rice",
     blurb:
-      "Plant-based chicken in a silky tomato-butter curry loaded with aromatic spices on jasmine rice. Plant-based, vegan, dairy-free.",
+      "Plant-based chicken in a silky tomato-butter curry loaded with aromatic spices, on jasmine rice.",
+    tag: "Simmer",
     image: "/images/meals/butter-curry.jpeg",
+    accent: "var(--color-gold)",
+    weight: "400g",
+    ready: "Ready in 4 minutes",
+    claims: ["Plant based", "Dairy free", "No artificial colours"],
   },
 ];
 
+// Names, pack claims and imagery all come straight off the retail cartons in
+// public/images/meats/packs — so the site says exactly what the shelf says.
 export const MEATS: Product[] = [
   {
-    name: "Plant-Based Fish Fingers",
-    blurb:
-      "Golden and crispy — serve with chips, tuck into tacos or dip into your favourite sauce.",
-    tag: "Sizzle",
-    image: "/images/meats/fish-fingers.png",
-    accent: "var(--color-gold)",
-  },
-  {
-    name: "Plant-Based Burger Patties",
-    blurb:
-      "Juicy and satisfying — stack in a bun with all the classic burger fixings.",
+    name: "Burgers",
+    tagline: "Juicy & grill-ready",
+    blurb: "Stack them in a bun with all the classic fixings.",
     tag: "Grill",
-    image: "/images/meats/burger-patties.png",
+    image: "/images/meats/packs/burgers.png",
     accent: "var(--color-coral)",
+    weight: "255g",
+    healthStar: "4.0",
+    ready: "Ready in minutes",
+    claims: ["Good source of protein", "Source of fibre"],
   },
   {
-    name: "Plant-Based Meatballs",
+    name: "Fish Fingers",
+    tagline: "Crispy golden crumb",
     blurb:
-      "Hearty and herby — simmer them in your favourite sauce or pile onto a sub.",
-    tag: "Simmer",
-    image: "/images/meats/meatballs.png",
-    accent: "var(--color-green-bright)",
-  },
-  {
-    name: "Plant-Based Pulled Pork",
-    blurb:
-      "Tender and smoky — pile into buns, tacos or loaded fries for an easy crowd-pleaser.",
-    tag: "Shred",
-    image: "/images/meats/pulled-pork.jpg",
+      "Serve with chips, tuck into tacos or dip into your favourite sauce.",
+    tag: "Crumbed",
+    image: "/images/meats/packs/fish-fingers.png",
     accent: "var(--color-gold)",
+    weight: "230g",
+    healthStar: "2.0",
+    ready: "Ready in minutes",
+    claims: ["Good source of protein", "Source of fibre"],
+  },
+  {
+    name: "Meatballs",
+    tagline: "Rich Italian style",
+    blurb: "Simmer them in your favourite sauce or pile onto a sub.",
+    tag: "Simmer",
+    image: "/images/meats/packs/meatballs.png",
+    accent: "var(--color-green-bright)",
+    weight: "200g",
+    healthStar: "4.0",
+    ready: "Ready in minutes",
+    claims: ["Good source of protein", "Source of fibre", "Iron & B12 fortified"],
+  },
+  {
+    name: "Pastrami",
+    tagline: "Deli style slices",
+    blurb: "Layer into sandwiches, bagels and platters.",
+    tag: "Deli",
+    image: "/images/meats/packs/pastrami.png",
+    accent: "var(--color-gold)",
+    weight: "180g",
+    healthStar: "4.0",
+    ready: "Thaw & enjoy — no cooking",
+    claims: ["Good source of protein", "Source of fibre", "Iron & B12 fortified"],
   },
 ];
 
@@ -420,7 +480,7 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     },
   },
   {
-    product: "Plant-Based Fish Fingers",
+    product: "Fish Fingers",
     slug: "fish-fingers",
     category: "Meats",
     ingredients:
@@ -441,7 +501,7 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     },
   },
   {
-    product: "Plant-Based Burger Patties",
+    product: "Burgers",
     slug: "burger-patties",
     category: "Meats",
     ingredients:
@@ -462,7 +522,7 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     },
   },
   {
-    product: "Plant-Based Meatballs",
+    product: "Meatballs",
     slug: "meatballs",
     category: "Meats",
     ingredients:
@@ -479,29 +539,6 @@ export const NUTRITION_INFO: NutritionEntry[] = [
         { label: "Sugars (g)", perServe: "0.7", per100g: "0.7" },
         { label: "Dietary Fibre (g)", perServe: "4.7", per100g: "4.7" },
         { label: "Sodium (mg)", perServe: "432", per100g: "432" },
-        { label: "Iron (mg)", perServe: "3.4 (30% RDI)", per100g: "3.4 (30% RDI)" },
-        { label: "Vitamin B12 (μg)", perServe: "1.8 (90% RDI)", per100g: "1.8 (90% RDI)" },
-      ],
-    },
-  },
-  {
-    product: "Plant-Based Pulled Pork",
-    slug: "pulled-pork",
-    category: "Meats",
-    ingredients:
-      "INGREDIENTS: Water, Soy Protein (Flour, Isolate), Wheat Gluten, Starch, Tomato, Soybean Oil, Onion Powder, Spices, Garlic Powder, Salt, Yeast Extract, Sugar, Gelling Agent (Konjac), Flavourings, Parsley, Iron and Vitamin B12.",
-    nutrition: {
-      servingsPerPack: "2",
-      servingSize: "100g",
-      rows: [
-        { label: "Energy (kJ)", perServe: "500", per100g: "500" },
-        { label: "Protein (g)", perServe: "17", per100g: "17" },
-        { label: "Fat, Total (g)", perServe: "2.6", per100g: "2.6" },
-        { label: "Saturated (g)", perServe: "0.6", per100g: "0.6" },
-        { label: "Carbohydrate (g)", perServe: "6", per100g: "6" },
-        { label: "Sugars (g)", perServe: "0.7", per100g: "0.7" },
-        { label: "Dietary Fibre (g)", perServe: "2.6", per100g: "2.6" },
-        { label: "Sodium (mg)", perServe: "550", per100g: "550" },
         { label: "Iron (mg)", perServe: "3.4 (30% RDI)", per100g: "3.4 (30% RDI)" },
         { label: "Vitamin B12 (μg)", perServe: "1.8 (90% RDI)", per100g: "1.8 (90% RDI)" },
       ],

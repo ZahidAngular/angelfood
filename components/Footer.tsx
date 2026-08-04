@@ -114,7 +114,7 @@ export function Footer() {
               Explore
             </p>
             <ul className="mt-5 space-y-3">
-              {NAV_LINKS.map((l) => (
+              {[...NAV_LINKS, { label: "Blog", href: "/alices-vegan-food-blog" }].map((l) => (
                 <li key={l.href}>
                   <Link
                     href={l.href}
@@ -165,10 +165,10 @@ export function Footer() {
             <Link href="/terms-of-website-use" className="hover:text-cream">
               Terms of website use
             </Link>
-            <Link href="/terms-and-conditions-of-trade" className="hover:text-cream">
+            <Link href="/terms-of-trade" className="hover:text-cream">
               Terms &amp; conditions of trade
             </Link>
-            <Link href="/social-media-giveaway-terms" className="hover:text-cream">
+            <Link href="/social-media-giveaway-ts-cs" className="hover:text-cream">
               Social media giveaway Ts &amp; Cs
             </Link>
           </div>

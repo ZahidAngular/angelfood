@@ -1,4 +1,5 @@
 import { getToken } from "./auth";
+import { LEGACY_RECIPE_SLUGS } from "./legacy-slugs";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "https://angelfood-api.webappconsulting.com.au/api";
@@ -308,12 +309,32 @@ export function resolveImageUrl(path: string | null | undefined): string | null 
   return `${S3_BUCKET_URL}${path}`;
 }
 
-/** URL-friendly slug derived from a recipe title, e.g. "Colin's bolognese" -> "colins-bolognese". */
-export function recipeSlug(title: string): string {
+/** Raw slug straight from the title, e.g. "Colin's bolognese" -> "colins-bolognese". */
+function slugifyTitle(title: string): string {
   return title
     .toLowerCase()
     .trim()
     .replace(/['’]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+/**
+ * The recipe's canonical URL slug. Where the old angelfood.co.nz site used a
+ * different slug than the title produces, the old one wins — it holds the
+ * search rankings and inbound links — so that is what links and the sitemap use.
+ */
+export function recipeSlug(title: string): string {
+  const generated = slugifyTitle(title);
+  return LEGACY_RECIPE_SLUGS[generated] ?? generated;
+}
+
+/**
+ * Whether `slug` addresses this recipe. Both the canonical (old-site) slug and
+ * the title-derived one resolve to the page, so neither address 404s; the
+ * canonical link tag tells search engines which of the two is the real one.
+ */
+export function recipeMatchesSlug(title: string, slug: string): boolean {
+  const generated = slugifyTitle(title);
+  return slug === generated || slug === (LEGACY_RECIPE_SLUGS[generated] ?? generated);
 }

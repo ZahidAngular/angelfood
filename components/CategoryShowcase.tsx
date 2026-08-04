@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { PRODUCTS, MEATS, MEALS } from "@/lib/site";
 import { Reveal } from "./Reveal";
 
 type Category = {
@@ -13,10 +14,12 @@ type Category = {
   images: string[];
 };
 
+// Counts and artwork come straight from the product data, so this stays in step
+// with the range instead of drifting whenever a product is added or renamed.
 const CATEGORIES: Category[] = [
   {
     name: "Cheeses",
-    count: "7 dairy-free heroes",
+    count: `${PRODUCTS.length} dairy-free heroes`,
     href: "/products#cheeses",
     images: [
       "/images/grated.png",
@@ -27,18 +30,13 @@ const CATEGORIES: Category[] = [
   },
   {
     name: "Meats",
-    count: "4 plant-based classics",
+    count: `${MEATS.length} plant-based classics`,
     href: "/products#meats",
-    images: [
-      "/images/meats/fish-fingers.jpg",
-      "/images/meats/burger-patties.jpg",
-      "/images/meats/meatballs.png",
-      "/images/meats/pulled-pork.jpg",
-    ],
+    images: MEATS.slice(0, 4).map((p) => p.image),
   },
   {
     name: "Meals",
-    count: "4 ready-to-go dinners",
+    count: `${MEALS.length} ready-to-go dinners`,
     href: "/products#meals",
     images: [
       "/images/lasagna.png",
