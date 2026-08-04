@@ -37,6 +37,16 @@ export const LEGACY_PAGE_PATHS: Record<string, string> = {
   "/terms-and-conditions-of-trade": "/terms-of-trade",
   // The old Squarespace site served the homepage at /home as well as /.
   "/home": "/",
+  // Dead links carried over from the old site's earlier URL structure —
+  // both www.angelfood.co.nz and this rebuild 404 at these exact paths, but
+  // the content lives on under /ingredients-nutrition-info/<slug> now.
+  "/feta": "/ingredients-nutrition-info/feta",
+  "/grated-cheese": "/ingredients-nutrition-info/grated-cheese",
+  "/sour-cream": "/ingredients-nutrition-info/sour-cream",
+  "/dairyfree-cheddar-alternative": "/ingredients-nutrition-info/cheddar-block",
+  "/dairyfree-mozzarella-alternative": "/ingredients-nutrition-info/mozza-block",
+  "/dairy-free-parmesan-alternative": "/ingredients-nutrition-info/parmesan",
+  "/recipes/quick-pickled-onions": "/recipes/quick-pickled-red-onions",
 };
 
 /**
