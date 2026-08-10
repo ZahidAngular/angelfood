@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { BlogCard, BlogFeaturedCard } from "@/components/BlogCard";
 import { Reveal } from "@/components/Reveal";
+import { JsonLd } from "@/components/JsonLd";
+import { itemListSchema } from "@/lib/schema";
 import { BLOG_BASE_PATH, getBlogPosts } from "@/lib/blog";
 
 const DESCRIPTION =
@@ -18,10 +20,21 @@ export const metadata: Metadata = {
 };
 
 export default function BlogIndexPage() {
-  const [featured, ...rest] = getBlogPosts();
+  const posts = getBlogPosts();
+  const [featured, ...rest] = posts;
 
   return (
     <main>
+      <JsonLd
+        data={itemListSchema({
+          name: "Alice's vegan food blog",
+          url: BLOG_BASE_PATH,
+          items: posts.map((post) => ({
+            name: post.title,
+            path: `${BLOG_BASE_PATH}/${post.slug}`,
+          })),
+        })}
+      />
       {/* Masthead */}
       <header className="relative overflow-hidden border-b border-line bg-cream pb-14 pt-40 sm:pb-16 sm:pt-48">
         <div className="pointer-events-none absolute -right-40 -top-16 h-[30rem] w-[30rem] rounded-full bg-gold/20 blur-[130px]" />

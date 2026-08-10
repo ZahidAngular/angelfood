@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
+import { JsonLd } from "@/components/JsonLd";
+import { itemListSchema } from "@/lib/schema";
 import { STORE_PRODUCTS } from "@/lib/store";
 
 export const metadata: Metadata = {
@@ -15,6 +17,16 @@ export const metadata: Metadata = {
 export default function StorePage() {
   return (
     <main>
+      <JsonLd
+        data={itemListSchema({
+          name: "Store",
+          url: "/store",
+          items: STORE_PRODUCTS.map((product) => ({
+            name: product.name,
+            path: `/store/p/${product.slug}`,
+          })),
+        })}
+      />
       <PageHeader
         eyebrow="Store"
         title="Store."

@@ -18,28 +18,28 @@ type Floater = {
 
 const FLOATERS: Floater[] = [
   {
-    src: "/images/lasagna.png",
+    src: "/images/lasagna.webp",
     className: "right-[4%] top-[14%] w-[26vw] max-w-[340px]",
     depth: 120,
     delay: 0.5,
     rotate: -6,
   },
   {
-    src: "/images/grated.png",
+    src: "/images/grated.webp",
     className: "right-[26%] top-[40%] w-[20vw] max-w-[260px]",
     depth: 220,
     delay: 0.65,
     rotate: 8,
   },
   {
-    src: "/images/butter-curry.png",
+    src: "/images/butter-curry.webp",
     className: "right-[2%] bottom-[8%] w-[19vw] max-w-[250px]",
     depth: 70,
     delay: 0.8,
     rotate: 5,
   },
   {
-    src: "/images/sour-cream.png",
+    src: "/images/sour-cream.webp",
     className: "left-[3%] bottom-[6%] w-[15vw] max-w-[190px]",
     depth: 180,
     delay: 0.95,

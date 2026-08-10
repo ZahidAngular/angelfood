@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Mail, Phone, ArrowUpRight, Loader2, Check } from "lucide-react";
 import { NAV_LINKS } from "@/lib/site";
-import { submitLead } from "@/lib/formService";
+import { submitLead, preloadRecaptcha } from "@/lib/formService";
+import { RecaptchaNotice } from "./RecaptchaNotice";
 import { Reveal } from "./Reveal";
 import { SocialLinks } from "./SocialIcons";
 
@@ -54,28 +55,36 @@ export function Footer() {
                 <Check size={18} /> You&apos;re in — welcome to the good stuff!
               </p>
             ) : (
-              <form
-                onSubmit={handleSubscribe}
-                className="flex flex-col gap-3 sm:flex-row"
-              >
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  placeholder="you@email.com"
-                  className="w-full rounded-full border border-cream/20 bg-cream/[0.06] px-6 py-4 text-cream placeholder:text-cream/50 outline-none transition-colors focus:border-gold"
-                />
-                <button
-                  type="submit"
-                  disabled={status === "submitting"}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gold px-7 py-4 font-semibold text-ink transition-transform hover:scale-[1.04] disabled:opacity-60 disabled:hover:scale-100"
+              <>
+                {/* onFocus bubbles up from the input, so reCAPTCHA starts
+                    loading the moment someone engages with the form rather
+                    than on every page view. By the time they submit it is
+                    ready, and submitLead() still loads it as a fallback. */}
+                <form
+                  onSubmit={handleSubscribe}
+                  onFocus={preloadRecaptcha}
+                  className="flex flex-col gap-3 sm:flex-row"
                 >
-                  {status === "submitting" && (
-                    <Loader2 size={16} className="animate-spin" />
-                  )}
-                  {status === "submitting" ? "Joining…" : "Subscribe"}
-                </button>
-              </form>
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="you@email.com"
+                    className="w-full rounded-full border border-cream/20 bg-cream/[0.06] px-6 py-4 text-cream placeholder:text-cream/50 outline-none transition-colors focus:border-gold"
+                  />
+                  <button
+                    type="submit"
+                    disabled={status === "submitting"}
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-gold px-7 py-4 font-semibold text-ink transition-transform hover:scale-[1.04] disabled:opacity-60 disabled:hover:scale-100"
+                  >
+                    {status === "submitting" && (
+                      <Loader2 size={16} className="animate-spin" />
+                    )}
+                    {status === "submitting" ? "Joining…" : "Subscribe"}
+                  </button>
+                </form>
+                <RecaptchaNotice tone="light" className="mt-3 max-w-md" />
+              </>
             )}
             {status === "error" && (
               <p className="mt-2 text-sm font-medium text-coral">

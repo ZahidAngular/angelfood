@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { RecipesGrid } from "@/components/RecipesGrid";
-import { recipeApi, type Recipe } from "@/lib/api";
+import { JsonLd } from "@/components/JsonLd";
+import { itemListSchema } from "@/lib/schema";
+import { recipeApi, recipeSlug, type Recipe } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Recipes — Angel Food",
@@ -21,6 +23,18 @@ export default async function RecipesPage() {
 
   return (
     <main>
+      {recipes.length > 0 && (
+        <JsonLd
+          data={itemListSchema({
+            name: "Plant-based recipes",
+            url: "/recipes",
+            items: recipes.map((recipe) => ({
+              name: recipe.title,
+              path: `/recipes/${recipeSlug(recipe.title)}`,
+            })),
+          })}
+        />
+      )}
       <PageHeader
         eyebrow="From our kitchen"
         title="Delicious plant-based recipes."

@@ -7,6 +7,9 @@ import { NUTRITION_INFO, getProductMeta } from "@/lib/site";
 import { Reveal } from "@/components/Reveal";
 import { NutritionTable } from "@/components/NutritionTable";
 import { NutritionCard } from "@/components/NutritionCard";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { JsonLd } from "@/components/JsonLd";
+import { productSchema } from "@/lib/schema";
 
 export function generateStaticParams() {
   return NUTRITION_INFO.map((entry) => ({ slug: entry.slug }));
@@ -46,17 +49,42 @@ export default async function NutritionDetailPage({
 
   const more = NUTRITION_INFO.filter(
     (n) => n.category === entry.category && n.slug !== entry.slug
-  ).slice(0, 4);
+  );
 
   return (
     <main>
+      {meta && (
+        <JsonLd
+          data={productSchema({
+            name: entry.product,
+            description: meta.blurb,
+            image: meta.image,
+            url: `/ingredients-nutrition-info/${entry.slug}`,
+            category: entry.category,
+          })}
+        />
+      )}
+
       <header className="relative overflow-hidden bg-cream pb-4 pt-40 sm:pt-48">
         <div className="pointer-events-none absolute -right-32 top-10 h-[26rem] w-[26rem] rounded-full bg-gold/20 blur-[120px]" />
         <div className="mx-auto max-w-5xl px-5 sm:px-8">
           <Reveal>
+            <Breadcrumbs
+              crumbs={[
+                { name: "Home", path: "/" },
+                {
+                  name: "Ingredients & Nutrition",
+                  path: "/ingredients-nutrition-info",
+                },
+                {
+                  name: entry.product,
+                  path: `/ingredients-nutrition-info/${entry.slug}`,
+                },
+              ]}
+            />
             <Link
               href="/ingredients-nutrition-info"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-ink-soft transition-colors hover:text-green"
+              className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-ink-soft transition-colors hover:text-green"
             >
               <ArrowLeft size={16} /> All ingredients &amp; nutrition
             </Link>
@@ -80,14 +108,16 @@ export default async function NutritionDetailPage({
               <Reveal>
                 <div className="lg:sticky lg:top-32">
                   {/* The frame follows the artwork so the image fills it with
-                      no padding and no empty background: meal sleeves are 4:3
-                      and rounded (the arc clips the white in their corners),
-                      meat cartons are square, and cheeses are cut-outs that
-                      still need room around them. */}
+                      no padding and no empty background: meal sleeves are 4:3,
+                      meat cartons and cheese cut-outs are square. The meal
+                      frame used to carry a heavy corner arc to mask the white
+                      in the sleeve corners — those corners are squared off in
+                      the source files now, so it takes the same radius as the
+                      rest. */}
                   <div
                     className={`relative w-full overflow-hidden border border-line bg-paper ${
                       entry.category === "Meals"
-                        ? "aspect-[4/3] rounded-[14%/18%]"
+                        ? "aspect-[4/3] rounded-3xl"
                         : "aspect-square rounded-3xl"
                     }`}
                   >
@@ -119,6 +149,45 @@ export default async function NutritionDetailPage({
                   </p>
                 </div>
               </Reveal>
+
+              {entry.allergens && (
+                <Reveal delay={0.12}>
+                  <div className="mt-8">
+                    <h2 className="font-display text-xl font-bold tracking-tight text-ink">
+                      Allergens
+                    </h2>
+                    <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                      {entry.allergens}
+                    </p>
+                  </div>
+                </Reveal>
+              )}
+
+              {entry.storage && (
+                <Reveal delay={0.13}>
+                  <div className="mt-8">
+                    <h2 className="font-display text-xl font-bold tracking-tight text-ink">
+                      Storage conditions
+                    </h2>
+                    <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                      {entry.storage}
+                    </p>
+                  </div>
+                </Reveal>
+              )}
+
+              {entry.cookingInstructions && (
+                <Reveal delay={0.14}>
+                  <div className="mt-8">
+                    <h2 className="font-display text-xl font-bold tracking-tight text-ink">
+                      Cooking instructions
+                    </h2>
+                    <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                      {entry.cookingInstructions}
+                    </p>
+                  </div>
+                </Reveal>
+              )}
 
               <Reveal delay={0.15}>
                 <div className="mt-8">

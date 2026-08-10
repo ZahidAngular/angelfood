@@ -24,7 +24,19 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   // Data changes constantly (dashboard edits, new recipes) — never let
   // Next.js cache a server-side fetch and serve a stale build-time snapshot.
-  const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers, cache: "no-store" });
+  //
+  // The exception is prerendering for `output: export`: there is no server to
+  // refetch from, and Next.js refuses to statically render a page that made an
+  // uncached fetch, so the whole point of the build is to bake this data in.
+  // Browser calls (the dashboard) always stay uncached either way.
+  const isStaticPrerender =
+    process.env.STATIC_EXPORT === "true" && typeof window === "undefined";
+
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers,
+    cache: isStaticPrerender ? "force-cache" : "no-store",
+  });
 
   if (res.status === 204) {
     return undefined as T;
@@ -245,10 +257,34 @@ export const userApi = {
     }),
 };
 
+/**
+ * A static export renders every page at build time, and each recipe page (plus
+ * its metadata, the listing, the homepage and the sitemap) asks for the full
+ * recipe list — well over a hundred identical calls in a few seconds, which the
+ * API starts refusing. Holding onto the first promise collapses them into one
+ * request for the whole build. Only for `output: export`: on a server build the
+ * data must stay live, so each request refetches as before.
+ */
+const memoizeForStaticExport = process.env.STATIC_EXPORT === "true";
+let allRecipesPromise: Promise<Recipe[]> | null = null;
+
 export const recipeApi = {
   getAll: async (): Promise<Recipe[]> => {
-    const wire = await request<RecipeWire[]>("/Recipe");
-    return wire.map(fromWire);
+    const fetchAll = async () => {
+      const wire = await request<RecipeWire[]>("/Recipe");
+      return wire.map(fromWire);
+    };
+
+    if (!memoizeForStaticExport) return fetchAll();
+
+    if (!allRecipesPromise) {
+      allRecipesPromise = fetchAll().catch((err) => {
+        // Don't cache a failure — the next caller should get a real attempt.
+        allRecipesPromise = null;
+        throw err;
+      });
+    }
+    return allRecipesPromise;
   },
   // The API has no server-side pagination (GET /api/Recipe takes no
   // parameters), so we fetch everything and paginate on the client.
@@ -310,7 +346,7 @@ export function resolveImageUrl(path: string | null | undefined): string | null 
 }
 
 /** Raw slug straight from the title, e.g. "Colin's bolognese" -> "colins-bolognese". */
-function slugifyTitle(title: string): string {
+export function slugifyTitle(title: string): string {
   return title
     .toLowerCase()
     .trim()

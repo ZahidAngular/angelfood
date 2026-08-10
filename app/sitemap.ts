@@ -4,6 +4,13 @@ import { SITE_URL, NUTRITION_INFO } from "@/lib/site";
 import { BLOG_BASE_PATH, getBlogPosts } from "@/lib/blog";
 import { STORE_PRODUCTS } from "@/lib/store";
 
+// Required so a static export (Firebase Hosting) can prerender this route —
+// on Vercel `revalidate` still applies on top, so the sitemap refreshes at
+// most hourly there instead of on every single request, which sitemaps don't
+// need anyway.
+export const dynamic = "force-static";
+export const revalidate = 3600;
+
 const STATIC_ROUTES: {
   path: string;
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];

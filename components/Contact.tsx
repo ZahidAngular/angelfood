@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Mail, Phone, ArrowUpRight, Loader2, Check } from "lucide-react";
 import { WHOLESALE } from "@/lib/site";
-import { submitLead } from "@/lib/formService";
+import { submitLead, preloadRecaptcha } from "@/lib/formService";
+import { RecaptchaNotice } from "./RecaptchaNotice";
 import { Reveal } from "./Reveal";
 import { Parallax } from "./Parallax";
 import { Magnetic } from "./Magnetic";
@@ -73,7 +74,11 @@ export function Contact() {
                   </p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="mt-9 space-y-4">
+                <form
+                  onSubmit={handleSubmit}
+                  onFocus={preloadRecaptcha}
+                  className="mt-9 space-y-4"
+                >
                   <div className="grid gap-4 sm:grid-cols-2">
                     <input
                       name="name"
@@ -119,6 +124,7 @@ export function Contact() {
                       {status === "submitting" ? "Sending…" : "Send message"}
                     </button>
                   </Magnetic>
+                  <RecaptchaNotice className="max-w-md" />
                 </form>
               )}
             </Reveal>

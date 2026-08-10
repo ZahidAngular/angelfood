@@ -41,6 +41,13 @@ export function RevealImage({
     [`-${parallax}%`, `${parallax}%`]
   );
 
+  // The inner layer is enlarged just enough that the parallax travel never
+  // exposes an edge: a ±P% shift needs (1 + 2P/100) of extra size. Deriving it
+  // from the prop instead of a fixed 125% means a still image (parallax 0) is
+  // shown at its true size rather than being needlessly blown up — which is
+  // what keeps a modest source file looking sharp.
+  const cover = 1 + (parallax * 2) / 100;
+
   return (
     <motion.div
       ref={ref}
@@ -53,7 +60,7 @@ export function RevealImage({
       }
       transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
     >
-      <motion.div style={{ y }} className="absolute inset-0 scale-125">
+      <motion.div style={{ y, scale: cover }} className="absolute inset-0">
         <Image
           src={src}
           alt={alt}

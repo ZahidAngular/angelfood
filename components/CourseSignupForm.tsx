@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
-import { submitLead } from "@/lib/formService";
+import { submitLead, preloadRecaptcha } from "@/lib/formService";
+import { RecaptchaNotice } from "./RecaptchaNotice";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -40,7 +41,11 @@ export function CourseSignupForm() {
 
   return (
     <div className="mt-10">
-      <form onSubmit={handleSubmit} className="max-w-md">
+      <form
+        onSubmit={handleSubmit}
+        onFocus={preloadRecaptcha}
+        className="max-w-md"
+      >
         <label
           htmlFor="course-email"
           className="block text-sm font-semibold text-ink"
@@ -67,6 +72,7 @@ export function CourseSignupForm() {
             {status === "submitting" ? "Sending…" : "Show me how!"}
           </button>
         </div>
+        <RecaptchaNotice className="mt-4" />
       </form>
       {status === "error" && (
         <p className="mt-3 text-sm font-medium text-coral">

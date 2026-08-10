@@ -33,14 +33,14 @@ export function Stockists() {
           <Reveal delay={0.12}>
             <LogoCard
               label="In supermarkets"
-              src="/images/retailers.png"
+              src="/images/retailers.webp"
               alt="Woolworths, New World, PAK'nSAVE, FreshChoice and SuperValue"
             />
           </Reveal>
           <Reveal delay={0.18}>
             <LogoCard
               label="In kitchens & food service"
-              src="/images/partners.png"
+              src="/images/partners.webp"
               alt="Pizza Hut, Dad's Pies, The Goodtime Pie Co, New World, Gilmours, St Pierre's Sushi, Bidfood and Davis Food Ingredients"
             />
           </Reveal>

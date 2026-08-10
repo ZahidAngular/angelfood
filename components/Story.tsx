@@ -12,7 +12,7 @@ export function Story() {
         {/* Image */}
         <div className="relative">
           <RevealImage
-            src="/images/founder.png"
+            src="/images/founder.webp"
             alt="Alice Shopland, founder of Angel Food"
             className="aspect-[4/5] border border-line bg-cream-deep"
             imgClassName="object-center"

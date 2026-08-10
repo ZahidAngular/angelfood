@@ -6,7 +6,9 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import { CustomCursor } from "@/components/CustomCursor";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { JsonLd } from "@/components/JsonLd";
 import { SITE_NAME, SITE_URL, SOCIAL_LINKS } from "@/lib/site";
+import { websiteSchema } from "@/lib/schema";
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -53,7 +55,7 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: [
       {
-        url: "/images/hero.png",
+        url: "/images/hero.webp",
         width: 1200,
         height: 630,
         alt: "Angel Food vegan cheese",
@@ -64,7 +66,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Angel Food — Better Vegan Cheese",
     description: SITE_DESCRIPTION,
-    images: ["/images/hero.png"],
+    images: ["/images/hero.webp"],
   },
   robots: {
     index: true,
@@ -84,10 +86,13 @@ export const metadata: Metadata = {
   },
 };
 
-/** Organization details for search engines — invisible to visitors. */
+/** Organization details for search engines — invisible to visitors.
+ *  The @id lets the WebSite block point back here instead of repeating the
+ *  brand details, so Google reads the two as one entity. */
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": `${SITE_URL}/#organization`,
   name: SITE_NAME,
   url: SITE_URL,
   logo: `${SITE_URL}/images/logo.png`,
@@ -110,10 +115,7 @@ export default function RootLayout({
   return (
     <html lang="en-NZ" className={`${bricolage.variable} ${jakarta.variable}`}>
       <body className="grain">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-        />
+        <JsonLd data={[organizationJsonLd, websiteSchema]} />
         <SmoothScroll>
           <ScrollToTop />
           <CustomCursor />

@@ -48,7 +48,7 @@ export const PRODUCTS: Product[] = [
     blurb:
       "The MVP in your fridge for Friday pizza, taco Tuesday, and all your toastie cravings. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Melts",
-    image: "/images/grated.png",
+    image: "/images/grated.webp",
     accent: "var(--color-gold)",
   },
   {
@@ -56,7 +56,7 @@ export const PRODUCTS: Product[] = [
     blurb:
       "Our award-winning star for cheesecakes and bagels. Creamy, spreadable, luxurious. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Spread",
-    image: "/images/cream-cheese.png",
+    image: "/images/cream-cheese.webp",
     accent: "var(--color-green-bright)",
   },
   {
@@ -64,7 +64,7 @@ export const PRODUCTS: Product[] = [
     blurb:
       "The creamy-tangy dollop on your nachos and the swirl in your pumpkin soup. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Spoon",
-    image: "/images/sour-cream.png",
+    image: "/images/sour-cream.webp",
     accent: "var(--color-coral)",
   },
   {
@@ -72,7 +72,7 @@ export const PRODUCTS: Product[] = [
     blurb:
       "Bursting with the salty-creamy-tangy vibe you'd expect. A treat on pizza, in muffins and salads. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Crumble",
-    image: "/images/feta.png",
+    image: "/images/feta.webp",
     accent: "var(--color-green-bright)",
   },
   {
@@ -80,7 +80,7 @@ export const PRODUCTS: Product[] = [
     blurb:
       "The block-in-a-tub that will save your sandwiches and cosy up to your crackers. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Slice",
-    image: "/images/cheddar.png",
+    image: "/images/cheddar.webp",
     accent: "var(--color-gold)",
   },
   {
@@ -88,7 +88,7 @@ export const PRODUCTS: Product[] = [
     blurb:
       "Tip it out of the tub and slice it or grate it onto your pizza or into your quesadilla. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Grate",
-    image: "/images/mozza.png",
+    image: "/images/mozza.webp",
     accent: "var(--color-coral)",
   },
   {
@@ -96,7 +96,7 @@ export const PRODUCTS: Product[] = [
     blurb:
       "The finishing touch for pasta — also great on baked beans, mash and fresh tomato. Plant-based, vegan, dairy-free, gluten-free.",
     tag: "Finish",
-    image: "/images/parmesan.png",
+    image: "/images/parmesan.webp",
     accent: "var(--color-gold)",
   },
 ];
@@ -110,7 +110,7 @@ export const MEALS: Product[] = [
     blurb:
       "Slow-cooked lentil ragu, tofu ricotta, velvety béchamel and tender pasta sheets — baked to perfection.",
     tag: "Bake",
-    image: "/images/meals/vege-lasagna.jpeg",
+    image: "/images/meals/vege-lasagna-v3.jpeg",
     accent: "var(--color-gold)",
     weight: "400g",
     ready: "Ready in 4 minutes",
@@ -123,7 +123,7 @@ export const MEALS: Product[] = [
     blurb:
       "Creamy coconut cashew korma with tender veges and aromatic spices.",
     tag: "Simmer",
-    image: "/images/meals/vege-korma.jpeg",
+    image: "/images/meals/vege-korma-v3.jpeg",
     accent: "var(--color-green-bright)",
     weight: "400g",
     ready: "Ready in 4 minutes",
@@ -136,7 +136,7 @@ export const MEALS: Product[] = [
     blurb:
       "Marinated tofu, vibrant spinach and fragrant jasmine rice drizzled in sesame ginger dressing.",
     tag: "Fresh",
-    image: "/images/meals/tofu-greens.jpeg",
+    image: "/images/meals/tofu-greens-v3.jpeg",
     accent: "var(--color-coral)",
     weight: "400g",
     ready: "Ready in 4 minutes",
@@ -149,7 +149,7 @@ export const MEALS: Product[] = [
     blurb:
       "Plant-based chicken in a silky tomato-butter curry loaded with aromatic spices, on jasmine rice.",
     tag: "Simmer",
-    image: "/images/meals/butter-curry.jpeg",
+    image: "/images/meals/butter-curry-v3.jpeg",
     accent: "var(--color-gold)",
     weight: "400g",
     ready: "Ready in 4 minutes",
@@ -165,7 +165,7 @@ export const MEATS: Product[] = [
     tagline: "Juicy & grill-ready",
     blurb: "Stack them in a bun with all the classic fixings.",
     tag: "Grill",
-    image: "/images/meats/packs/burgers.png",
+    image: "/images/meats/packs/burgers.webp",
     accent: "var(--color-coral)",
     weight: "255g",
     healthStar: "4.0",
@@ -178,7 +178,7 @@ export const MEATS: Product[] = [
     blurb:
       "Serve with chips, tuck into tacos or dip into your favourite sauce.",
     tag: "Crumbed",
-    image: "/images/meats/packs/fish-fingers.png",
+    image: "/images/meats/packs/fish-fingers.webp",
     accent: "var(--color-gold)",
     weight: "230g",
     healthStar: "2.0",
@@ -190,8 +190,20 @@ export const MEATS: Product[] = [
     tagline: "Rich Italian style",
     blurb: "Simmer them in your favourite sauce or pile onto a sub.",
     tag: "Simmer",
-    image: "/images/meats/packs/meatballs.png",
+    image: "/images/meats/packs/meatballs.webp",
     accent: "var(--color-green-bright)",
+    weight: "200g",
+    healthStar: "4.0",
+    ready: "Ready in minutes",
+    claims: ["Good source of protein", "Source of fibre", "Iron & B12 fortified"],
+  },
+  {
+    name: "Pulled Pork",
+    tagline: "Smoky & tender",
+    blurb: "Pile into buns, tacos or loaded fries for an easy crowd-pleaser.",
+    tag: "Shred",
+    image: "/images/meats/packs/pulled-pork-v2.webp",
+    accent: "var(--color-gold)",
     weight: "200g",
     healthStar: "4.0",
     ready: "Ready in minutes",
@@ -201,24 +213,38 @@ export const MEATS: Product[] = [
     name: "Pastrami",
     tagline: "Deli style slices",
     blurb: "Layer into sandwiches, bagels and platters.",
-    tag: "Deli",
+    tag: "Slice",
     image: "/images/meats/packs/pastrami.png",
-    accent: "var(--color-gold)",
+    accent: "var(--color-coral)",
     weight: "180g",
     healthStar: "4.0",
-    ready: "Thaw & enjoy — no cooking",
+    ready: "Thaw & enjoy",
+    claims: ["Good source of protein", "Source of fibre", "Iron & B12 fortified"],
+  },
+  {
+    name: "Seafood Rings",
+    tagline: "Light & crispy",
+    blurb: "Dip into tartare sauce or serve with a squeeze of lemon.",
+    tag: "Fry",
+    image: "/images/meats/packs/seafood-rings.png",
+    accent: "var(--color-gold)",
+    weight: "200g",
+    healthStar: "3.5",
+    ready: "Ready in minutes",
     claims: ["Good source of protein", "Source of fibre", "Iron & B12 fortified"],
   },
 ];
 
 export type NutritionRow = {
   label: string;
-  perServe: string;
+  /** Omitted when the supplier only provides a per-100g figure (no defined serving size). */
+  perServe?: string;
   per100g: string;
 };
 
 export type NutritionFacts = {
-  servingsPerPack: string;
+  /** Omitted when the supplier only provides per-100g figures. */
+  servingsPerPack?: string;
   servingSize?: string;
   rows: NutritionRow[];
 };
@@ -229,6 +255,9 @@ export type NutritionEntry = {
   slug: string;
   category: "Cheeses" | "Meals" | "Meats";
   ingredients: string;
+  allergens?: string;
+  storage?: string;
+  cookingInstructions?: string;
   nutrition: NutritionFacts;
 };
 
@@ -544,6 +573,82 @@ export const NUTRITION_INFO: NutritionEntry[] = [
       ],
     },
   },
+  {
+    product: "Pulled Pork",
+    slug: "pulled-pork",
+    category: "Meats",
+    ingredients:
+      "INGREDIENTS: Water, Soy Protein (Flour, Isolate), Wheat Gluten, Starch, Tomato, Soybean Oil, Onion Powder, Spices, Garlic Powder, Salt, Yeast Extract, Sugar, Gelling Agent (Konjac), Flavourings, Parsley, Iron and Vitamin B12.",
+    nutrition: {
+      servingsPerPack: "2",
+      servingSize: "100g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "500", per100g: "500" },
+        { label: "Protein (g)", perServe: "17", per100g: "17" },
+        { label: "Fat, Total (g)", perServe: "2.6", per100g: "2.6" },
+        { label: "Saturated (g)", perServe: "0.6", per100g: "0.6" },
+        { label: "Carbohydrate (g)", perServe: "6", per100g: "6" },
+        { label: "Sugars (g)", perServe: "0.7", per100g: "0.7" },
+        { label: "Dietary Fibre (g)", perServe: "2.6", per100g: "2.6" },
+        { label: "Sodium (mg)", perServe: "550", per100g: "550" },
+        { label: "Iron (mg)", perServe: "3.4 (30% RDI)", per100g: "3.4 (30% RDI)" },
+        { label: "Vitamin B12 (μg)", perServe: "1.8 (90% RDI)", per100g: "1.8 (90% RDI)" },
+      ],
+    },
+  },
+  {
+    product: "Pastrami",
+    slug: "pastrami",
+    category: "Meats",
+    ingredients:
+      "INGREDIENTS: Water, Plant Protein [Soy Protein (Defatted, Isolate), Wheat Gluten, Starch], Soy Protein, Soybean Oil, Thickeners (Modified Starch, Xanthan Gum), Sugar, Spices (Mustard), Flavourings, Wheat Gluten, Black Pepper, Yeast Extract, Salt, Colours (Beetroot Red, Paprika Extract), Rosemary Powder, Iron and Vitamin B12.",
+    allergens: "Contains soy, gluten and mustard. May contain traces of celery and sesame.",
+    storage:
+      "Keep frozen at -18°C. Do not refreeze after defrosting. If kept frozen, use by date printed on pack. Once defrosted, keep refrigerated and consume within 2 days.",
+    cookingInstructions: "Ready to eat: may be consumed directly after thawing.",
+    nutrition: {
+      rows: [
+        { label: "Energy (kJ)", per100g: "645" },
+        { label: "Calories (cal)", per100g: "154" },
+        { label: "Fat, Total (g)", per100g: "6.4" },
+        { label: "Saturated (g)", per100g: "1.4" },
+        { label: "Carbohydrate (g)", per100g: "6.9" },
+        { label: "Sugars (g)", per100g: "2.0" },
+        { label: "Dietary Fibre (g)", per100g: "4.3" },
+        { label: "Protein (g)", per100g: "15" },
+        { label: "Salt (g)", per100g: "2.0" },
+        { label: "Iron (mg)", per100g: "3.7" },
+        { label: "Vitamin B12 (μg)", per100g: "1.0" },
+      ],
+    },
+  },
+  {
+    product: "Seafood Rings",
+    slug: "seafood-rings",
+    category: "Meats",
+    ingredients:
+      "INGREDIENTS: Water, Soybean Oil, Plant Protein [Soy Protein (Isolate, Defatted), Wheat Gluten], Breadcrumbs [Wheat Flour, Salt, Colours (Paprika Extract, Curcumin)], Onion, Batter [Wheat Flour, Starch, Thickeners (Modified Starch, Xanthan Gum), Salt], Starch, Thickeners (Methylcellulose, Gellan Gum), Sugar, Salt, Flavourings, Vinegar, Spices, Yeast Extract, Iron and Vitamin B12.",
+    allergens: "Contains soy and gluten. May contain traces of celery, mustard and sesame.",
+    storage:
+      "Keep frozen at -18°C. Do not refreeze after defrosting. If kept frozen, use by date printed on pack. Once defrosted, keep refrigerated and consume within 2 days.",
+    cookingInstructions:
+      "Thawed. Oven (200°C): Preheat, spread product in a single layer on a tray and heat for 5 minutes. Air fryer (200°C): Preheat, air-fry for 5 minutes, shaking the basket halfway. Stovetop: Preheat a skillet over medium heat with a little oil, cook for 2–3 minutes, stirring occasionally. Cook thoroughly before consumption.",
+    nutrition: {
+      rows: [
+        { label: "Energy (kJ)", per100g: "1061" },
+        { label: "Calories (cal)", per100g: "254" },
+        { label: "Fat, Total (g)", per100g: "12" },
+        { label: "Saturated (g)", per100g: "2.3" },
+        { label: "Carbohydrate (g)", per100g: "24" },
+        { label: "Sugars (g)", per100g: "3.7" },
+        { label: "Dietary Fibre (g)", per100g: "2.5" },
+        { label: "Protein (g)", per100g: "11" },
+        { label: "Salt (g)", per100g: "1.3" },
+        { label: "Iron (mg)", per100g: "2.9" },
+        { label: "Vitamin B12 (μg)", per100g: "2.0" },
+      ],
+    },
+  },
 ];
 
 export function getNutritionSlug(productName: string): string | undefined {
@@ -616,7 +721,7 @@ export const RECIPES: Recipe[] = [
     blurb:
       "A rich celebration cake with sour cream ganache — not too sweet, but seriously indulgent.",
     tag: "Sweet",
-    image: "/images/recipes/choc-cherry-cake.jpg",
+    image: "/images/recipes/choc-cherry-cake.webp",
     ingredients: [
       {
         heading: "Cake",
@@ -657,7 +762,7 @@ export const RECIPES: Recipe[] = [
     title: "Gingerbread Cheesecake",
     blurb: "Super-indulgent and sweetly spiced. The ultimate cosy dessert.",
     tag: "Dessert",
-    image: "/images/recipes/gingerbread-cheesecake.jpg",
+    image: "/images/recipes/gingerbread-cheesecake.webp",
     ingredients: [
       {
         heading: "Base",
@@ -691,7 +796,7 @@ export const RECIPES: Recipe[] = [
     title: "Vegan Lemon Curd",
     blurb: "Zingy, creamy and sweet — lemon curd without eggs or butter!",
     tag: "Sweet",
-    image: "/images/recipes/lemon-curd.jpg",
+    image: "/images/recipes/lemon-curd.webp",
     ingredients: [
       {
         items: [
@@ -715,7 +820,7 @@ export const RECIPES: Recipe[] = [
     title: "Upside-Down Onion Tart",
     blurb: "A savoury version of the classic French apple tart.",
     tag: "Savoury",
-    image: "/images/recipes/onion-tart.jpg",
+    image: "/images/recipes/onion-tart.webp",
     ingredients: [
       {
         items: [
@@ -749,7 +854,7 @@ export const RECIPES: Recipe[] = [
     blurb:
       "Crunchy, sweet, salty — this recipe brings out the very best in cabbage.",
     tag: "Savoury",
-    image: "/images/recipes/roast-cabbage-feta.jpg",
+    image: "/images/recipes/roast-cabbage-feta.webp",
     ingredients: [
       {
         items: [
@@ -778,7 +883,7 @@ export const RECIPES: Recipe[] = [
     title: "Roasted Harissa Chickpeas & Barley Stuffed Kumara",
     blurb: "Glorious flavour, great looks, lovely texture — win, win, win!",
     tag: "Mains",
-    image: "/images/recipes/harissa-kumara.jpg",
+    image: "/images/recipes/harissa-kumara.webp",
     serves: "Serves 4",
     ingredients: [
       {
@@ -821,7 +926,7 @@ export const RECIPES: Recipe[] = [
     title: "Colin's Bolognese",
     blurb: "An easy and tasty meal that's a real crowd-pleaser.",
     tag: "Mains",
-    image: "/images/recipes/bolognese.jpg",
+    image: "/images/recipes/bolognese.webp",
     serves: "Serves 4",
     ingredients: [
       {
@@ -861,7 +966,7 @@ export const RECIPES: Recipe[] = [
     blurb:
       "Made extra tasty by roasting the veg first, then a creamy sour-cream swirl.",
     tag: "Comfort",
-    image: "/images/recipes/pumpkin-soup.jpg",
+    image: "/images/recipes/pumpkin-soup.webp",
     ingredients: [
       {
         items: [
@@ -902,7 +1007,7 @@ export const RECIPES: Recipe[] = [
     title: "Cheesy Zucchini Fritters",
     blurb: "Cheesy, plant-based and gluten-free = win, win, win!",
     tag: "Snack",
-    image: "/images/recipes/zucchini-fritters.jpg",
+    image: "/images/recipes/zucchini-fritters.webp",
     ingredients: [
       {
         items: [
@@ -932,7 +1037,7 @@ export const RECIPES: Recipe[] = [
     title: "Broccoli Cheddar Beans",
     blurb: "Need dinner in 10? This hits the spot.",
     tag: "Quick",
-    image: "/images/recipes/broccoli-cheddar-beans.jpg",
+    image: "/images/recipes/broccoli-cheddar-beans.webp",
     serves: "3–4 servings",
     ingredients: [
       {
@@ -965,7 +1070,7 @@ export const RECIPES: Recipe[] = [
     title: "Smoky Cheese Sauce",
     blurb: "Tasty cheese sauce topped with smoked paprika oil.",
     tag: "Sauce",
-    image: "/images/recipes/smoky-cheese-sauce.jpg",
+    image: "/images/recipes/smoky-cheese-sauce.webp",
     ingredients: [
       {
         items: [
@@ -997,7 +1102,7 @@ export const RECIPES: Recipe[] = [
     blurb:
       "Tasty, snackable and portable — perfect for picnics and packed lunches.",
     tag: "Snack",
-    image: "/images/recipes/pizza-rolls.jpg",
+    image: "/images/recipes/pizza-rolls.webp",
     ingredients: [
       {
         heading: "Dough",
@@ -1039,7 +1144,7 @@ export const RECIPES: Recipe[] = [
     blurb:
       "Luscious pan-steamed eggplant with a flavour-packed fresh and crunchy topping.",
     tag: "Savoury",
-    image: "/images/recipes/zingy-aubergine.jpg",
+    image: "/images/recipes/zingy-aubergine.webp",
     ingredients: [
       {
         items: [
@@ -1069,7 +1174,7 @@ export const RECIPES: Recipe[] = [
     title: "Best Potato Salad",
     blurb: "A crowd-pleaser of a retro dish, made creamy and kind.",
     tag: "Side",
-    image: "/images/recipes/potato-salad.jpg",
+    image: "/images/recipes/potato-salad.webp",
     ingredients: [
       {
         items: [
@@ -1099,7 +1204,7 @@ export const RECIPES: Recipe[] = [
     blurb:
       "A make-ahead stuffed sandwich crammed with smoky eggplant, capsicum and cream cheese.",
     tag: "Lunch",
-    image: "/images/recipes/eggplant-muffaletta.jpg",
+    image: "/images/recipes/eggplant-muffaletta.webp",
     ingredients: [
       {
         heading: "Marinated eggplant",
@@ -1152,7 +1257,7 @@ export const RECIPES: Recipe[] = [
     title: "Easy Vegan Pesto",
     blurb: "Fresh pesto is a real treat that's real easy to make!",
     tag: "Sauce",
-    image: "/images/recipes/vegan-pesto.jpg",
+    image: "/images/recipes/vegan-pesto.webp",
     ingredients: [
       {
         items: [
@@ -1180,7 +1285,7 @@ export const RECIPES: Recipe[] = [
     blurb:
       "The English classic veganised — with a luscious layer of cheesecake mousse.",
     tag: "Dessert",
-    image: "/images/recipes/summer-pudding.jpg",
+    image: "/images/recipes/summer-pudding.webp",
     ingredients: [
       {
         heading: "Berry filling",
@@ -1227,7 +1332,7 @@ export const RECIPES: Recipe[] = [
     title: "Rich Chocolate Cheesecake",
     blurb: "Super-luxurious dessert that's a cinch to make and always a hit.",
     tag: "Dessert",
-    image: "/images/recipes/choc-cheesecake.jpg",
+    image: "/images/recipes/choc-cheesecake.webp",
     ingredients: [
       {
         items: [
@@ -1256,7 +1361,7 @@ export const RECIPES: Recipe[] = [
     blurb:
       "Luscious, rich and creamy cheesecake — perfect with your favourite fruity toppings.",
     tag: "Dessert",
-    image: "/images/recipes/vanilla-cheesecake.jpg",
+    image: "/images/recipes/vanilla-cheesecake.webp",
     serves: "8 servings (12cm tin)",
     ingredients: [
       {
@@ -1285,7 +1390,7 @@ export const RECIPES: Recipe[] = [
     blurb:
       "Super-summery make-ahead dessert, rich with cream cheese and fresh strawberries.",
     tag: "Sweet",
-    image: "/images/recipes/strawberry-icebox.jpg",
+    image: "/images/recipes/strawberry-icebox.webp",
     ingredients: [
       {
         items: [

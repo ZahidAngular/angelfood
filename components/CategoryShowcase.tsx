@@ -22,10 +22,10 @@ const CATEGORIES: Category[] = [
     count: `${PRODUCTS.length} dairy-free heroes`,
     href: "/products#cheeses",
     images: [
-      "/images/grated.png",
-      "/images/cream-cheese.png",
-      "/images/sour-cream.png",
-      "/images/feta.png",
+      "/images/grated.webp",
+      "/images/cream-cheese.webp",
+      "/images/sour-cream.webp",
+      "/images/feta.webp",
     ],
   },
   {
@@ -39,10 +39,10 @@ const CATEGORIES: Category[] = [
     count: `${MEALS.length} ready-to-go dinners`,
     href: "/products#meals",
     images: [
-      "/images/lasagna.png",
-      "/images/korma.png",
-      "/images/tofu-greens.png",
-      "/images/butter-curry.png",
+      "/images/lasagna.webp",
+      "/images/korma.webp",
+      "/images/tofu-greens.webp",
+      "/images/butter-curry.webp",
     ],
   },
 ];

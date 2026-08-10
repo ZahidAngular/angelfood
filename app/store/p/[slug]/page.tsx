@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronRight, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { JsonLd } from "@/components/JsonLd";
+import { productSchema } from "@/lib/schema";
 import { STORE_PRODUCTS, getStoreProduct } from "@/lib/store";
 
 export function generateStaticParams() {
@@ -42,14 +45,24 @@ export default async function StoreProductPage({
 
   return (
     <main className="bg-cream pb-24 pt-36 sm:pb-32 sm:pt-44">
+      <JsonLd
+        data={productSchema({
+          name: product.name,
+          description: `${product.intro} ${product.usedFor.join(", ")}. ${product.format}.`,
+          image: product.image,
+          url: `/store/p/${product.slug}`,
+          sku: product.productCode,
+        })}
+      />
+
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <nav className="flex items-center gap-1.5 text-sm text-ink-soft">
-          <Link href="/store" className="transition-colors hover:text-green">
-            Store
-          </Link>
-          <ChevronRight size={14} className="text-ink-soft/50" />
-          <span className="text-ink">{product.name}</span>
-        </nav>
+        <Breadcrumbs
+          crumbs={[
+            { name: "Home", path: "/" },
+            { name: "Store", path: "/store" },
+            { name: product.name, path: `/store/p/${product.slug}` },
+          ]}
+        />
 
         <div className="mt-10 grid gap-12 lg:grid-cols-2 lg:gap-16">
           <Reveal>

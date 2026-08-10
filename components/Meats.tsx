@@ -10,10 +10,10 @@ export function Meats() {
           eyebrow="Meats"
           count={MEATS.length}
           title="Plant-based meat, done right."
-          intro="Burgers, fish fingers, meatballs and pastrami — all your favourites, deliciously plant-based."
+          intro="Burgers, fish fingers, meatballs and pulled pork — all your favourites, deliciously plant-based."
         />
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
           {MEATS.map((product, i) => (
             <PackCard key={product.name} product={product} index={i} />
           ))}

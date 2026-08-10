@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
 import { NutritionCard } from "@/components/NutritionCard";
+import { JsonLd } from "@/components/JsonLd";
+import { itemListSchema } from "@/lib/schema";
 import { NUTRITION_INFO } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -22,6 +24,16 @@ const CATEGORY_INTRO: Record<(typeof CATEGORY_ORDER)[number], string> = {
 export default function IngredientsNutritionInfoPage() {
   return (
     <main>
+      <JsonLd
+        data={itemListSchema({
+          name: "Ingredients and nutritional info",
+          url: "/ingredients-nutrition-info",
+          items: NUTRITION_INFO.map((entry) => ({
+            name: entry.product,
+            path: `/ingredients-nutrition-info/${entry.slug}`,
+          })),
+        })}
+      />
       <PageHeader
         eyebrow="Full transparency"
         title="Ingredients and nutritional info."

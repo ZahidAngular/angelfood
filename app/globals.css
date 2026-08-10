@@ -336,3 +336,12 @@ html.lenis body {
   background: var(--color-green);
   border-radius: 999px;
 }
+
+/* reCAPTCHA v3 floating badge.
+   Google permits hiding it as long as the attribution is shown next to the
+   form instead — that is the <RecaptchaNotice> under each submit button, so
+   the two must stay in place together. `visibility` rather than `display`:
+   the widget still needs to occupy a box and run, it just isn't drawn. */
+.grecaptcha-badge {
+  visibility: hidden;
+}

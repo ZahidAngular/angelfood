@@ -1,0 +1,24 @@
+{
+  "hosting": {
+    "public": "out",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "redirects": [
+      { "source": "/social-media-giveaway-terms", "destination": "/social-media-giveaway-ts-cs", "type": 301 },
+      { "source": "/terms-and-conditions-of-trade", "destination": "/terms-of-trade", "type": 301 },
+      { "source": "/home", "destination": "/", "type": 301 },
+      { "source": "/feta", "destination": "/ingredients-nutrition-info/feta", "type": 301 },
+      { "source": "/grated-cheese", "destination": "/ingredients-nutrition-info/grated-cheese", "type": 301 },
+      { "source": "/sour-cream", "destination": "/ingredients-nutrition-info/sour-cream", "type": 301 },
+      { "source": "/dairyfree-cheddar-alternative", "destination": "/ingredients-nutrition-info/cheddar-block", "type": 301 },
+      { "source": "/dairyfree-mozzarella-alternative", "destination": "/ingredients-nutrition-info/mozza-block", "type": 301 },
+      { "source": "/dairy-free-parmesan-alternative", "destination": "/ingredients-nutrition-info/parmesan", "type": 301 },
+      { "source": "/recipes/quick-pickled-onions", "destination": "/recipes/quick-pickled-red-onions", "type": 301 }
+    ]
+  }
+}

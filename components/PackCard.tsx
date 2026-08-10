@@ -18,11 +18,13 @@ import { Reveal } from "./Reveal";
  * overlaid on the artwork — the packs already carry their own straplines and
  * roundels, and a badge on top of them just competes.
  *
- * Meal sleeves are photographed as rounded rectangles, which leaves white in
- * the four corners of an otherwise full-bleed shot. Cropping it away is not an
- * option — the corner radius is wider than the margin around the logo and the
- * strapline — so `4/3` rounds the frame along the same arc instead. Nothing is
- * cut and no white shows.
+ * Meal sleeves were photographed as rounded rectangles, which left white in the
+ * four corners of an otherwise full-bleed shot. The frame used to be rounded
+ * along the same arc to hide it, which made the meal cards visibly softer than
+ * the square pack shots sitting next to them. The corners are now squared off
+ * in the source files instead — the sleeve's own edge colour is carried out to
+ * the border, so nothing is cropped and every card in the range shares one
+ * corner treatment.
  */
 export function PackCard({
   product,
@@ -44,11 +46,7 @@ export function PackCard({
     >
       <div
         className={`relative overflow-hidden bg-cream ${
-          aspect === "square"
-            ? "aspect-square"
-            : // 14%/18% traces the sleeve's own corner arc (measured at ~214px
-              // on a 1600x1232 shot), so the white outside it is clipped away.
-              "aspect-[4/3] rounded-[14%/18%]"
+          aspect === "square" ? "aspect-square" : "aspect-[4/3]"
         }`}
       >
         <Image

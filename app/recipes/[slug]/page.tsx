@@ -7,16 +7,31 @@ import {
   resolveImageUrl,
   recipeSlug,
   recipeMatchesSlug,
+  slugifyTitle,
   type Recipe,
 } from "@/lib/api";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { Reveal } from "@/components/Reveal";
 import { RevealImage } from "@/components/RevealImage";
 import { PublicRecipeCard } from "@/components/PublicRecipeCard";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 async function findRecipeBySlug(slug: string): Promise<Recipe | null> {
   const allRecipes = await recipeApi.getAll().catch(() => [] as Recipe[]);
   return allRecipes.find((r) => recipeMatchesSlug(r.title, slug)) ?? null;
+}
+
+// Static export has no server to render unlisted params on demand, so every
+// address a recipe can be reached by — the generated slug and, where it
+// differs, the old-site slug — needs its own pre-rendered page.
+export async function generateStaticParams() {
+  const recipes = await recipeApi.getAll().catch(() => [] as Recipe[]);
+  const slugs = new Set<string>();
+  for (const r of recipes) {
+    slugs.add(slugifyTitle(r.title));
+    slugs.add(recipeSlug(r.title));
+  }
+  return Array.from(slugs).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -113,9 +128,19 @@ export default async function RecipeDetailPage({
         <div className="pointer-events-none absolute -right-32 top-10 h-[26rem] w-[26rem] rounded-full bg-gold/20 blur-[120px]" />
         <div className="mx-auto max-w-5xl px-5 sm:px-8">
           <Reveal>
+            <Breadcrumbs
+              crumbs={[
+                { name: "Home", path: "/" },
+                { name: "Recipes", path: "/recipes" },
+                {
+                  name: recipe.title,
+                  path: `/recipes/${recipeSlug(recipe.title)}`,
+                },
+              ]}
+            />
             <Link
               href="/recipes"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-ink-soft transition-colors hover:text-green"
+              className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-ink-soft transition-colors hover:text-green"
             >
               <ArrowLeft size={16} /> All recipes
             </Link>

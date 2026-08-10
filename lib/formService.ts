@@ -1,5 +1,5 @@
 
-const RECAPTCHA_SITE_KEY = "6LcSZSAkAAAAAFxJ_WfOQl4itrBsLPDcVkGGRmtI";
+const RECAPTCHA_SITE_KEY = "6Ldu0XUtAAAAAGA58lfHZm6X3W6HC_0O1Fzctr4s";
 
 
 const ENABLE_RECAPTCHA = true;
@@ -19,7 +19,13 @@ declare global {
 
 let recaptchaPromise: Promise<void> | null = null;
 
-function loadRecaptcha(): Promise<void> {
+/** Preload reCAPTCHA so its badge is visible as soon as the page loads,
+ *  instead of only appearing once a form is submitted. */
+export function preloadRecaptcha(): void {
+  if (ENABLE_RECAPTCHA) loadRecaptcha().catch(() => {});
+}
+
+export function loadRecaptcha(): Promise<void> {
   if (typeof window === "undefined") {
     return Promise.reject(new Error("reCAPTCHA is only available in the browser."));
   }
