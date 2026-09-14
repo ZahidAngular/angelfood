@@ -22,6 +22,8 @@ import {
   BANNERS,
   PRODUCT_CATEGORY_ORDER,
   categorizeProduct,
+  fetchBannerStores,
+  mergeStoreData,
   type Store,
   type StoreData,
 } from "@/lib/stores";
@@ -125,8 +127,51 @@ function MaybePortal({
 /* Component                                                           */
 /* ------------------------------------------------------------------ */
 
-export function StoreLocator({ data }: { data: StoreData }) {
-  const { stores, products, regions } = data;
+export function StoreLocator() {
+  // Fetched in the browser (not on the server) so a static export always
+  // shows the stockist list as it is right now, not as it was at build time.
+  // Each banner is requested in parallel and merged in as it lands — the
+  // Woolworths feed alone can take several seconds, so waiting for every
+  // banner before showing anything made the whole page feel stuck.
+  const [data, setData] = useState<StoreData | null>(null);
+  const [loadedBanners, setLoadedBanners] = useState(0);
+  const [loadError, setLoadError] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const results: { stores: Store[]; skipped: number }[] = [];
+    let landed = 0;
+    let anySucceeded = false;
+
+    BANNERS.forEach((banner) => {
+      fetchBannerStores(banner)
+        .then((result) => {
+          if (cancelled) return;
+          results.push(result);
+          anySucceeded = true;
+          landed++;
+          setLoadedBanners(landed);
+          setData({ ...mergeStoreData(results), ok: true });
+        })
+        .catch((err) => {
+          console.error(`[store-locator] ${banner.name} failed to load:`, err);
+          if (cancelled) return;
+          landed++;
+          setLoadedBanners(landed);
+          if (!anySucceeded && landed === BANNERS.length) setLoadError(true);
+        });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const { stores, products, regions } = data ?? {
+    stores: [],
+    products: [],
+    regions: [],
+  };
 
   /* ---------------- filter state ---------------- */
   const [query, setQuery] = useState("");
@@ -225,14 +270,11 @@ export function StoreLocator({ data }: { data: StoreData }) {
       }).setView(saved ? saved.center : NZ_CENTER, saved ? saved.zoom : 5);
       mapRef.current = map;
 
-      L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-        {
-          maxZoom: 19,
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
-        }
-      ).addTo(map);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
 
       L.control.zoom({ position: "bottomright" }).addTo(map);
       map.on("click", () => setShowSuggest(false));
@@ -581,7 +623,7 @@ export function StoreLocator({ data }: { data: StoreData }) {
   return (
     <section className="bg-cream pb-24 sm:pb-28">
       <div className="mx-auto max-w-[100rem] px-5 sm:px-8">
-        {!data.ok && (
+        {data && !data.ok && (
           <p className="mb-6 rounded-2xl border border-coral/30 bg-coral/10 px-5 py-4 text-sm font-medium text-ink">
             We couldn&apos;t reach the stockist service just now. Please try again
             shortly, or <a className="underline" href="/contact">get in touch</a>.
@@ -816,10 +858,18 @@ export function StoreLocator({ data }: { data: StoreData }) {
               {/* -- results -- */}
               <div className="flex items-center justify-between px-4 py-3 sm:px-5">
                 <p className="text-sm font-bold text-ink">
-                  {filtered.length}{" "}
-                  <span className="font-medium text-ink-soft">
-                    {filtered.length === 1 ? "stockist" : "stockists"}
-                  </span>
+                  {data ? (
+                    <>
+                      {filtered.length}{" "}
+                      <span className="font-medium text-ink-soft">
+                        {filtered.length === 1 ? "stockist" : "stockists"}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="font-medium text-ink-soft">
+                      Loading{loadedBanners > 0 ? ` (${loadedBanners}/${BANNERS.length})` : ""}…
+                    </span>
+                  )}
                 </p>
                 {center && (
                   <p className="text-xs font-medium text-ink-soft">
@@ -835,7 +885,33 @@ export function StoreLocator({ data }: { data: StoreData }) {
                     : "max-h-[34rem] lg:max-h-[38rem]"
                 }`}
               >
-                {filtered.length === 0 ? (
+                {!data && !loadError ? (
+                  <ul className="divide-y divide-line" aria-label="Loading stockists">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <li key={i} className="flex items-start gap-3 px-4 py-4 sm:px-5">
+                        <span className="mt-1 h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-line" />
+                        <span className="min-w-0 flex-1 space-y-2">
+                          <span
+                            className="block h-3.5 animate-pulse rounded bg-line"
+                            style={{ width: `${55 + ((i * 13) % 30)}%` }}
+                          />
+                          <span
+                            className="block h-3 animate-pulse rounded bg-line/70"
+                            style={{ width: `${70 + ((i * 9) % 20)}%` }}
+                          />
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : loadError ? (
+                  <div className="px-5 py-14 text-center">
+                    <StoreIcon size={28} className="mx-auto mb-3 text-line" />
+                    <p className="font-semibold text-ink">Couldn&apos;t load stockists</p>
+                    <p className="mt-1 text-sm text-ink-soft">
+                      Please refresh the page to try again.
+                    </p>
+                  </div>
+                ) : filtered.length === 0 ? (
                   <div className="px-5 py-14 text-center">
                     <StoreIcon size={28} className="mx-auto mb-3 text-line" />
                     <p className="font-semibold text-ink">No stockists match</p>
@@ -925,6 +1001,20 @@ export function StoreLocator({ data }: { data: StoreData }) {
                   sizing lives on the parent wrapper above instead. */}
               <div ref={mapEl} className="h-full w-full bg-cream-deep" />
 
+              {/* Map has nothing to plot until the first banner lands — cover
+                  it so it doesn't read as broken/empty while that happens. */}
+              {!data && !loadError && (
+                <div className="pointer-events-none absolute inset-0 z-[400] flex items-center justify-center bg-cream-deep/70 backdrop-blur-[1px]">
+                  <div className="flex flex-col items-center gap-2 rounded-2xl bg-paper/95 px-6 py-5 shadow-lg">
+                    <Loader2 size={24} className="animate-spin text-green" />
+                    <p className="text-sm font-medium text-ink-soft">
+                      Loading stockists
+                      {loadedBanners > 0 ? ` (${loadedBanners}/${BANNERS.length})` : ""}…
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* legend */}
               <div className="pointer-events-none absolute left-3 top-3 z-[500] rounded-2xl border border-line/70 bg-paper/92 px-3.5 py-2.5 shadow-lg backdrop-blur-sm">
                 <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-soft">
@@ -973,9 +1063,11 @@ export function StoreLocator({ data }: { data: StoreData }) {
         </MaybePortal>
 
         <p className="mt-4 text-center text-xs text-ink-soft/70">
-          Stockist list updates hourly from Angel Food&apos;s live store data
-          {data.skipped > 0 && ` · ${data.skipped} stores hidden pending location details`}.
-          Ranges are straight-line distances — always call ahead for stock.
+          Stockist list is loaded fresh from Angel Food&apos;s live store data
+          {data && data.skipped > 0
+            ? ` · ${data.skipped} stores hidden pending location details`
+            : ""}
+          . Ranges are straight-line distances — always call ahead for stock.
         </p>
       </div>
     </section>

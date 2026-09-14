@@ -256,75 +256,82 @@ type ApiStore = {
   inventory: { id: number; name: string }[] | null;
 };
 
-export async function getStoreData(): Promise<StoreData> {
-  const responses = await Promise.allSettled(
-    BANNERS.map(async (banner) => {
-      const res = await fetch(
-        `${API_BASE}/ProductContact/GetStoreWithLocations?bannerCategoryId=${banner.id}`,
-        { next: { revalidate: REVALIDATE_SECONDS } }
-      );
-      if (!res.ok) throw new Error(`${banner.name}: HTTP ${res.status}`);
-      return { banner, payload: (await res.json()) as { storeData: ApiStore[] } };
-    })
-  );
+type BannerConfig = (typeof BANNERS)[number];
 
+/** One banner's rows, turned into presentable stores. Thrown on fetch failure. */
+export async function fetchBannerStores(
+  banner: BannerConfig
+): Promise<{ stores: Store[]; skipped: number }> {
+  const res = await fetch(
+    `${API_BASE}/ProductContact/GetStoreWithLocations?bannerCategoryId=${banner.id}`,
+    { next: { revalidate: REVALIDATE_SECONDS } }
+  );
+  if (!res.ok) throw new Error(`${banner.name}: HTTP ${res.status}`);
+  const payload = (await res.json()) as { storeData: ApiStore[] };
+
+  const stores: Store[] = [];
+  let skipped = 0;
+
+  for (const row of payload.storeData ?? []) {
+    const lat = Number(row.location?.latitude);
+    const lng = Number(row.location?.longitude);
+
+    // A handful of rows have empty/NaN coords, and one sits in Virginia.
+    const mappable =
+      Number.isFinite(lat) &&
+      Number.isFinite(lng) &&
+      lat >= NZ_BOUNDS.minLat &&
+      lat <= NZ_BOUNDS.maxLat &&
+      lng >= NZ_BOUNDS.minLng &&
+      lng <= NZ_BOUNDS.maxLng;
+
+    if (!mappable) {
+      skipped++;
+      continue;
+    }
+
+    const { cleaned, postcode, region, locality } = parseAddress(row.address);
+    const inventory = [
+      ...new Set(
+        (row.inventory ?? [])
+          .map((p) => toRetailName(canonProduct(p.name)))
+          .filter((n): n is string => !!n)
+      ),
+    ].sort();
+
+    stores.push({
+      id: `${banner.id}-${row.id}`,
+      // Real names are absent from the feed, so build "<banner> <suburb>".
+      name: locality ? `${banner.name} ${locality}` : banner.name,
+      banner: banner.name,
+      address: cleaned,
+      postcode: postcode || (row.postCode ?? ""),
+      region,
+      lat,
+      lng,
+      hours: (row.hours || "").trim(),
+      products: inventory,
+    });
+  }
+
+  return { stores, skipped };
+}
+
+/** Merges a set of per-banner store lists into one sorted, deduped StoreData. */
+export function mergeStoreData(
+  banners: { stores: Store[]; skipped: number }[]
+): StoreData {
   const stores: Store[] = [];
   const products = new Set<string>();
   const regions = new Set<string>();
   let skipped = 0;
-  let succeeded = 0;
 
-  for (const result of responses) {
-    if (result.status !== "fulfilled") {
-      console.error("[store-locator] banner fetch failed:", result.reason);
-      continue;
-    }
-    succeeded++;
-
-    const { banner, payload } = result.value;
-    for (const row of payload.storeData ?? []) {
-      const lat = Number(row.location?.latitude);
-      const lng = Number(row.location?.longitude);
-
-      // A handful of rows have empty/NaN coords, and one sits in Virginia.
-      const mappable =
-        Number.isFinite(lat) &&
-        Number.isFinite(lng) &&
-        lat >= NZ_BOUNDS.minLat &&
-        lat <= NZ_BOUNDS.maxLat &&
-        lng >= NZ_BOUNDS.minLng &&
-        lng <= NZ_BOUNDS.maxLng;
-
-      if (!mappable) {
-        skipped++;
-        continue;
-      }
-
-      const { cleaned, postcode, region, locality } = parseAddress(row.address);
-      const inventory = [
-        ...new Set(
-          (row.inventory ?? [])
-            .map((p) => toRetailName(canonProduct(p.name)))
-            .filter((n): n is string => !!n)
-        ),
-      ].sort();
-
-      inventory.forEach((p) => products.add(p));
-      if (region) regions.add(region);
-
-      stores.push({
-        id: `${banner.id}-${row.id}`,
-        // Real names are absent from the feed, so build "<banner> <suburb>".
-        name: locality ? `${banner.name} ${locality}` : banner.name,
-        banner: banner.name,
-        address: cleaned,
-        postcode: postcode || (row.postCode ?? ""),
-        region,
-        lat,
-        lng,
-        hours: (row.hours || "").trim(),
-        products: inventory,
-      });
+  for (const { stores: bannerStores, skipped: bannerSkipped } of banners) {
+    skipped += bannerSkipped;
+    for (const store of bannerStores) {
+      store.products.forEach((p) => products.add(p));
+      if (store.region) regions.add(store.region);
+      stores.push(store);
     }
   }
 
@@ -335,6 +342,23 @@ export async function getStoreData(): Promise<StoreData> {
     products: [...products].sort((a, b) => a.localeCompare(b)),
     regions: [...regions].sort((a, b) => a.localeCompare(b)),
     skipped,
-    ok: succeeded > 0,
+    ok: banners.length > 0,
   };
+}
+
+export async function getStoreData(): Promise<StoreData> {
+  const responses = await Promise.allSettled(
+    BANNERS.map((banner) => fetchBannerStores(banner))
+  );
+
+  const fulfilled: { stores: Store[]; skipped: number }[] = [];
+  for (const result of responses) {
+    if (result.status !== "fulfilled") {
+      console.error("[store-locator] banner fetch failed:", result.reason);
+      continue;
+    }
+    fulfilled.push(result.value);
+  }
+
+  return { ...mergeStoreData(fulfilled), ok: fulfilled.length > 0 };
 }

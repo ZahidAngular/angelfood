@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { StoreLocator } from "@/components/StoreLocator";
 import { Stockists } from "@/components/Stockists";
-import { getStoreData } from "@/lib/stores";
 
 export const metadata: Metadata = {
   title: "Where to Buy — Angel Food",
@@ -11,21 +10,15 @@ export const metadata: Metadata = {
   alternates: { canonical: "/where-to-buy" },
 };
 
-export default async function WhereToBuyPage() {
-  const data = await getStoreData();
-
+export default function WhereToBuyPage() {
   return (
     <main>
       <PageHeader
         eyebrow="Where to buy"
         title="Find your nearest stockist."
-        intro={
-          data.stores.length
-            ? `Angel Food is on shelves at ${data.stores.length} stores across Aotearoa. Search your town, filter by the product you're after, and we'll point you to the closest one.`
-            : "Stocked in supermarkets and loved by kitchens nationwide — from your weekly shop to your favourite pizza joint."
-        }
+        intro="Stocked in supermarkets and loved by kitchens nationwide — from your weekly shop to your favourite pizza joint. Search your town below, filter by the product you're after, and we'll point you to the closest one."
       />
-      <StoreLocator data={data} />
+      <StoreLocator />
       <Stockists />
     </main>
   );
