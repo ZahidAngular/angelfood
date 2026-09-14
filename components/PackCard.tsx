@@ -30,10 +30,18 @@ export function PackCard({
   product,
   index,
   aspect = "square",
+  fit = "cover",
 }: {
   product: Product;
   index: number;
   aspect?: "square" | "4/3";
+  /**
+   * "cover" fills the frame edge to edge — for full-bleed pack shots. "contain"
+   * fits the whole image with no cropping — for the angled 3D box renders,
+   * which carry almost no transparent margin of their own, so cropping to a
+   * square would cut into the pack art itself.
+   */
+  fit?: "cover" | "contain";
 }) {
   const nutritionSlug = getNutritionSlug(product.name);
 
@@ -54,7 +62,9 @@ export function PackCard({
           alt={`Angel Food ${product.name} pack`}
           fill
           sizes="(min-width: 1024px) 24vw, (min-width: 640px) 45vw, 90vw"
-          className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]"
+          className={`transition-transform duration-[900ms] ease-out group-hover:scale-[1.04] ${
+            fit === "contain" ? "object-contain p-4" : "object-cover"
+          }`}
         />
       </div>
 

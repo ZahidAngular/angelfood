@@ -127,9 +127,9 @@ export default async function NutritionDetailPage({
                       fill
                       sizes="(min-width: 1024px) 40vw, 90vw"
                       className={
-                        entry.category === "Cheeses"
-                          ? "object-contain p-6"
-                          : "object-cover"
+                        entry.category === "Meals"
+                          ? "object-cover"
+                          : "object-contain p-6"
                       }
                     />
                   </div>
