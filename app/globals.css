@@ -251,13 +251,28 @@ html.lenis body {
   text-transform: uppercase;
   color: var(--color-ink-soft);
 }
+/* The whole stack scrolls, so category headings stay with their chips. */
+.af-pop-groups {
+  margin-top: 0.5rem;
+  max-height: 11rem;
+  overflow-y: auto;
+}
+.af-pop-group + .af-pop-group {
+  margin-top: 0.6rem;
+}
+.af-pop-cat {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-green-bright);
+}
 .af-pop-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
-  margin-top: 0.45rem;
-  max-height: 6.5rem;
-  overflow-y: auto;
+  margin-top: 0.3rem;
 }
 .af-pop-chip {
   border-radius: 999px;

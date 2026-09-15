@@ -20,10 +20,10 @@ import {
 } from "lucide-react";
 import {
   BANNERS,
-  PRODUCT_CATEGORY_ORDER,
-  categorizeProduct,
   fetchBannerStores,
+  groupByCategory,
   mergeStoreData,
+  type BannerStores,
   type Store,
   type StoreData,
 } from "@/lib/stores";
@@ -75,18 +75,36 @@ function brandedPin(store: Store) {
   )}" draggable="false"/></span>`;
 }
 
-function popupHtml(store: Store, dist: number | null, origin: Center | null) {
+function popupHtml(
+  store: Store,
+  dist: number | null,
+  origin: Center | null,
+  categoryOf: Map<string, string>
+) {
   const dest = `${store.lat},${store.lng}`;
   const directions = `https://www.google.com/maps/dir/?api=1${
     origin ? `&origin=${origin.lat},${origin.lng}` : ""
   }&destination=${dest}&travelmode=driving`;
 
+  // A well-stocked store carries a dozen-odd lines, which as one run of chips
+  // is a wall — so they're split into the feed's categories.
+  const groups = groupByCategory(
+    store.products.map((name) => ({ name, category: categoryOf.get(name) ?? "" }))
+  )
+    .map(
+      (g) =>
+        `<div class="af-pop-group"><span class="af-pop-cat">${escapeHtml(
+          g.category
+        )}</span><div class="af-pop-chips">${g.products
+          .map((p) => `<span class="af-pop-chip">${escapeHtml(p)}</span>`)
+          .join("")}</div></div>`
+    )
+    .join("");
+
   const products = store.products.length
     ? `<div class="af-pop-sec"><span class="af-pop-label">Stocks ${store.products.length} product${
         store.products.length > 1 ? "s" : ""
-      }</span><div class="af-pop-chips">${store.products
-        .map((p) => `<span class="af-pop-chip">${escapeHtml(p)}</span>`)
-        .join("")}</div></div>`
+      }</span><div class="af-pop-groups">${groups}</div></div>`
     : "";
 
   return `
@@ -139,7 +157,7 @@ export function StoreLocator() {
 
   useEffect(() => {
     let cancelled = false;
-    const results: { stores: Store[]; skipped: number }[] = [];
+    const results: BannerStores[] = [];
     let landed = 0;
     let anySucceeded = false;
 
@@ -173,6 +191,16 @@ export function StoreLocator() {
     regions: [],
   };
 
+  /* ---------------- derived: products by category ---------------- */
+  // The feed categorises a product on some rows and leaves it blank on others
+  // (the 350g blocks), so the merged list is the single source of truth for
+  // which category a product sits in.
+  const productGroups = useMemo(() => groupByCategory(products), [products]);
+  const productCategory = useMemo(
+    () => new Map(products.map((p) => [p.name, p.category])),
+    [products]
+  );
+
   /* ---------------- filter state ---------------- */
   const [query, setQuery] = useState("");
   const [banners, setBanners] = useState<string[]>([]);
@@ -200,6 +228,9 @@ export function StoreLocator() {
   // Preserves the map centre/zoom across the remount that entering/leaving
   // fullscreen triggers (the map is portaled to a new container).
   const savedViewRef = useRef<{ center: [number, number]; zoom: number } | null>(null);
+  // Set when a store is picked while the map pane is still hidden; the effect
+  // that runs once the pane is visible finishes opening it.
+  const pendingFocus = useRef<(() => void) | null>(null);
   // A monotonic counter bumped once each time a map is (re)created. Unlike a
   // boolean `ready`, a single increasing setter call can't be coalesced by
   // React's batching when the map is torn down and rebuilt in the same tick —
@@ -332,22 +363,50 @@ export function StoreLocator() {
       const map = mapRef.current;
       if (!L || !map) return;
 
-      if (fly) map.flyTo([store.lat, store.lng], Math.max(map.getZoom(), 14), { duration: 0.8 });
+      const show = (animate: boolean) => {
+        // Going fullscreen tears this map down and builds another, and this
+        // closure can outlive that — so only ever drive the live one.
+        if (mapRef.current !== map) return false;
 
-      L.popup({
-        className: "af-popup",
-        maxWidth: 360,
-        minWidth: 272,
-        autoPanPadding: [24, 24],
-        offset: [0, -46],
-      })
-        .setLatLng([store.lat, store.lng])
-        .setContent(popupHtml(store, dist, center))
-        .openOn(map);
+        // On mobile the map pane is `hidden` until the "Map" tab is picked.
+        // Flying against a hidden pane either divides by a zero size — which
+        // throws "Invalid LatLng object: (NaN, NaN)" out of the click handler
+        // before the popup ever opens — or, once Leaflet has a cached size
+        // from an earlier visit, animates where nobody can see it. That cache
+        // is why this measures the container itself rather than ask the map.
+        const el = map.getContainer();
+        if (!el.clientWidth || !el.clientHeight) return false;
+
+        if (fly) {
+          const zoom = Math.max(map.getZoom(), 14);
+          // A pane the user has only just revealed has nothing to fly
+          // from — it arrives on this store, no flight.
+          if (animate) map.flyTo([store.lat, store.lng], zoom, { duration: 0.8 });
+          else map.setView([store.lat, store.lng], zoom, { animate: false });
+        }
+
+        L.popup({
+          className: "af-popup",
+          maxWidth: 360,
+          minWidth: 272,
+          autoPanPadding: [24, 24],
+          offset: [0, -46],
+        })
+          .setLatLng([store.lat, store.lng])
+          .setContent(popupHtml(store, dist, center, productCategory))
+          .openOn(map);
+
+        return true;
+      };
 
       setMobileView("map");
+      if (show(true)) return;
+
+      // Pane was hidden, so hand this store to the effect below, which runs
+      // once the switch has painted and the map can be measured.
+      pendingFocus.current = () => show(false);
     },
-    [center]
+    [center, productCategory]
   );
 
   /* ---------------- render markers + clusters ---------------- */
@@ -507,12 +566,17 @@ export function StoreLocator() {
   }, [mapEpoch, fitKey]);
 
   // Catch up once the map pane actually becomes visible (mobile tab switch,
-  // or entering/leaving fullscreen), skipping the flight animation.
+  // or entering/leaving fullscreen), skipping the flight animation. A store
+  // tapped in the list is what brought us here, so it wins over the fit —
+  // otherwise this would pull the map straight back out to every result.
   useEffect(() => {
     if (mobileView !== "map") return;
     const t = setTimeout(() => {
       mapRef.current?.invalidateSize();
-      fitToResults(false);
+      const focus = pendingFocus.current;
+      pendingFocus.current = null;
+      if (focus) focus();
+      else fitToResults(false);
     }, 50);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -794,19 +858,15 @@ export function StoreLocator() {
                       className="w-full rounded-xl border border-line bg-cream px-3.5 py-2.5 text-sm text-ink outline-none focus:border-green"
                     >
                       <option value="">Any product</option>
-                      {PRODUCT_CATEGORY_ORDER.map((cat) => {
-                        const items = products.filter((p) => categorizeProduct(p) === cat);
-                        if (items.length === 0) return null;
-                        return (
-                          <optgroup key={cat} label={cat}>
-                            {items.map((p) => (
-                              <option key={p} value={p}>
-                                {p}
-                              </option>
-                            ))}
-                          </optgroup>
-                        );
-                      })}
+                      {productGroups.map(({ category, products: items }) => (
+                        <optgroup key={category} label={category}>
+                          {items.map((p) => (
+                            <option key={p} value={p}>
+                              {p}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
                     </select>
                   </label>
 

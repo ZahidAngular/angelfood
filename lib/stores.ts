@@ -33,6 +33,9 @@ export const BANNERS = [
 
 export type BannerName = (typeof BANNERS)[number]["name"];
 
+/** A product name paired with the category the feed files it under. */
+export type ProductInfo = { name: string; category: string };
+
 export type Store = {
   id: string;
   name: string;
@@ -48,7 +51,8 @@ export type Store = {
 
 export type StoreData = {
   stores: Store[];
-  products: string[];
+  /** Every product stocked somewhere, with the category it belongs to. */
+  products: ProductInfo[];
   regions: string[];
   /** Rows the API returned that had no usable coordinates. */
   skipped: number;
@@ -222,21 +226,48 @@ function toRetailName(canon: string): string | null {
     .trim();
 }
 
-export const PRODUCT_CATEGORY_ORDER = [
-  "Dairy alternatives",
-  "Ready meals",
-  "Meat alternatives",
-] as const;
-export type ProductCategory = (typeof PRODUCT_CATEGORY_ORDER)[number];
+/* ------------------------------------------------------------------ */
+/* Categories                                                          */
+/* ------------------------------------------------------------------ */
 
-const READY_MEAL = /rice|lasagn|korma|curry|bowl/i;
-const MEAT_ALT = /chicken|beef|pork|bacon|fish finger|patt(y|ies)|meatball/i;
+/**
+ * Categories come straight from the feed (`inventory[].category`). These are
+ * the ones it sends today, listed in the order they should read; a category
+ * added later still shows up, it just sorts in alphabetically after these.
+ */
+const CATEGORY_ORDER = ["Cheese", "Meals", "Meat"];
 
-/** Which section a product belongs to in the "Product" filter dropdown. */
-export function categorizeProduct(name: string): ProductCategory {
-  if (READY_MEAL.test(name)) return "Ready meals";
-  if (MEAT_ALT.test(name)) return "Meat alternatives";
-  return "Dairy alternatives";
+/** Where products the feed left uncategorised land. Always sorts last. */
+export const OTHER_CATEGORY = "Other";
+
+export type ProductGroup = { category: string; products: string[] };
+
+function categoryRank(category: string) {
+  const known = CATEGORY_ORDER.indexOf(category);
+  if (known !== -1) return known;
+  return category === OTHER_CATEGORY
+    ? CATEGORY_ORDER.length + 1
+    : CATEGORY_ORDER.length;
+}
+
+/** Splits a product list into its categories, ready to render as sections. */
+export function groupByCategory(items: ProductInfo[]): ProductGroup[] {
+  const groups = new Map<string, string[]>();
+
+  for (const { name, category } of items) {
+    const key = category || OTHER_CATEGORY;
+    const bucket = groups.get(key);
+    if (bucket) bucket.push(name);
+    else groups.set(key, [name]);
+  }
+
+  return [...groups]
+    .map(([category, products]) => ({ category, products }))
+    .sort(
+      (a, b) =>
+        categoryRank(a.category) - categoryRank(b.category) ||
+        a.category.localeCompare(b.category)
+    );
 }
 
 /* ------------------------------------------------------------------ */
@@ -253,15 +284,23 @@ type ApiStore = {
   location: { latitude: string | number; longitude: string | number } | null;
   postCode: string | null;
   hours: string | null;
-  inventory: { id: number; name: string }[] | null;
+  inventory: { id: number; name: string; category: string | null }[] | null;
 };
 
 type BannerConfig = (typeof BANNERS)[number];
 
-/** One banner's rows, turned into presentable stores. Thrown on fetch failure. */
+/** What one banner's feed yields: its stores, plus the categories it named. */
+export type BannerStores = {
+  stores: Store[];
+  skipped: number;
+  /** Retail product name -> category, for the rows that carried one. */
+  categories: Record<string, string>;
+};
+
+/** One banner's rows, turned into presentable stores. Throws on fetch failure. */
 export async function fetchBannerStores(
   banner: BannerConfig
-): Promise<{ stores: Store[]; skipped: number }> {
+): Promise<BannerStores> {
   const res = await fetch(
     `${API_BASE}/ProductContact/GetStoreWithLocations?bannerCategoryId=${banner.id}`,
     { next: { revalidate: REVALIDATE_SECONDS } }
@@ -270,6 +309,7 @@ export async function fetchBannerStores(
   const payload = (await res.json()) as { storeData: ApiStore[] };
 
   const stores: Store[] = [];
+  const categories: Record<string, string> = {};
   let skipped = 0;
 
   for (const row of payload.storeData ?? []) {
@@ -291,13 +331,18 @@ export async function fetchBannerStores(
     }
 
     const { cleaned, postcode, region, locality } = parseAddress(row.address);
-    const inventory = [
-      ...new Set(
-        (row.inventory ?? [])
-          .map((p) => toRetailName(canonProduct(p.name)))
-          .filter((n): n is string => !!n)
-      ),
-    ].sort();
+
+    const inventory = new Set<string>();
+    for (const item of row.inventory ?? []) {
+      const name = toRetailName(canonProduct(item.name));
+      if (!name) continue;
+      inventory.add(name);
+      // Some rows arrive with no category at all (the 350g blocks), and a
+      // product can appear in several pack sizes, so the first row that does
+      // name a category settles it for that product everywhere.
+      const category = (item.category || "").trim();
+      if (category && !categories[name]) categories[name] = category;
+    }
 
     stores.push({
       id: `${banner.id}-${row.id}`,
@@ -310,26 +355,30 @@ export async function fetchBannerStores(
       lat,
       lng,
       hours: (row.hours || "").trim(),
-      products: inventory,
+      products: [...inventory].sort(),
     });
   }
 
-  return { stores, skipped };
+  return { stores, skipped, categories };
 }
 
 /** Merges a set of per-banner store lists into one sorted, deduped StoreData. */
-export function mergeStoreData(
-  banners: { stores: Store[]; skipped: number }[]
-): StoreData {
+export function mergeStoreData(banners: BannerStores[]): StoreData {
   const stores: Store[] = [];
-  const products = new Set<string>();
+  const names = new Set<string>();
+  // Pooled across banners so a product only one banner categorised is still
+  // filed correctly for every store that stocks it.
+  const categories: Record<string, string> = {};
   const regions = new Set<string>();
   let skipped = 0;
 
-  for (const { stores: bannerStores, skipped: bannerSkipped } of banners) {
-    skipped += bannerSkipped;
-    for (const store of bannerStores) {
-      store.products.forEach((p) => products.add(p));
+  for (const banner of banners) {
+    skipped += banner.skipped;
+    for (const [name, category] of Object.entries(banner.categories)) {
+      if (!categories[name]) categories[name] = category;
+    }
+    for (const store of banner.stores) {
+      store.products.forEach((p) => names.add(p));
       if (store.region) regions.add(store.region);
       stores.push(store);
     }
@@ -339,7 +388,9 @@ export function mergeStoreData(
 
   return {
     stores,
-    products: [...products].sort((a, b) => a.localeCompare(b)),
+    products: [...names]
+      .sort((a, b) => a.localeCompare(b))
+      .map((name) => ({ name, category: categories[name] ?? "" })),
     regions: [...regions].sort((a, b) => a.localeCompare(b)),
     skipped,
     ok: banners.length > 0,
@@ -351,7 +402,7 @@ export async function getStoreData(): Promise<StoreData> {
     BANNERS.map((banner) => fetchBannerStores(banner))
   );
 
-  const fulfilled: { stores: Store[]; skipped: number }[] = [];
+  const fulfilled: BannerStores[] = [];
   for (const result of responses) {
     if (result.status !== "fulfilled") {
       console.error("[store-locator] banner fetch failed:", result.reason);
