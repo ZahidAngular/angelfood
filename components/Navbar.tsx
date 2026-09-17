@@ -103,7 +103,7 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <div className="hidden items-center gap-1.5 xl:flex">
+            <div className="hidden items-center gap-1.5 lg:flex">
               <SocialLinks
                 size={16}
                 className="flex h-9 w-9 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-cream-deep hover:text-green"
@@ -112,7 +112,7 @@ export function Navbar() {
             <CartLink count={cartCount} />
             <Link
               href="/where-to-buy"
-              className={`hidden rounded-full bg-green font-semibold text-cream transition-all duration-500 hover:scale-[1.04] lg:inline-flex ${
+              className={`hidden rounded-full bg-green font-semibold text-cream transition-all duration-500 hover:scale-[1.04] sm:inline-flex ${
                 scrolled ? "px-5 py-2.5 text-sm" : "px-6 py-3 text-base"
               }`}
             >
