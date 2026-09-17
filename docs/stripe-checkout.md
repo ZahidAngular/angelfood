@@ -171,16 +171,31 @@ the tab after paying and never load `/checkout/success`. Listen for
 order there — `/api/SalesOrders/SendOnlineSalesOrder` on the Angel Food API
 takes one, including an `isInCarton` flag and line items.
 
+## How it's priced
+
+Every item costs the same whatever it is; the rate depends only on how many
+are in the order. All of it lives in `lib/pricing.ts`:
+
+| Items | Per item | Delivery |
+| ----- | -------- | -------- |
+| 12–23 | $11.50   | $20.00   |
+| 24+   | $10.00   | Free     |
+
+Twelve is the minimum — below it the cart says how many more are needed and
+there is no way through to the checkout. A carton of meals is twelve items, so
+one carton is exactly the minimum: $138.00 + $20.00 = **$158.00**. Two cartons
+is twenty-four: **$240.00**, delivered.
+
+**Price the same way on the server.** `unitAmount` in the request is the rate
+the customer was shown, and a request is just a browser POST that anyone can
+edit before it is sent. Count the items, look the rate up from the same table,
+and charge that — then check `deliveryAmount` against it too.
+
 ## Before going live
 
-- **The prices are placeholders.** `CATALOGUE` in `lib/meals.ts` carries
-  invented figures ($8.50 a pack, $45.00 a carton) because the product feed
-  has no retail price — only `costPrice`. Replace them with the real ones
-  before a single payment is possible.
 - Test with Stripe's test keys and card `4242 4242 4242 4242` first.
-- Delivery is a flat $20 nationwide, set as `DELIVERY_FEE` in
-  `lib/checkout.ts` and quoted on the cart, the checkout and the pay button.
-  Charge it from `deliveryAmount` in the request only after checking it
-  against that same figure server-side.
+- The feed says a meal carton holds six. It holds twelve, so `CATALOGUE` in
+  `lib/meals.ts` overrides it. Correct `quantityInCartion` in Cin7 and delete
+  those `cartonQty` overrides — the feed's own figure takes over.
 - Decide what happens for an address the courier can't serve — rural delivery
-  and the offshore islands usually cost more than a flat rate.
+  and the offshore islands cost more than the $20 average.

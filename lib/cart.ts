@@ -9,9 +9,12 @@
  */
 
 import { useSyncExternalStore } from "react";
-import type { PackSize } from "./meals";
+import { itemsPerPack, type PackSize } from "./meals";
 
-const STORAGE_KEY = "angelfood-cart-v1";
+// v2: lines no longer carry a price of their own. What an item costs depends
+// on how many are in the order (lib/pricing.ts), so a stored price would only
+// ever be a stale answer to a question the cart no longer asks.
+const STORAGE_KEY = "angelfood-cart-v2";
 
 /** Past any sane order — stops a held key or a stray paste running away. */
 const MAX_QUANTITY = 99;
@@ -22,15 +25,18 @@ export type CartLine = {
   packSize: PackSize;
   name: string;
   image: string | null;
-  /** Units in a carton, kept for the "6 × 400g" label. */
+  /** Units in a carton — both the "6 × 400g" label and what the line counts. */
   cartonQty: number;
   weight: string;
-  /** NZD for one of whatever `packSize` says, as priced when it was added. */
-  price: number;
+  /** How many of this pack. Not how many items: see `lineItems`. */
   quantity: number;
 };
 
 export const lineKey = (code: string, packSize: PackSize) => `${code}:${packSize}`;
+
+/** Individual items this line puts in the order — a carton of six counts six. */
+export const lineItems = (line: CartLine) =>
+  line.quantity * itemsPerPack(line.packSize, line);
 
 /* ------------------------------------------------------------------ */
 /* Store                                                               */
@@ -53,8 +59,8 @@ function isLine(value: unknown): value is CartLine {
     !!line &&
     typeof line.code === "string" &&
     (line.packSize === "unit" || line.packSize === "carton") &&
-    typeof line.price === "number" &&
-    Number.isFinite(line.price) &&
+    typeof line.cartonQty === "number" &&
+    line.cartonQty > 0 &&
     typeof line.quantity === "number" &&
     line.quantity > 0
   );
@@ -171,12 +177,14 @@ export function clearCart() {
 export function useCart() {
   const cartLines = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
 
-  let count = 0;
-  let total = 0;
+  // `packs` is what was added, `items` is what is being sent — the second is
+  // what the price tiers and the minimum order are counted in.
+  let packs = 0;
+  let items = 0;
   for (const line of cartLines) {
-    count += line.quantity;
-    total += line.price * line.quantity;
+    packs += line.quantity;
+    items += lineItems(line);
   }
 
-  return { lines: cartLines, count, total };
+  return { lines: cartLines, packs, items };
 }

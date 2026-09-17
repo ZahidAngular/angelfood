@@ -3,16 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Lock, ShoppingCart, Trash2 } from "lucide-react";
-import { QuantityStepper } from "./BuyNow";
-import { clearCart, removeLine, setLineQuantity, useCart } from "@/lib/cart";
-import { formatPrice, packLabel } from "@/lib/meals";
-import { orderTotals } from "@/lib/checkout";
+import { OrderProgress, QuantityStepper } from "./BuyNow";
+import { clearCart, lineItems, removeLine, setLineQuantity, useCart } from "@/lib/cart";
+import { packLabel } from "@/lib/meals";
+import { formatPrice, orderTotals } from "@/lib/pricing";
 
 export function CartView() {
-  const { lines, count, total: subtotal } = useCart();
-  const totals = orderTotals(subtotal);
+  const { lines, items } = useCart();
+  const totals = orderTotals(items);
 
-  if (count === 0) return <EmptyCart />;
+  if (items === 0) return <EmptyCart />;
 
   return (
     <div className="mx-auto max-w-5xl px-5 sm:px-8">
@@ -21,7 +21,8 @@ export function CartView() {
           Your order
         </h1>
         <p className="mt-4 text-lg text-ink-soft">
-          {count} {count === 1 ? "item" : "items"} ready to go.
+          {totals.items} {totals.items === 1 ? "item" : "items"} at{" "}
+          {formatPrice(totals.perItem)} each.
         </p>
       </header>
 
@@ -53,7 +54,8 @@ export function CartView() {
                   {line.name}
                 </p>
                 <p className="mt-1 text-sm text-ink-soft">
-                  {packLabel(line.packSize, line)} · {formatPrice(line.price)} each
+                  {packLabel(line.packSize, line)} ·{" "}
+                  {lineItems(line) === 1 ? "1 item" : `${lineItems(line)} items`}
                 </p>
               </div>
 
@@ -66,7 +68,7 @@ export function CartView() {
                   onChange={(next) => setLineQuantity(line.code, line.packSize, next)}
                 />
                 <span className="font-display text-lg font-bold text-ink sm:w-24 sm:text-right">
-                  {formatPrice(line.price * line.quantity)}
+                  {formatPrice(lineItems(line) * totals.perItem)}
                 </span>
                 <button
                   type="button"
@@ -89,7 +91,9 @@ export function CartView() {
 
             <dl className="mt-4 space-y-2 border-t border-line pt-4 text-sm">
               <div className="flex justify-between">
-                <dt className="text-ink-soft">Subtotal</dt>
+                <dt className="text-ink-soft">
+                  {totals.items} × {formatPrice(totals.perItem)}
+                </dt>
                 <dd className="font-semibold text-ink">
                   {formatPrice(totals.subtotal)}
                 </dd>
@@ -97,7 +101,11 @@ export function CartView() {
               <div className="flex justify-between">
                 <dt className="text-ink-soft">Delivery</dt>
                 <dd className="font-semibold text-ink">
-                  {formatPrice(totals.delivery)}
+                  {totals.delivery === 0 ? (
+                    <span className="text-green">Free</span>
+                  ) : (
+                    formatPrice(totals.delivery)
+                  )}
                 </dd>
               </div>
               <div className="flex items-baseline justify-between border-t border-line pt-3">
@@ -107,20 +115,28 @@ export function CartView() {
                 </dd>
               </div>
             </dl>
-            <p className="mt-1.5 text-xs text-ink-soft">
-              GST included. Flat $20 courier, anywhere in New Zealand.
-            </p>
+            <p className="mt-1.5 text-xs text-ink-soft">GST included.</p>
+
+            <OrderProgress totals={totals} className="mt-4" />
 
             <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-xs text-ink-soft">
               <Lock size={12} /> Secure payment by Stripe
             </p>
 
-            <Link
-              href="/checkout"
-              className="mt-5 flex items-center justify-center gap-2 rounded-full bg-green px-5 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-cream transition-transform hover:scale-[1.03]"
-            >
-              Checkout <ArrowRight size={15} />
-            </Link>
+            {/* Below the minimum there is nothing to check out to, so the
+                button becomes the reason why rather than a dead end. */}
+            {totals.meetsMinimum ? (
+              <Link
+                href="/checkout"
+                className="mt-5 flex items-center justify-center gap-2 rounded-full bg-green px-5 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-cream transition-transform hover:scale-[1.03]"
+              >
+                Checkout <ArrowRight size={15} />
+              </Link>
+            ) : (
+              <p className="mt-5 rounded-full bg-cream px-5 py-3.5 text-center text-sm font-bold uppercase tracking-[0.12em] text-ink-soft">
+                {totals.shortBy} more to check out
+              </p>
+            )}
             <Link
               href="/buy-now"
               className="mt-3 flex items-center justify-center rounded-full border border-line px-5 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-green transition-colors hover:bg-cream"

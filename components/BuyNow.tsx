@@ -6,17 +6,15 @@ import Link from "next/link";
 import { ArrowRight, Check, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { Reveal } from "./Reveal";
 import {
-  cartonSaving,
   fetchBuyableProducts,
-  formatPrice,
+  itemsPerPack,
   packLabel,
-  priceFor,
   SECTIONS,
   type BuyableProduct,
   type PackSize,
 } from "@/lib/meals";
-import { addToCart, removeLine, useCart } from "@/lib/cart";
-import { DELIVERY_FEE } from "@/lib/checkout";
+import { addToCart, lineItems, removeLine, useCart } from "@/lib/cart";
+import { formatPrice, orderTotals, MINIMUM_ITEMS, PRICE_TIERS } from "@/lib/pricing";
 
 /** How long the button stays on "Added" after a meal goes in the order. */
 const ADDED_FEEDBACK_MS = 1800;
@@ -44,10 +42,15 @@ export function BuyNow() {
     };
   }, []);
 
+  const { items } = useCart();
+  const totals = orderTotals(items);
+
   return (
     <section className="bg-cream pb-24 pt-4 sm:pb-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-12">
+        <PricingBanner />
+
+        <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-12">
           <div>
             {failed ? (
               <LoadFailed />
@@ -73,7 +76,12 @@ export function BuyNow() {
                       </h2>
                       <div className="grid gap-6 sm:grid-cols-2">
                         {inSection.map((meal, i) => (
-                          <MealCard key={meal.code} meal={meal} index={i} />
+                          <MealCard
+                            key={meal.code}
+                            meal={meal}
+                            index={i}
+                            perItem={totals.perItem}
+                          />
                         ))}
                       </div>
                     </section>
@@ -94,7 +102,16 @@ export function BuyNow() {
 /* Meal card                                                           */
 /* ------------------------------------------------------------------ */
 
-function MealCard({ meal, index }: { meal: BuyableProduct; index: number }) {
+function MealCard({
+  meal,
+  index,
+  perItem,
+}: {
+  meal: BuyableProduct;
+  index: number;
+  /** The rate the order currently qualifies for — see lib/pricing.ts. */
+  perItem: number;
+}) {
   const [packSize, setPackSize] = useState<PackSize>("unit");
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
@@ -107,12 +124,7 @@ function MealCard({ meal, index }: { meal: BuyableProduct; index: number }) {
     []
   );
 
-  const price = priceFor(meal, packSize);
-  const saving = cartonSaving(meal);
-
   function add() {
-    if (price === null) return;
-
     addToCart(
       {
         code: meal.code,
@@ -121,7 +133,6 @@ function MealCard({ meal, index }: { meal: BuyableProduct; index: number }) {
         image: meal.image,
         cartonQty: meal.cartonQty,
         weight: meal.weight,
-        price,
       },
       quantity
     );
@@ -173,15 +184,11 @@ function MealCard({ meal, index }: { meal: BuyableProduct; index: number }) {
           {/* mt-auto pins the buying controls to the card's bottom edge, so a
               row of cards lines up however much copy sits above them. */}
           <div className="mt-auto pt-6">
-            {price === null ? (
-              <PriceOnRequest meal={meal} />
-            ) : (
-              <>
-                <fieldset>
+            <fieldset>
                   <legend className="sr-only">Pack size for {meal.name}</legend>
                   <div className="grid grid-cols-2 gap-2">
                     {(["unit", "carton"] as const).map((size) => {
-                      const sizePrice = priceFor(meal, size);
+                      const count = itemsPerPack(size, meal);
                       const selected = packSize === size;
                       return (
                         <label
@@ -204,7 +211,7 @@ function MealCard({ meal, index }: { meal: BuyableProduct; index: number }) {
                             {size === "carton" ? "Carton" : "Single"}
                           </span>
                           <span className="mt-1 block font-display text-lg font-bold">
-                            {sizePrice === null ? "—" : formatPrice(sizePrice)}
+                            {formatPrice(perItem * count)}
                           </span>
                           <span
                             className={`mt-0.5 block text-xs ${
@@ -215,11 +222,13 @@ function MealCard({ meal, index }: { meal: BuyableProduct; index: number }) {
                               ? `${meal.cartonQty} × ${meal.weight || "pack"}`
                               : meal.weight || "1 pack"}
                           </span>
-                          {size === "carton" && saving !== null && (
-                            <span className="absolute -top-2 right-3 rounded-full bg-gold px-2 py-0.5 text-[0.6rem] font-bold uppercase tracking-[0.1em] text-ink">
-                              Save {saving}%
-                            </span>
-                          )}
+                          <span
+                            className={`mt-0.5 block text-[0.65rem] ${
+                              selected ? "text-cream/60" : "text-ink-soft/70"
+                            }`}
+                          >
+                            {count === 1 ? "1 item" : `${count} items`}
+                          </span>
                         </label>
                       );
                     })}
@@ -258,31 +267,11 @@ function MealCard({ meal, index }: { meal: BuyableProduct; index: number }) {
                         meal
                       )}, added to your order`
                     : ""}
-                </span>
-              </>
-            )}
+            </span>
           </div>
         </div>
       </article>
     </Reveal>
-  );
-}
-
-/** A product the feed sells that the site has no retail price for yet. */
-function PriceOnRequest({ meal }: { meal: BuyableProduct }) {
-  return (
-    <div className="rounded-2xl border border-dashed border-line bg-cream p-4">
-      <p className="text-sm font-semibold text-ink">Price on request</p>
-      <p className="mt-1 text-xs leading-relaxed text-ink-soft">
-        {meal.name} isn&apos;t priced for online orders yet.
-      </p>
-      <Link
-        href="/contact"
-        className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.12em] text-green"
-      >
-        Ask us <ArrowRight size={13} />
-      </Link>
-    </div>
   );
 }
 
@@ -342,8 +331,40 @@ export function QuantityStepper({
 /* Order summary                                                       */
 /* ------------------------------------------------------------------ */
 
+function PricingBanner() {
+  const [best, entry] = [PRICE_TIERS[0], PRICE_TIERS[PRICE_TIERS.length - 1]];
+
+  return (
+    <div className="rounded-[1.75rem] border border-line bg-paper p-5 sm:p-6">
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-green">
+        How it&apos;s priced
+      </p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <p className="text-sm leading-relaxed text-ink-soft">
+          <span className="font-bold text-ink">
+            {entry.minItems} items, {formatPrice(entry.perItem)} each
+          </span>{" "}
+          — anything from the range counts, mixed however you like. Delivery is
+          a flat {formatPrice(entry.delivery)} anywhere in New Zealand.
+        </p>
+        <p className="rounded-2xl bg-cream p-3.5 text-sm leading-relaxed text-ink-soft">
+          <span className="font-bold text-ink">
+            {best.minItems} items, {formatPrice(best.perItem)} each
+          </span>{" "}
+          — and{" "}
+          <span className="font-bold uppercase tracking-wide text-green">
+            free delivery
+          </span>
+          .
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function OrderSummary() {
-  const { lines, count, total } = useCart();
+  const { lines, items } = useCart();
+  const totals = orderTotals(items);
 
   return (
     <aside className="lg:sticky lg:top-32 lg:h-fit">
@@ -352,10 +373,10 @@ function OrderSummary() {
           <ShoppingBag size={14} /> Your order
         </h2>
 
-        {count === 0 ? (
+        {items === 0 ? (
           <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-            Nothing in it yet. Pick a meal — single packs or a carton, whichever
-            suits.
+            Nothing in it yet. Mix and match — {MINIMUM_ITEMS} items is the
+            smallest we send.
           </p>
         ) : (
           <>
@@ -372,7 +393,7 @@ function OrderSummary() {
                     </p>
                   </div>
                   <span className="shrink-0 text-sm font-bold text-ink">
-                    {formatPrice(line.price * line.quantity)}
+                    {formatPrice(lineItems(line) * totals.perItem)}
                   </span>
                   <button
                     type="button"
@@ -386,20 +407,35 @@ function OrderSummary() {
               ))}
             </ul>
 
-            <div className="mt-4 flex items-baseline justify-between border-t border-line pt-4">
-              <span className="text-sm font-semibold text-ink-soft">
-                Subtotal{" "}
-                <span className="font-medium">
-                  ({count} {count === 1 ? "item" : "items"})
-                </span>
-              </span>
-              <span className="font-display text-2xl font-extrabold text-ink">
-                {formatPrice(total)}
-              </span>
-            </div>
-            <p className="mt-1 text-xs text-ink-soft">
-              plus {formatPrice(DELIVERY_FEE)} delivery
-            </p>
+            <dl className="mt-4 space-y-2 border-t border-line pt-4 text-sm">
+              <div className="flex justify-between">
+                <dt className="text-ink-soft">
+                  {totals.items} {totals.items === 1 ? "item" : "items"} ×{" "}
+                  {formatPrice(totals.perItem)}
+                </dt>
+                <dd className="font-semibold text-ink">
+                  {formatPrice(totals.subtotal)}
+                </dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-ink-soft">Delivery</dt>
+                <dd className="font-semibold text-ink">
+                  {totals.delivery === 0 ? (
+                    <span className="text-green">Free</span>
+                  ) : (
+                    formatPrice(totals.delivery)
+                  )}
+                </dd>
+              </div>
+              <div className="flex items-baseline justify-between border-t border-line pt-2.5">
+                <dt className="font-semibold text-ink">Total</dt>
+                <dd className="font-display text-2xl font-extrabold text-ink">
+                  {formatPrice(totals.total)}
+                </dd>
+              </div>
+            </dl>
+
+            <OrderProgress totals={totals} />
 
             <Link
               href="/cart"
@@ -411,7 +447,7 @@ function OrderSummary() {
         )}
 
         <p className="mt-5 border-t border-line pt-4 text-xs leading-relaxed text-ink-soft">
-          Flat {formatPrice(DELIVERY_FEE)} delivery anywhere in New Zealand, or{" "}
+          Delivered anywhere in New Zealand, or{" "}
           <Link href="/where-to-buy" className="font-semibold text-green underline">
             find a stockist
           </Link>{" "}
@@ -422,6 +458,49 @@ function OrderSummary() {
   );
 }
 
+/**
+ * The one line that tells a shopper where they stand: how far off the minimum
+ * they are, or what one more handful would save them.
+ */
+export function OrderProgress({
+  totals,
+  className = "mt-3",
+}: {
+  totals: ReturnType<typeof orderTotals>;
+  className?: string;
+}) {
+  if (totals.items === 0) return null;
+
+  if (!totals.meetsMinimum) {
+    return (
+      <p
+        className={`rounded-xl bg-coral/10 p-3 text-xs font-semibold leading-relaxed text-ink ${className}`}
+      >
+        Add {totals.shortBy} more to reach the {MINIMUM_ITEMS}-item minimum.
+      </p>
+    );
+  }
+
+  if (totals.nextTier) {
+    const { tier, itemsAway } = totals.nextTier;
+    return (
+      <p
+        className={`rounded-xl bg-gold/15 p-3 text-xs font-semibold leading-relaxed text-ink ${className}`}
+      >
+        Add {itemsAway} more for {formatPrice(tier.perItem)} each and free
+        delivery.
+      </p>
+    );
+  }
+
+  return (
+    <p
+      className={`rounded-xl bg-green/10 p-3 text-xs font-semibold leading-relaxed text-green ${className}`}
+    >
+      Best rate, and delivery is on us.
+    </p>
+  );
+}
 /* ------------------------------------------------------------------ */
 /* Placeholder states                                                  */
 /* ------------------------------------------------------------------ */

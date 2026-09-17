@@ -15,14 +15,14 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { AddressSearch } from "./AddressSearch";
-import { useCart } from "@/lib/cart";
+import { lineItems, useCart } from "@/lib/cart";
 import type { AddressSuggestion } from "@/lib/address-search";
-import { formatPrice, packLabel } from "@/lib/meals";
+import { packLabel } from "@/lib/meals";
+import { formatPrice, orderTotals, MINIMUM_ITEMS } from "@/lib/pricing";
 import { NZ_REGIONS } from "@/lib/stores";
 import {
   createCheckoutSession,
   errorsForStep,
-  orderTotals,
   paymentsConfigured,
   saveCustomer,
   stepForField,
@@ -38,8 +38,8 @@ import {
 } from "@/lib/checkout";
 
 export function CheckoutForm() {
-  const { lines, count, total: subtotal } = useCart();
-  const totals = orderTotals(subtotal);
+  const { lines, items } = useCart();
+  const totals = orderTotals(items);
 
   // What was typed here last time, and whatever has been typed since. Keeping
   // the two apart means the saved details can arrive from the browser after
@@ -140,7 +140,9 @@ export function CheckoutForm() {
       const origin = window.location.origin;
       const session = await createCheckoutSession({
         currency: CURRENCY,
-        lines: toCheckoutLines(lines, (line) => packLabel(line.packSize, line)),
+        lines: toCheckoutLines(lines, totals.perItem, (line) =>
+          packLabel(line.packSize, line)
+        ),
         deliveryAmount: toCents(totals.delivery),
         customer,
         successUrl: `${origin}/checkout/success`,
@@ -165,7 +167,11 @@ export function CheckoutForm() {
     else advance();
   }
 
-  if (count === 0) return <NothingToPayFor />;
+  // Nothing to pay for, or not enough of it — either way the form has no
+  // business being here, and the cart is where it can be fixed.
+  if (items === 0 || !totals.meetsMinimum) {
+    return <NotReadyToPay items={items} shortBy={totals.shortBy} />;
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-5 sm:px-8">
@@ -251,7 +257,7 @@ export function CheckoutForm() {
           </div>
         </form>
 
-        <OrderPanel totals={totals} count={count} lines={lines} />
+        <OrderPanel totals={totals} lines={lines} />
       </div>
     </div>
   );
@@ -578,7 +584,7 @@ function ReviewStep({
                 </span>
               </span>
               <span className="shrink-0 font-semibold text-ink">
-                {formatPrice(line.price * line.quantity)}
+                {formatPrice(lineItems(line) * totals.perItem)}
               </span>
             </li>
           ))}
@@ -629,30 +635,29 @@ function ReviewCard({
 
 function Totals({
   totals,
-  count,
   className = "",
 }: {
   totals: ReturnType<typeof orderTotals>;
-  count?: number;
   className?: string;
 }) {
   return (
     <dl className={`space-y-2 text-sm ${className}`}>
       <div className="flex justify-between">
         <dt className="text-ink-soft">
-          Subtotal
-          {count !== undefined && (
-            <span className="text-ink-soft/70">
-              {" "}
-              ({count} {count === 1 ? "item" : "items"})
-            </span>
-          )}
+          {totals.items} {totals.items === 1 ? "item" : "items"} ×{" "}
+          {formatPrice(totals.perItem)}
         </dt>
         <dd className="font-semibold text-ink">{formatPrice(totals.subtotal)}</dd>
       </div>
       <div className="flex justify-between">
         <dt className="text-ink-soft">Delivery</dt>
-        <dd className="font-semibold text-ink">{formatPrice(totals.delivery)}</dd>
+        <dd className="font-semibold text-ink">
+          {totals.delivery === 0 ? (
+            <span className="text-green">Free</span>
+          ) : (
+            formatPrice(totals.delivery)
+          )}
+        </dd>
       </div>
       <div className="flex items-baseline justify-between border-t border-line pt-2.5">
         <dt className="font-semibold text-ink">Total</dt>
@@ -666,11 +671,9 @@ function Totals({
 
 function OrderPanel({
   lines,
-  count,
   totals,
 }: {
   lines: ReturnType<typeof useCart>["lines"];
-  count: number;
   totals: ReturnType<typeof orderTotals>;
 }) {
   // On a phone the order would push the form itself below the fold, so it
@@ -691,7 +694,7 @@ function OrderPanel({
           <span className="text-xs font-bold uppercase tracking-[0.18em] text-green">
             Your order
             <span className="ml-2 font-medium normal-case tracking-normal text-ink-soft">
-              ({count} {count === 1 ? "item" : "items"})
+              ({totals.items} {totals.items === 1 ? "item" : "items"})
             </span>
           </span>
           <span className="flex shrink-0 items-center gap-2">
@@ -741,20 +744,14 @@ function OrderPanel({
                   </p>
                 </div>
                 <span className="shrink-0 text-sm font-bold text-ink">
-                  {formatPrice(line.price * line.quantity)}
+                  {formatPrice(lineItems(line) * totals.perItem)}
                 </span>
               </li>
             ))}
           </ul>
 
-          <Totals
-            totals={totals}
-            count={count}
-            className="mt-4 border-t border-line pt-4"
-          />
-          <p className="mt-1.5 text-xs text-ink-soft">
-            GST included. Flat $20 courier, anywhere in New Zealand.
-          </p>
+          <Totals totals={totals} className="mt-4 border-t border-line pt-4" />
+          <p className="mt-1.5 text-xs text-ink-soft">GST included.</p>
 
           <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-ink-soft">
             <Lock size={12} /> Card details are handled by Stripe, never by us.
@@ -899,17 +896,19 @@ function SelectField({
 /* Empty                                                               */
 /* ------------------------------------------------------------------ */
 
-function NothingToPayFor() {
+function NotReadyToPay({ items, shortBy }: { items: number; shortBy: number }) {
   return (
     <div className="mx-auto max-w-3xl px-5 text-center sm:px-8">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-line bg-paper text-ink-soft">
         <ShoppingCart size={26} />
       </div>
       <h1 className="mt-8 font-display text-[clamp(2.2rem,6vw,4rem)] font-extrabold leading-[0.98] tracking-[-0.03em] text-ink">
-        Nothing to pay for
+        {items === 0 ? "Nothing to pay for" : "Not quite enough yet"}
       </h1>
       <p className="mt-5 text-lg text-ink-soft">
-        Your order is empty — pick a meal or two and come back.
+        {items === 0
+          ? `Your order is empty — ${MINIMUM_ITEMS} items is the smallest we send.`
+          : `${shortBy} more and you're away — ${MINIMUM_ITEMS} items is the smallest we send.`}
       </p>
       <Link
         href="/buy-now"

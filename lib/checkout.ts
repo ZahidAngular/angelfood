@@ -15,25 +15,14 @@
  */
 
 import { useMemo, useSyncExternalStore } from "react";
-import type { CartLine } from "./cart";
+import { lineItems, type CartLine } from "./cart";
+import { orderTotals } from "./pricing";
 
 /** The endpoint that creates a Stripe Checkout Session. Empty until wired. */
 const CHECKOUT_API_URL = process.env.NEXT_PUBLIC_CHECKOUT_API_URL || "";
 
 /** Everything here is priced and charged in New Zealand dollars. */
 export const CURRENCY = "nzd";
-
-/** Flat courier rate, anywhere in New Zealand. */
-export const DELIVERY_FEE = 20;
-
-export type OrderTotals = { subtotal: number; delivery: number; total: number };
-
-/** Goods, freight and what actually gets charged. */
-export function orderTotals(subtotal: number): OrderTotals {
-  // No order, no courier — keeps an empty cart from reading as $20.
-  const delivery = subtotal > 0 ? DELIVERY_FEE : 0;
-  return { subtotal, delivery, total: subtotal + delivery };
-}
 
 export const paymentsConfigured = () => CHECKOUT_API_URL !== "";
 
@@ -66,6 +55,8 @@ export type CheckoutCustomer = {
   postcode: string;
   deliveryNotes: string;
 };
+
+export { orderTotals };
 
 export type CheckoutRequest = {
   currency: typeof CURRENCY;
@@ -102,16 +93,22 @@ export const emptyCustomer: CheckoutCustomer = {
 /** Cents, rounded — floats like 8.5 * 100 can land a hair under. */
 export const toCents = (amount: number) => Math.round(amount * 100);
 
+/**
+ * Priced in individual items rather than packs: the rate is per item, so a
+ * carton of six goes to Stripe as six at the item rate. That way the payment
+ * page itemises what the customer actually agreed to.
+ */
 export function toCheckoutLines(
   cart: CartLine[],
+  perItem: number,
   describe: (line: CartLine) => string
 ): CheckoutLine[] {
   return cart.map((line) => ({
     code: line.code,
     name: line.name,
     description: describe(line),
-    quantity: line.quantity,
-    unitAmount: toCents(line.price),
+    quantity: lineItems(line),
+    unitAmount: toCents(perItem),
   }));
 }
 

@@ -34,38 +34,36 @@ const isSection = (value: string): value is Section =>
   (SECTIONS as readonly string[]).includes(value);
 
 /** Units per carton, for a product the saleable feed has no carton size for. */
-const DEFAULT_CARTON_QTY = 6;
+const DEFAULT_CARTON_QTY = 12;
 
 export type PackSize = "unit" | "carton";
 
-/** NZD, GST inclusive. */
-export type MealPrice = { unit: number; carton: number };
-
 /**
- * PLACEHOLDER PRICES — replace these with Angel Food's real retail figures
- * before the page is announced.
+ * What the site sells and how each one is presented.
  *
- * There is nothing to fetch: the feed's only number for these products is
- * `costPrice`, which is what a carton costs to make, so prices live here until
- * the API carries a retail one. `meal` ties the feed's product code to the
- * range on /products, which is where the photography, copy and accent colour
- * come from — so each meal is still described in exactly one place.
+ * No prices here: what an item costs depends on how many are in the order,
+ * not on which item it is — see lib/pricing.ts. `product` ties the feed's
+ * code to the range on /products, which is where the photography, copy and
+ * accent colour come from, so each one is described in exactly one place.
  */
 const CATALOGUE: Record<
   string,
-  { section: Section; product: string; price: MealPrice }
+  { section: Section; product: string; cartonQty?: number }
 > = {
-  CMBC400G: { section: "Meals", product: "Creamy Butter Curry", price: { unit: 8.5, carton: 45 } },
-  CMLC400G: { section: "Meals", product: "Vege Lasagna", price: { unit: 8.5, carton: 45 } },
-  CMTS400G: { section: "Meals", product: "Tofu & Greens", price: { unit: 8.5, carton: 45 } },
-  CMVK400G: { section: "Meals", product: "Vege Korma", price: { unit: 8.5, carton: 45 } },
+  // The feed says six meals to a carton; a carton is twelve. Delete these
+  // overrides once Cin7 is corrected and the feed's own figure takes over —
+  // `cartonQty` is only consulted when it is set.
+  CMBC400G: { section: "Meals", product: "Creamy Butter Curry", cartonQty: 12 },
+  CMLC400G: { section: "Meals", product: "Vege Lasagna", cartonQty: 12 },
+  CMTS400G: { section: "Meals", product: "Tofu & Greens", cartonQty: 12 },
+  CMVK400G: { section: "Meals", product: "Vege Korma", cartonQty: 12 },
 
-  MTBG255G: { section: "Meat", product: "Burgers", price: { unit: 9.5, carton: 85 } },
-  MTFF230G: { section: "Meat", product: "Fish Fingers", price: { unit: 9.5, carton: 85 } },
-  MTMB200G: { section: "Meat", product: "Meatballs", price: { unit: 9.5, carton: 85 } },
-  MTPP200G: { section: "Meat", product: "Pulled Pork", price: { unit: 9.5, carton: 85 } },
-  MTPI180G: { section: "Meat", product: "Pastrami", price: { unit: 9.5, carton: 85 } },
-  MTSR200G: { section: "Meat", product: "Seafood Rings", price: { unit: 9.5, carton: 85 } },
+  MTBG255G: { section: "Meat", product: "Burgers" },
+  MTFF230G: { section: "Meat", product: "Fish Fingers" },
+  MTMB200G: { section: "Meat", product: "Meatballs" },
+  MTPP200G: { section: "Meat", product: "Pulled Pork" },
+  MTPI180G: { section: "Meat", product: "Pastrami" },
+  MTSR200G: { section: "Meat", product: "Seafood Rings" },
 };
 
 /** Everything the site has a card for, whichever range it belongs to. */
@@ -84,8 +82,6 @@ export type BuyableProduct = {
   weight: string;
   /** Units in one carton, from the feed. */
   cartonQty: number;
-  /** null for a meal the feed sells that CATALOGUE has no price for yet. */
-  price: MealPrice | null;
 };
 
 /* ------------------------------------------------------------------ */
@@ -169,8 +165,8 @@ export async function fetchBuyableProducts(): Promise<BuyableProduct[]> {
       image: range?.image ?? null,
       accent: range?.accent ?? "var(--color-green-bright)",
       weight: range?.weight ?? "",
-      cartonQty: cartonQtyByCode.get(code) ?? DEFAULT_CARTON_QTY,
-      price: entry?.price ?? null,
+      cartonQty:
+        entry?.cartonQty ?? cartonQtyByCode.get(code) ?? DEFAULT_CARTON_QTY,
     });
   }
 
@@ -185,7 +181,7 @@ export async function fetchBuyableProducts(): Promise<BuyableProduct[]> {
 }
 
 /* ------------------------------------------------------------------ */
-/* Pricing                                                             */
+/* Packs                                                               */
 /* ------------------------------------------------------------------ */
 
 /** How a chosen pack reads to a shopper: "Carton (6 × 400g)", or "400g". */
@@ -197,23 +193,10 @@ export function packLabel(
   return `Carton (${meal.cartonQty}${meal.weight ? ` × ${meal.weight}` : " packs"})`;
 }
 
-/** What one `packSize` of this product costs, or null if it has no price yet. */
-export function priceFor(meal: BuyableProduct, packSize: PackSize): number | null {
-  if (!meal.price) return null;
-  return packSize === "carton" ? meal.price.carton : meal.price.unit;
-}
-
-const NZD = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD" });
-
-export const formatPrice = (amount: number) => NZD.format(amount);
-
-/**
- * What a carton saves against the same meals bought singly, as a whole
- * percent — the reason to take one. null when there is nothing in it.
- */
-export function cartonSaving(meal: BuyableProduct): number | null {
-  if (!meal.price || meal.cartonQty < 2) return null;
-  const singly = meal.price.unit * meal.cartonQty;
-  if (singly <= meal.price.carton) return null;
-  return Math.round(((singly - meal.price.carton) / singly) * 100);
+/** How many individual items a chosen pack puts into the order. */
+export function itemsPerPack(
+  packSize: PackSize,
+  product: { cartonQty: number }
+): number {
+  return packSize === "carton" ? product.cartonQty : 1;
 }
