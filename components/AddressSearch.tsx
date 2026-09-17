@@ -170,7 +170,7 @@ export function AddressSearch({
           id="address-search-results"
           role="listbox"
           aria-label="Matching addresses"
-          className="absolute z-30 mt-2 w-full overflow-hidden rounded-2xl border border-line bg-paper shadow-xl"
+          className="absolute z-[60] mt-2 w-full overflow-hidden rounded-2xl border border-line bg-paper shadow-xl"
         >
           {results.map((result, i) => (
             <li
@@ -178,12 +178,18 @@ export function AddressSearch({
               id={`address-search-option-${i}`}
               role="option"
               aria-selected={i === active}
-              // Pointer-down rather than click: a click would land after the
-              // input's blur had already closed the list out from under it.
+              // Pointer-down fires before the input's blur can close the list
+              // out from under the click. It isn't relied on alone, though:
+              // a cancelled pointer sequence (a touch that drifts into a
+              // scroll, a browser that suppresses the compatibility events)
+              // would otherwise leave a tap doing nothing at all. Choosing the
+              // same suggestion twice sets the same fields, so whichever of
+              // the two arrives second costs nothing.
               onPointerDown={(e) => {
                 e.preventDefault();
                 choose(result);
               }}
+              onClick={() => choose(result)}
               onMouseEnter={() => setActive(i)}
               className={`flex cursor-pointer items-start gap-2.5 px-4 py-3 text-left transition-colors ${
                 i === active ? "bg-cream" : ""
