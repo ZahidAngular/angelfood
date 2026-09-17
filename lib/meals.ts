@@ -12,14 +12,26 @@
  * store locator makes).
  */
 
-import { MEALS } from "./site";
+import { MEALS, MEATS } from "./site";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
   "https://angelfood-api.webappconsulting.com.au/api";
 
-/** The sub-category ready meals are filed under in the product feed. */
-const MEALS_SUBCATEGORY = "Meals";
+/**
+ * The sections this page sells, in the order they appear.
+ *
+ * The feed files ready meals under sub-category "Meals". It does not file
+ * the meat range under anything — those products come through as plain
+ * Retail with no sub-category — so which section they belong to comes from
+ * CATALOGUE below. Tag them "Meat" in the feed and that takes over on its
+ * own; nothing here needs changing.
+ */
+export const SECTIONS = ["Meals", "Meat"] as const;
+export type Section = (typeof SECTIONS)[number];
+
+const isSection = (value: string): value is Section =>
+  (SECTIONS as readonly string[]).includes(value);
 
 /** Units per carton, for a product the saleable feed has no carton size for. */
 const DEFAULT_CARTON_QTY = 6;
@@ -39,16 +51,31 @@ export type MealPrice = { unit: number; carton: number };
  * range on /products, which is where the photography, copy and accent colour
  * come from — so each meal is still described in exactly one place.
  */
-const CATALOGUE: Record<string, { meal: string; price: MealPrice }> = {
-  CMBC400G: { meal: "Creamy Butter Curry", price: { unit: 8.5, carton: 45 } },
-  CMLC400G: { meal: "Vege Lasagna", price: { unit: 8.5, carton: 45 } },
-  CMTS400G: { meal: "Tofu & Greens", price: { unit: 8.5, carton: 45 } },
-  CMVK400G: { meal: "Vege Korma", price: { unit: 8.5, carton: 45 } },
+const CATALOGUE: Record<
+  string,
+  { section: Section; product: string; price: MealPrice }
+> = {
+  CMBC400G: { section: "Meals", product: "Creamy Butter Curry", price: { unit: 8.5, carton: 45 } },
+  CMLC400G: { section: "Meals", product: "Vege Lasagna", price: { unit: 8.5, carton: 45 } },
+  CMTS400G: { section: "Meals", product: "Tofu & Greens", price: { unit: 8.5, carton: 45 } },
+  CMVK400G: { section: "Meals", product: "Vege Korma", price: { unit: 8.5, carton: 45 } },
+
+  MTBG255G: { section: "Meat", product: "Burgers", price: { unit: 9.5, carton: 85 } },
+  MTFF230G: { section: "Meat", product: "Fish Fingers", price: { unit: 9.5, carton: 85 } },
+  MTMB200G: { section: "Meat", product: "Meatballs", price: { unit: 9.5, carton: 85 } },
+  MTPP200G: { section: "Meat", product: "Pulled Pork", price: { unit: 9.5, carton: 85 } },
+  MTPI180G: { section: "Meat", product: "Pastrami", price: { unit: 9.5, carton: 85 } },
+  MTSR200G: { section: "Meat", product: "Seafood Rings", price: { unit: 9.5, carton: 85 } },
 };
 
-export type BuyableMeal = {
+/** Everything the site has a card for, whichever range it belongs to. */
+const RANGE = [...MEALS, ...MEATS];
+
+export type BuyableProduct = {
   /** The feed's product code, e.g. "CMBC400G". With a pack size, a cart line. */
   code: string;
+  /** Which run of the page it sits under. */
+  section: Section;
   name: string;
   blurb: string;
   image: string | null;
@@ -84,14 +111,14 @@ async function getJson<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
-/** Where a meal sits on /products, so both pages run the range in one order. */
+/** Where a product sits on /products, so both pages run the range in one order. */
 function rangeOrder(code: string): number {
   const entry = CATALOGUE[code];
-  const i = entry ? MEALS.findIndex((m) => m.name === entry.meal) : -1;
-  return i === -1 ? MEALS.length : i;
+  const i = entry ? RANGE.findIndex((p) => p.name === entry.product) : -1;
+  return i === -1 ? RANGE.length : i;
 }
 
-export async function fetchBuyableMeals(): Promise<BuyableMeal[]> {
+export async function fetchBuyableProducts(): Promise<BuyableProduct[]> {
   // One feed says which products are meals, the other how many go in a carton.
   // Neither carries both, and only the first is worth failing the page over.
   const [products, saleable] = await Promise.all([
@@ -112,23 +139,29 @@ export async function fetchBuyableMeals(): Promise<BuyableMeal[]> {
     if (code && qty > 1 && !cartonQtyByCode.has(code)) cartonQtyByCode.set(code, qty);
   }
 
-  const meals: BuyableMeal[] = [];
+  const buyable: BuyableProduct[] = [];
   const seen = new Set<string>();
 
   for (const row of products) {
-    if ((row.subCategory || "").trim() !== MEALS_SUBCATEGORY) continue;
     // The feed's own "show this on the website" flag.
     if (!row.displayStatus) continue;
 
     const code = (row.styleCode || "").trim();
     if (!code || seen.has(code)) continue;
-    seen.add(code);
 
     const entry = CATALOGUE[code];
-    const range = entry ? MEALS.find((m) => m.name === entry.meal) : undefined;
+    const filed = (row.subCategory || "").trim();
+    // The feed has the final say on where something belongs; CATALOGUE only
+    // answers for the products it has said nothing about.
+    const section = isSection(filed) ? filed : entry?.section;
+    if (!section) continue;
 
-    meals.push({
+    seen.add(code);
+    const range = entry ? RANGE.find((p) => p.name === entry.product) : undefined;
+
+    buyable.push({
       code,
+      section,
       // A meal the feed has added but the site has no card for still shows,
       // under the feed's own name — better a plain card than a silent gap.
       name: range?.name ?? (row.name || code).trim(),
@@ -141,11 +174,14 @@ export async function fetchBuyableMeals(): Promise<BuyableMeal[]> {
     });
   }
 
-  meals.sort(
-    (a, b) => rangeOrder(a.code) - rangeOrder(b.code) || a.name.localeCompare(b.name)
+  buyable.sort(
+    (a, b) =>
+      SECTIONS.indexOf(a.section) - SECTIONS.indexOf(b.section) ||
+      rangeOrder(a.code) - rangeOrder(b.code) ||
+      a.name.localeCompare(b.name)
   );
 
-  return meals;
+  return buyable;
 }
 
 /* ------------------------------------------------------------------ */
@@ -161,8 +197,8 @@ export function packLabel(
   return `Carton (${meal.cartonQty}${meal.weight ? ` × ${meal.weight}` : " packs"})`;
 }
 
-/** What one `packSize` of this meal costs, or null if it has no price yet. */
-export function priceFor(meal: BuyableMeal, packSize: PackSize): number | null {
+/** What one `packSize` of this product costs, or null if it has no price yet. */
+export function priceFor(meal: BuyableProduct, packSize: PackSize): number | null {
   if (!meal.price) return null;
   return packSize === "carton" ? meal.price.carton : meal.price.unit;
 }
@@ -175,7 +211,7 @@ export const formatPrice = (amount: number) => NZD.format(amount);
  * What a carton saves against the same meals bought singly, as a whole
  * percent — the reason to take one. null when there is nothing in it.
  */
-export function cartonSaving(meal: BuyableMeal): number | null {
+export function cartonSaving(meal: BuyableProduct): number | null {
   if (!meal.price || meal.cartonQty < 2) return null;
   const singly = meal.price.unit * meal.cartonQty;
   if (singly <= meal.price.carton) return null;

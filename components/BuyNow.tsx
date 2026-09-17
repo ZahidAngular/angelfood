@@ -7,11 +7,12 @@ import { ArrowRight, Check, Minus, Plus, ShoppingBag, Trash2 } from "lucide-reac
 import { Reveal } from "./Reveal";
 import {
   cartonSaving,
-  fetchBuyableMeals,
+  fetchBuyableProducts,
   formatPrice,
   packLabel,
   priceFor,
-  type BuyableMeal,
+  SECTIONS,
+  type BuyableProduct,
   type PackSize,
 } from "@/lib/meals";
 import { addToCart, removeLine, useCart } from "@/lib/cart";
@@ -23,13 +24,13 @@ const ADDED_FEEDBACK_MS = 1800;
 export function BuyNow() {
   // Fetched in the browser, not at build time, so the page lists what the
   // product feed says today — and so a static export stays correct.
-  const [meals, setMeals] = useState<BuyableMeal[] | null>(null);
+  const [meals, setMeals] = useState<BuyableProduct[] | null>(null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    fetchBuyableMeals()
+    fetchBuyableProducts()
       .then((loaded) => {
         if (!cancelled) setMeals(loaded);
       })
@@ -55,10 +56,29 @@ export function BuyNow() {
             ) : meals.length === 0 ? (
               <NoMeals />
             ) : (
-              <div className="grid gap-6 sm:grid-cols-2">
-                {meals.map((meal, i) => (
-                  <MealCard key={meal.code} meal={meal} index={i} />
-                ))}
+              // One run per section, in the order SECTIONS lists them. A
+              // section with nothing in it simply doesn't appear, so the feed
+              // adding or dropping a range needs no change here.
+              <div className="space-y-12">
+                {SECTIONS.map((section) => {
+                  const inSection = meals.filter((m) => m.section === section);
+                  if (inSection.length === 0) return null;
+                  return (
+                    <section key={section}>
+                      <h2 className="mb-5 flex items-baseline gap-3 font-display text-2xl font-bold tracking-[-0.02em] text-ink">
+                        {section}
+                        <span className="text-sm font-medium text-ink-soft">
+                          {inSection.length}
+                        </span>
+                      </h2>
+                      <div className="grid gap-6 sm:grid-cols-2">
+                        {inSection.map((meal, i) => (
+                          <MealCard key={meal.code} meal={meal} index={i} />
+                        ))}
+                      </div>
+                    </section>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -74,7 +94,7 @@ export function BuyNow() {
 /* Meal card                                                           */
 /* ------------------------------------------------------------------ */
 
-function MealCard({ meal, index }: { meal: BuyableMeal; index: number }) {
+function MealCard({ meal, index }: { meal: BuyableProduct; index: number }) {
   const [packSize, setPackSize] = useState<PackSize>("unit");
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
@@ -142,9 +162,10 @@ function MealCard({ meal, index }: { meal: BuyableMeal; index: number }) {
         </div>
 
         <div className="flex flex-1 flex-col p-5 sm:p-6">
-          <h2 className="font-display text-xl font-bold leading-tight tracking-[-0.02em] text-ink sm:text-[1.4rem]">
+          {/* h3: the section heading above this grid is the h2. */}
+          <h3 className="font-display text-xl font-bold leading-tight tracking-[-0.02em] text-ink sm:text-[1.4rem]">
             {meal.name}
-          </h2>
+          </h3>
           {meal.blurb && (
             <p className="mt-2.5 text-sm leading-relaxed text-ink-soft">{meal.blurb}</p>
           )}
@@ -247,8 +268,8 @@ function MealCard({ meal, index }: { meal: BuyableMeal; index: number }) {
   );
 }
 
-/** A meal the feed sells that the site has no retail price for yet. */
-function PriceOnRequest({ meal }: { meal: BuyableMeal }) {
+/** A product the feed sells that the site has no retail price for yet. */
+function PriceOnRequest({ meal }: { meal: BuyableProduct }) {
   return (
     <div className="rounded-2xl border border-dashed border-line bg-cream p-4">
       <p className="text-sm font-semibold text-ink">Price on request</p>
@@ -407,7 +428,7 @@ function OrderSummary() {
 
 function MealGridSkeleton() {
   return (
-    <div className="grid gap-6 sm:grid-cols-2" aria-label="Loading meals">
+    <div className="grid gap-6 sm:grid-cols-2" aria-label="Loading products">
       {Array.from({ length: 4 }).map((_, i) => (
         <div
           key={i}
@@ -430,7 +451,7 @@ function LoadFailed() {
   return (
     <div className="rounded-[1.75rem] border border-coral/30 bg-coral/10 px-6 py-12 text-center">
       <p className="font-display text-xl font-bold text-ink">
-        We couldn&apos;t load the meals
+        We couldn&apos;t load the range
       </p>
       <p className="mx-auto mt-2 max-w-sm text-sm text-ink-soft">
         Please refresh the page to try again — or find them on a shelf near you.
