@@ -64,7 +64,8 @@ export type StoreData = {
 /* Address parsing                                                     */
 /* ------------------------------------------------------------------ */
 
-const REGIONS = [
+/** New Zealand's regions — for reading addresses, and for entering one. */
+export const NZ_REGIONS = [
   "Northland", "Auckland", "Waikato", "Bay of Plenty", "Gisborne",
   "Hawke's Bay", "Taranaki", "Manawatū-Whanganui", "Wellington", "Tasman",
   "Nelson", "Marlborough", "West Coast", "Canterbury", "Otago", "Southland",
@@ -100,7 +101,7 @@ const CITY_REGION: Record<string, string> = {
 };
 
 /** Longest-first so "Bay of Plenty" wins over "Plenty". */
-const PLACES = [...new Set([...REGIONS, ...Object.keys(CITY_REGION)])].sort(
+const PLACES = [...new Set([...NZ_REGIONS, ...Object.keys(CITY_REGION)])].sort(
   (a, b) => b.length - a.length
 );
 

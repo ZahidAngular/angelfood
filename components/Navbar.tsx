@@ -5,14 +5,38 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, ShoppingBag, X } from "lucide-react";
 import { NAV_LINKS } from "@/lib/site";
+import { useCart } from "@/lib/cart";
 import { SocialLinks } from "./SocialIcons";
+
+/** The order being built on /buy-now, reachable from every page. */
+function CartLink({ count }: { count: number }) {
+  return (
+    <Link
+      href="/cart"
+      aria-label={
+        count > 0
+          ? `Your order — ${count} ${count === 1 ? "item" : "items"}`
+          : "Your order"
+      }
+      className="relative flex h-10 w-10 items-center justify-center rounded-full border border-line text-green transition-colors hover:bg-cream-deep"
+    >
+      <ShoppingBag size={17} />
+      {count > 0 && (
+        <span className="absolute -right-1 -top-1 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-coral px-1 text-[0.65rem] font-bold text-cream">
+          {count > 99 ? "99+" : count}
+        </span>
+      )}
+    </Link>
+  );
+}
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { count: cartCount } = useCart();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -79,15 +103,16 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <div className="hidden items-center gap-1.5 lg:flex">
+            <div className="hidden items-center gap-1.5 xl:flex">
               <SocialLinks
                 size={16}
                 className="flex h-9 w-9 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-cream-deep hover:text-green"
               />
             </div>
+            <CartLink count={cartCount} />
             <Link
               href="/where-to-buy"
-              className={`hidden rounded-full bg-green font-semibold text-cream transition-all duration-500 hover:scale-[1.04] sm:inline-flex ${
+              className={`hidden rounded-full bg-green font-semibold text-cream transition-all duration-500 hover:scale-[1.04] lg:inline-flex ${
                 scrolled ? "px-5 py-2.5 text-sm" : "px-6 py-3 text-base"
               }`}
             >
@@ -143,6 +168,13 @@ export function Navbar() {
               ))}
             </nav>
             <div className="mt-auto flex flex-col gap-5">
+              <Link
+                href="/cart"
+                onClick={() => setOpen(false)}
+                className="font-display text-lg font-bold tracking-tight text-gold"
+              >
+                Your order{cartCount > 0 ? ` (${cartCount})` : ""}
+              </Link>
               <div className="flex gap-3">
                 <SocialLinks
                   size={18}

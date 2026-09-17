@@ -301,6 +301,39 @@ html.lenis body {
   background: var(--color-green-bright);
 }
 
+/* Checkout steps slide in as they are swapped. `both` so the end state
+   sticks even where the animation never runs. */
+@keyframes af-step-in {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.af-step {
+  animation: af-step-in 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .af-step {
+    animation: none;
+  }
+}
+
+/* Quantity inputs: the native spinners are too small to hit and duplicate
+   the -/+ buttons either side of them. */
+.af-qty::-webkit-outer-spin-button,
+.af-qty::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.af-qty {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 /* radius slider */
 .af-range {
   -webkit-appearance: none;
