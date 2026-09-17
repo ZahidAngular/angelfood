@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Loader2, MapPin, Search } from "lucide-react";
+import { Loader2, MapPin, Search, SearchX } from "lucide-react";
 import {
   searchNzAddresses,
   MIN_QUERY_LENGTH,
@@ -27,6 +27,10 @@ export function AddressSearch({
   const [searching, setSearching] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
+  // The query the results belong to, so "nothing found" can be told apart
+  // from "hasn't looked yet" without another flag to keep in step.
+  const [answered, setAnswered] = useState("");
+  const [lookupFailed, setLookupFailed] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
 
   // Too short to be worth asking about. Nothing is cleared here — what's
@@ -43,6 +47,7 @@ export function AddressSearch({
       try {
         const found = await searchNzAddresses(q, controller.signal);
         setResults(found);
+        setLookupFailed(false);
         setActive(-1);
         setOpen(true);
       } catch (err) {
@@ -51,9 +56,14 @@ export function AddressSearch({
         if (!controller.signal.aborted) {
           console.error("[checkout] address lookup failed:", err);
           setResults([]);
+          setLookupFailed(true);
+          setOpen(true);
         }
       } finally {
-        if (!controller.signal.aborted) setSearching(false);
+        if (!controller.signal.aborted) {
+          setSearching(false);
+          setAnswered(q);
+        }
       }
     }, DEBOUNCE_MS);
 
@@ -100,7 +110,11 @@ export function AddressSearch({
     }
   }
 
-  const showList = open && longEnough && results.length > 0;
+  // True once the lookup has come back for exactly what is in the box.
+  const settled = answered === query.trim();
+  // An empty list used to render nothing at all, which is indistinguishable
+  // from a broken search — so say so instead.
+  const showList = open && longEnough && (results.length > 0 || settled);
 
   return (
     <div ref={boxRef} className="relative">
@@ -160,7 +174,7 @@ export function AddressSearch({
         >
           {results.map((result, i) => (
             <li
-              key={result.label}
+              key={`${result.label}|${result.detail}`}
               id={`address-search-option-${i}`}
               role="option"
               aria-selected={i === active}
@@ -171,14 +185,35 @@ export function AddressSearch({
                 choose(result);
               }}
               onMouseEnter={() => setActive(i)}
-              className={`flex cursor-pointer items-start gap-2.5 px-4 py-3 text-left text-sm transition-colors ${
-                i === active ? "bg-cream text-ink" : "text-ink-soft"
+              className={`flex cursor-pointer items-start gap-2.5 px-4 py-3 text-left transition-colors ${
+                i === active ? "bg-cream" : ""
               }`}
             >
               <MapPin size={15} className="mt-0.5 shrink-0 text-coral" />
-              <span className="line-clamp-2">{result.label}</span>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold text-ink">
+                  {result.label}
+                </span>
+                {result.detail && (
+                  <span className="block truncate text-xs text-ink-soft">
+                    {result.detail}
+                    {result.kind === "locality" && " · add the street below"}
+                  </span>
+                )}
+              </span>
             </li>
           ))}
+
+          {results.length === 0 && (
+            <li className="flex items-start gap-2.5 px-4 py-3 text-sm text-ink-soft">
+              <SearchX size={15} className="mt-0.5 shrink-0 text-ink-soft/60" />
+              <span>
+                {lookupFailed
+                  ? "Address lookup isn't responding. Fill the fields in below instead."
+                  : `Nothing found for "${query.trim()}". Try the street and town, or just fill the fields in below.`}
+              </span>
+            </li>
+          )}
         </ul>
       )}
     </div>

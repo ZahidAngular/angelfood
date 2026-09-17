@@ -81,13 +81,22 @@ export function CheckoutForm() {
   function applyAddress(found: AddressSuggestion) {
     setEdits((prev) => ({
       ...prev,
-      address1: found.address1,
+      // A suburb match has no street of its own — it fills in everything
+      // around one, so don't wipe a street already typed.
+      address1: found.address1 || prev.address1 || "",
       suburb: found.suburb || prev.suburb || "",
-      city: found.city,
+      city: found.city || prev.city || "",
       region: found.region || prev.region || "",
-      postcode: found.postcode,
+      postcode: found.postcode || prev.postcode || "",
     }));
     setErrors({});
+
+    // Picking a suburb leaves exactly one thing to type; put the cursor in it.
+    if (found.kind === "locality") {
+      setTimeout(() => {
+        formRef.current?.querySelector<HTMLElement>('[name="address1"]')?.focus();
+      }, 0);
+    }
   }
 
   function goTo(next: CheckoutStep) {

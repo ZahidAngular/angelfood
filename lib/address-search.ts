@@ -12,6 +12,10 @@
  * numbers than a paid address service (Google Places, NZ Post's AMS) would
  * be. So a lookup fills the form in; every field stays editable afterwards,
  * and nothing here blocks someone typing their address by hand.
+ *
+ * It searches on whatever is typed, so a street number finds a doorstep and
+ * a suburb finds a suburb. Both are offered — a suburb still fills in the
+ * town, region and postcode.
  */
 
 import { NZ_REGIONS } from "./stores";
@@ -22,8 +26,17 @@ const ENDPOINT = "https://nominatim.openstreetmap.org/search";
 export const MIN_QUERY_LENGTH = 4;
 
 export type AddressSuggestion = {
-  /** The whole address on one line, for the list. */
+  /** Headline for the list: the street line, or the name of the place. */
   label: string;
+  /** The line under it — suburb, town, postcode. */
+  detail: string;
+  /**
+   * "address" is somewhere a courier can go. "locality" is a suburb or town
+   * that fills in everything but the street, which is still most of the
+   * typing saved — searching "Ponsonby" used to return nothing at all.
+   */
+  kind: "address" | "locality";
+  /** Empty for a locality, which has no street of its own. */
   address1: string;
   suburb: string;
   city: string;
@@ -79,17 +92,34 @@ function toSuggestion(result: NominatimResult): AddressSuggestion | null {
     .join(" ")
     .trim();
 
-  // A result with no street is a town or a region — true, but not somewhere
-  // a courier can deliver to, so it is no use on this form.
-  if (!street) return null;
+  const suburb =
+    address.suburb ?? address.neighbourhood ?? address.village ?? address.hamlet ?? "";
+  const city = address.city ?? address.town ?? address.municipality ?? address.county ?? "";
+  const postcode = address.postcode ?? "";
+
+  // Deliberately not `display_name`, which reads
+  // "Chief Post Office, 12, Queen Street, Princes Wharf, Wynyard Quarter,
+  // City Centre, Auckland, Waitematā, Auckland, 1010, New Zealand" — every
+  // administrative layer OSM knows, in one unreadable run.
+  const label = street || suburb || city;
+  if (!label) return null;
+
+  const detail = [
+    street && suburb ? suburb : "",
+    city && city !== label ? city : "",
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   return {
-    label: result.display_name ?? street,
+    label,
+    detail: [detail, postcode].filter(Boolean).join(" "),
+    kind: street ? "address" : "locality",
     address1: street,
-    suburb: address.suburb ?? address.neighbourhood ?? address.village ?? address.hamlet ?? "",
-    city: address.city ?? address.town ?? address.municipality ?? address.county ?? "",
+    suburb,
+    city,
     region: toRegion(address.state),
-    postcode: address.postcode ?? "",
+    postcode,
   };
 }
 
@@ -119,9 +149,12 @@ export async function searchNzAddresses(
 
   for (const result of results) {
     const suggestion = toSuggestion(result);
-    // The same street can come back once per house number on it.
-    if (!suggestion || seen.has(suggestion.label)) continue;
-    seen.add(suggestion.label);
+    if (!suggestion) continue;
+    // One address can come back once per business at it — four cafes at
+    // 12 Queen Street are one address as far as a delivery is concerned.
+    const key = suggestion.label + "|" + suggestion.detail;
+    if (seen.has(key)) continue;
+    seen.add(key);
     suggestions.push(suggestion);
   }
 
