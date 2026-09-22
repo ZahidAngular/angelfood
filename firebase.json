@@ -9,16 +9,79 @@
     "cleanUrls": true,
     "trailingSlash": false,
     "redirects": [
-      { "source": "/social-media-giveaway-terms", "destination": "/social-media-giveaway-ts-cs", "type": 301 },
-      { "source": "/terms-and-conditions-of-trade", "destination": "/terms-of-trade", "type": 301 },
-      { "source": "/home", "destination": "/", "type": 301 },
-      { "source": "/feta", "destination": "/ingredients-nutrition-info/feta", "type": 301 },
-      { "source": "/grated-cheese", "destination": "/ingredients-nutrition-info/grated-cheese", "type": 301 },
-      { "source": "/sour-cream", "destination": "/ingredients-nutrition-info/sour-cream", "type": 301 },
-      { "source": "/dairyfree-cheddar-alternative", "destination": "/ingredients-nutrition-info/cheddar-block", "type": 301 },
-      { "source": "/dairyfree-mozzarella-alternative", "destination": "/ingredients-nutrition-info/mozza-block", "type": 301 },
-      { "source": "/dairy-free-parmesan-alternative", "destination": "/ingredients-nutrition-info/parmesan", "type": 301 },
-      { "source": "/recipes/quick-pickled-onions", "destination": "/recipes/quick-pickled-red-onions", "type": 301 }
+      {
+        "source": "/social-media-giveaway-terms",
+        "destination": "/social-media-giveaway-ts-cs",
+        "type": 301
+      },
+      {
+        "source": "/terms-and-conditions-of-trade",
+        "destination": "/terms-of-trade",
+        "type": 301
+      },
+      {
+        "source": "/home",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/feta",
+        "destination": "/ingredients-nutrition-info/feta",
+        "type": 301
+      },
+      {
+        "source": "/grated-cheese",
+        "destination": "/ingredients-nutrition-info/grated-cheese",
+        "type": 301
+      },
+      {
+        "source": "/sour-cream",
+        "destination": "/ingredients-nutrition-info/sour-cream",
+        "type": 301
+      },
+      {
+        "source": "/dairyfree-cheddar-alternative",
+        "destination": "/ingredients-nutrition-info/cheddar-block",
+        "type": 301
+      },
+      {
+        "source": "/dairyfree-mozzarella-alternative",
+        "destination": "/ingredients-nutrition-info/mozza-block",
+        "type": 301
+      },
+      {
+        "source": "/dairy-free-parmesan-alternative",
+        "destination": "/ingredients-nutrition-info/parmesan",
+        "type": 301
+      },
+      {
+        "source": "/recipes/quick-pickled-onions",
+        "destination": "/recipes/quick-pickled-red-onions",
+        "type": 301
+      }
+    ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.google-analytics.com https://www.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://angelfood-api.webappconsulting.com.au https://webapi.webappconsulting.com.au https://nominatim.openstreetmap.org; frame-src https://www.google.com; object-src 'none'; base-uri 'self'"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          }
+        ]
+      }
     ]
   }
 }
