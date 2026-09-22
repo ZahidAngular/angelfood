@@ -3,14 +3,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Lock, ShoppingCart, Trash2 } from "lucide-react";
-import { OrderProgress, QuantityStepper } from "./BuyNow";
-import { clearCart, lineItems, removeLine, setLineQuantity, useCart } from "@/lib/cart";
-import { packLabel } from "@/lib/meals";
+import { OrderNotice, PostcodeField, QuantityStepper, Totals } from "./BuyNow";
+import {
+  clearCart,
+  lineItems,
+  priceOf,
+  removeLine,
+  setLineQuantity,
+  useCart,
+} from "@/lib/cart";
+import { packLabel } from "@/lib/shop";
+import { useDeliveryPostcode, useDeliveryRate } from "@/lib/delivery";
 import { formatPrice, orderTotals } from "@/lib/pricing";
 
 export function CartView() {
-  const { lines, items } = useCart();
-  const totals = orderTotals(items);
+  const { lines, items, freight } = useCart();
+  const postcode = useDeliveryPostcode();
+  const rateState = useDeliveryRate(postcode);
+  const totals = orderTotals(lines.map(priceOf), rateState.rate, freight);
 
   if (items === 0) return <EmptyCart />;
 
@@ -21,8 +31,8 @@ export function CartView() {
           Your order
         </h1>
         <p className="mt-4 text-lg text-ink-soft">
-          {totals.items} {totals.items === 1 ? "item" : "items"} at{" "}
-          {formatPrice(totals.perItem)} each.
+          {totals.items} {totals.items === 1 ? "item" : "items"} in{" "}
+          {totals.cartons} {totals.cartons === 1 ? "carton" : "cartons"}.
         </p>
       </header>
 
@@ -68,7 +78,7 @@ export function CartView() {
                   onChange={(next) => setLineQuantity(line.code, line.packSize, next)}
                 />
                 <span className="font-display text-lg font-bold text-ink sm:w-24 sm:text-right">
-                  {formatPrice(lineItems(line) * totals.perItem)}
+                  {formatPrice(priceOf(line).price)}
                 </span>
                 <button
                   type="button"
@@ -89,35 +99,13 @@ export function CartView() {
               Summary
             </h2>
 
-            <dl className="mt-4 space-y-2 border-t border-line pt-4 text-sm">
-              <div className="flex justify-between">
-                <dt className="text-ink-soft">
-                  {totals.items} × {formatPrice(totals.perItem)}
-                </dt>
-                <dd className="font-semibold text-ink">
-                  {formatPrice(totals.subtotal)}
-                </dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-ink-soft">Delivery</dt>
-                <dd className="font-semibold text-ink">
-                  {totals.delivery === 0 ? (
-                    <span className="text-green">Free</span>
-                  ) : (
-                    formatPrice(totals.delivery)
-                  )}
-                </dd>
-              </div>
-              <div className="flex items-baseline justify-between border-t border-line pt-3">
-                <dt className="font-semibold text-ink">Total</dt>
-                <dd className="font-display text-3xl font-extrabold text-ink">
-                  {formatPrice(totals.total)}
-                </dd>
-              </div>
-            </dl>
-            <p className="mt-1.5 text-xs text-ink-soft">GST included.</p>
+            <PostcodeField className="mt-4 border-t border-line pt-4" />
+            <Totals totals={totals} rateState={rateState} className="mt-4" />
+            <p className="mt-1.5 text-xs text-ink-soft">
+              GST included. Delivery is charged per carton at your postcode&apos;s rate.
+            </p>
 
-            <OrderProgress totals={totals} className="mt-4" />
+            <OrderNotice totals={totals} rateState={rateState} className="mt-4" />
 
             <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-xs text-ink-soft">
               <Lock size={12} /> Secure payment by Stripe
@@ -125,7 +113,7 @@ export function CartView() {
 
             {/* Below the minimum there is nothing to check out to, so the
                 button becomes the reason why rather than a dead end. */}
-            {totals.meetsMinimum ? (
+            {totals.meetsMinimum && totals.total !== null ? (
               <Link
                 href="/checkout"
                 className="mt-5 flex items-center justify-center gap-2 rounded-full bg-green px-5 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-cream transition-transform hover:scale-[1.03]"
@@ -134,7 +122,9 @@ export function CartView() {
               </Link>
             ) : (
               <p className="mt-5 rounded-full bg-cream px-5 py-3.5 text-center text-sm font-bold uppercase tracking-[0.12em] text-ink-soft">
-                {totals.shortBy} more to check out
+                {!totals.meetsMinimum
+                  ? `${totals.shortBy} more to check out`
+                  : "Add a delivery postcode"}
               </p>
             )}
             <Link

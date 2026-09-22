@@ -15,9 +15,15 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { AddressSearch } from "./AddressSearch";
-import { lineItems, useCart } from "@/lib/cart";
+import { OrderNotice, Totals } from "./BuyNow";
+import { priceOf, useCart } from "@/lib/cart";
 import type { AddressSuggestion } from "@/lib/address-search";
-import { packLabel } from "@/lib/meals";
+import { packLabel } from "@/lib/shop";
+import {
+  rememberPostcode,
+  useDeliveryPostcode,
+  useDeliveryRate,
+} from "@/lib/delivery";
 import { formatPrice, orderTotals, MINIMUM_ITEMS } from "@/lib/pricing";
 import { NZ_REGIONS } from "@/lib/stores";
 import {
@@ -38,8 +44,12 @@ import {
 } from "@/lib/checkout";
 
 export function CheckoutForm() {
-  const { lines, items } = useCart();
-  const totals = orderTotals(items);
+  const { lines, items, freight } = useCart();
+  // The delivery step's postcode is the one the summary quotes freight from,
+  // so it is asked for once and shared rather than collected twice.
+  const storedPostcode = useDeliveryPostcode();
+  const rateState = useDeliveryRate(storedPostcode);
+  const totals = orderTotals(lines.map(priceOf), rateState.rate, freight);
 
   // What was typed here last time, and whatever has been typed since. Keeping
   // the two apart means the saved details can arrive from the browser after
@@ -71,6 +81,7 @@ export function CheckoutForm() {
   }, [step]);
 
   const set = (field: keyof CheckoutCustomer) => (value: string) => {
+    if (field === "postcode") rememberPostcode(value);
     setEdits((prev) => ({ ...prev, [field]: value }));
     // Clear the complaint as soon as they start fixing it, rather than
     // leaving it shouting until the next press.
@@ -84,11 +95,13 @@ export function CheckoutForm() {
       // A suburb match has no street of its own — it fills in everything
       // around one, so don't wipe a street already typed.
       address1: found.address1 || prev.address1 || "",
+      // Freight is quoted off this, so the store hears about it too.
       suburb: found.suburb || prev.suburb || "",
       city: found.city || prev.city || "",
       region: found.region || prev.region || "",
       postcode: found.postcode || prev.postcode || "",
     }));
+    if (found.postcode) rememberPostcode(found.postcode);
     setErrors({});
 
     // Picking a suburb leaves exactly one thing to type; put the cursor in it.
@@ -140,10 +153,8 @@ export function CheckoutForm() {
       const origin = window.location.origin;
       const session = await createCheckoutSession({
         currency: CURRENCY,
-        lines: toCheckoutLines(lines, totals.perItem, (line) =>
-          packLabel(line.packSize, line)
-        ),
-        deliveryAmount: toCents(totals.delivery),
+        lines: toCheckoutLines(lines, (line) => packLabel(line.packSize, line)),
+        deliveryAmount: toCents(totals.delivery ?? 0),
         customer,
         successUrl: `${origin}/checkout/success`,
         cancelUrl: `${origin}/checkout?cancelled=1`,
@@ -227,6 +238,7 @@ export function CheckoutForm() {
                     customer={customer}
                     lines={lines}
                     totals={totals}
+                    rateState={rateState}
                     onEdit={goTo}
                   />
                 )}
@@ -253,11 +265,11 @@ export function CheckoutForm() {
                 <ArrowLeft size={15} /> Back
               </button>
             )}
-            <StepButton step={step} total={totals.total} submitting={submitting} />
+            <StepButton step={step} total={totals.total ?? 0} submitting={submitting} />
           </div>
         </form>
 
-        <OrderPanel totals={totals} lines={lines} />
+        <OrderPanel totals={totals} rateState={rateState} lines={lines} />
       </div>
     </div>
   );
@@ -529,11 +541,13 @@ function ReviewStep({
   customer,
   lines,
   totals,
+  rateState,
   onEdit,
 }: {
   customer: CheckoutCustomer;
   lines: ReturnType<typeof useCart>["lines"];
   totals: ReturnType<typeof orderTotals>;
+  rateState: ReturnType<typeof useDeliveryRate>;
   onEdit: (step: CheckoutStep) => void;
 }) {
   const addressLines = [
@@ -584,12 +598,12 @@ function ReviewStep({
                 </span>
               </span>
               <span className="shrink-0 font-semibold text-ink">
-                {formatPrice(lineItems(line) * totals.perItem)}
+                {formatPrice(priceOf(line).price)}
               </span>
             </li>
           ))}
         </ul>
-        <Totals totals={totals} className="mt-3 border-t border-line pt-3" />
+        <Totals totals={totals} rateState={rateState} className="mt-3 border-t border-line pt-3" />
       </section>
 
       <p className="flex items-start gap-2 text-xs leading-relaxed text-ink-soft">
@@ -633,48 +647,14 @@ function ReviewCard({
 /* Order summary                                                       */
 /* ------------------------------------------------------------------ */
 
-function Totals({
-  totals,
-  className = "",
-}: {
-  totals: ReturnType<typeof orderTotals>;
-  className?: string;
-}) {
-  return (
-    <dl className={`space-y-2 text-sm ${className}`}>
-      <div className="flex justify-between">
-        <dt className="text-ink-soft">
-          {totals.items} {totals.items === 1 ? "item" : "items"} ×{" "}
-          {formatPrice(totals.perItem)}
-        </dt>
-        <dd className="font-semibold text-ink">{formatPrice(totals.subtotal)}</dd>
-      </div>
-      <div className="flex justify-between">
-        <dt className="text-ink-soft">Delivery</dt>
-        <dd className="font-semibold text-ink">
-          {totals.delivery === 0 ? (
-            <span className="text-green">Free</span>
-          ) : (
-            formatPrice(totals.delivery)
-          )}
-        </dd>
-      </div>
-      <div className="flex items-baseline justify-between border-t border-line pt-2.5">
-        <dt className="font-semibold text-ink">Total</dt>
-        <dd className="font-display text-2xl font-extrabold text-ink">
-          {formatPrice(totals.total)}
-        </dd>
-      </div>
-    </dl>
-  );
-}
-
 function OrderPanel({
   lines,
   totals,
+  rateState,
 }: {
   lines: ReturnType<typeof useCart>["lines"];
   totals: ReturnType<typeof orderTotals>;
+  rateState: ReturnType<typeof useDeliveryRate>;
 }) {
   // On a phone the order would push the form itself below the fold, so it
   // starts folded away behind its own total — and sits open on a wide screen,
@@ -699,7 +679,7 @@ function OrderPanel({
           </span>
           <span className="flex shrink-0 items-center gap-2">
             <span className="font-display text-lg font-extrabold text-ink">
-              {formatPrice(totals.total)}
+              {totals.total === null ? "—" : formatPrice(totals.total)}
             </span>
             <ChevronDown
               size={16}
@@ -744,14 +724,21 @@ function OrderPanel({
                   </p>
                 </div>
                 <span className="shrink-0 text-sm font-bold text-ink">
-                  {formatPrice(lineItems(line) * totals.perItem)}
+                  {formatPrice(priceOf(line).price)}
                 </span>
               </li>
             ))}
           </ul>
 
-          <Totals totals={totals} className="mt-4 border-t border-line pt-4" />
-          <p className="mt-1.5 text-xs text-ink-soft">GST included.</p>
+          <Totals
+            totals={totals}
+            rateState={rateState}
+            className="mt-4 border-t border-line pt-4"
+          />
+          <p className="mt-1.5 text-xs text-ink-soft">
+            GST included. Delivery is per carton at your postcode&apos;s rate.
+          </p>
+          <OrderNotice totals={totals} rateState={rateState} className="mt-4" />
 
           <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-ink-soft">
             <Lock size={12} /> Card details are handled by Stripe, never by us.
