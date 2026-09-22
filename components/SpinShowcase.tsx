@@ -49,8 +49,10 @@ export function SpinShowcase() {
           style={{ opacity: titleOpacity, scale: titleScale }}
           className="relative z-20 max-w-2xl px-6 text-center"
         >
-          <h2 className="font-display text-[clamp(2rem,8vw,7rem)] font-extrabold leading-[0.86] tracking-[-0.03em]">
-            Made to <span className="text-gold">melt</span> your heart.
+          <h2 className="font-display text-[clamp(1.6rem,6vw,5rem)] font-extrabold leading-[0.95] tracking-[-0.03em]">
+            Vegan Cheese Range — Cheddar,{" "}
+            <span className="text-gold">Mozzarella</span>, Feta, Parmesan &
+            More
           </h2>
           <p className="mx-auto mt-6 hidden max-w-md text-lg text-cream/75 sm:block">
             One range, endless cravings. Keep scrolling — watch them turn.
@@ -64,11 +66,15 @@ export function SpinShowcase() {
         >
           {PRODUCTS.map((p, i) => {
             const angle = (i / PRODUCTS.length) * 360;
+            const lower = p.name.toLowerCase();
+            const altText = lower.includes("cheese") || lower.includes("cream")
+              ? `Angel Food vegan ${lower}`
+              : `Angel Food vegan ${lower} cheese`;
             return (
               <RingItem
                 key={p.name}
                 src={p.image}
-                name={p.name}
+                name={altText}
                 angle={angle}
                 progress={scrollYProgress}
               />

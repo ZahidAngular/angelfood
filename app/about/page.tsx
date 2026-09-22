@@ -8,6 +8,12 @@ export const metadata: Metadata = {
   description:
     "Founded by Alice Shopland in 2006, Angel Food is Aotearoa's original vegan cheese company — a little company that's big on doing good.",
   alternates: { canonical: "/about" },
+  openGraph: {
+    url: "/about",
+    title: "Our Story — Angel Food",
+    description:
+      "Founded by Alice Shopland in 2006, Angel Food is Aotearoa's original vegan cheese company — a little company that's big on doing good.",
+  },
 };
 
 export default function AboutPage() {

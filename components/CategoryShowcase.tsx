@@ -19,7 +19,7 @@ type Category = {
 const CATEGORIES: Category[] = [
   {
     name: "Cheeses",
-    count: `${PRODUCTS.length} dairy-free heroes`,
+    count: `${PRODUCTS.length} Dairy Free Favourites`,
     href: "/products#cheeses",
     images: [
       "/images/grated.webp",
@@ -30,13 +30,13 @@ const CATEGORIES: Category[] = [
   },
   {
     name: "Meats",
-    count: `${MEATS.length} plant-based classics`,
+    count: `${MEATS.length} Plant Based Favourites`,
     href: "/products#meats",
     images: MEATS.slice(0, 4).map((p) => p.image),
   },
   {
     name: "Meals",
-    count: `${MEALS.length} ready-to-go dinners`,
+    count: `${MEALS.length} Ready to Enjoy Favourites`,
     href: "/products#meals",
     images: [
       "/images/lasagna.webp",
@@ -64,14 +64,15 @@ export function CategoryShowcase() {
             </Reveal>
             <Reveal delay={0.05}>
               <h2 className="mt-4 font-display text-[clamp(2rem,5.5vw,4rem)] font-extrabold leading-[0.98] tracking-tight text-ink">
-                Find your favourite.
+                Find Your Favourite Plant Based Foods.
               </h2>
             </Reveal>
           </div>
           <Reveal delay={0.1}>
             <p className="max-w-sm text-ink-soft">
-              Seven dairy-free heroes, real meat alternatives and ready-to-go
-              meals — pick a lane and start browsing.
+              Explore our range of vegan cheese, plant based meat
+              alternatives and ready meals, made for delicious everyday
+              eating in Aotearoa New Zealand.
             </p>
           </Reveal>
         </div>

@@ -19,7 +19,7 @@ export function Values() {
           </Reveal>
           <Reveal delay={0.05}>
             <h2 className="mt-4 max-w-3xl font-display text-[clamp(2rem,5.5vw,4rem)] font-extrabold leading-[0.98] tracking-tight">
-              Doing good, baked into everything.
+              Good food, made with purpose.
             </h2>
           </Reveal>
         </Parallax>

@@ -33,16 +33,17 @@ export function Story() {
           </Reveal>
           <Reveal delay={0.05}>
             <h2 className="mt-4 font-display text-[clamp(2rem,5vw,3.6rem)] font-extrabold leading-[1] tracking-tight text-ink">
-              Kia ora, I&apos;m Alice.
+              Meet Alice: Founder of NZ&apos;s Original Vegan Cheese Company
             </h2>
           </Reveal>
           <Reveal delay={0.1}>
             <p className="mt-6 text-lg leading-relaxed text-ink-soft">
-              I founded Angel Food in 2006, two years into my vegan journey. I
-              loved the lifestyle — but I missed the creamy, melty cheese I&apos;d
-              grown up with. So I started importing vegan cheese from the UK, and
-              then we developed our own – the first vegan cheese manufactured in
-              Aotearoa.
+              I founded Angel Food in 2006 after choosing a plant based
+              lifestyle and missing the creamy, melty cheese I loved. What
+              started with importing vegan cheese from the UK soon became a
+              mission to develop our own products here in Aotearoa, creating
+              New Zealand made dairy free alternatives with taste at the
+              heart.
             </p>
           </Reveal>
           <Reveal delay={0.15}>
@@ -53,9 +54,9 @@ export function Story() {
           </Reveal>
           <Reveal delay={0.2}>
             <p className="mt-6 text-lg leading-relaxed text-ink-soft">
-              From those early days to becoming a household name on shelves
-              nationwide, one thing hasn&apos;t changed: we&apos;re a little
-              company that&apos;s big on doing good.
+              Nearly two decades later, Angel Food continues to create plant
+              based food with the same focus on taste, quality and making
+              everyday choices more delicious.
             </p>
           </Reveal>
           <Reveal delay={0.25}>

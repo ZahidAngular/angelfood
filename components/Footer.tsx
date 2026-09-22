@@ -100,7 +100,7 @@ export function Footer() {
         <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <Image
-              src="/images/logo.png"
+              src="/images/logo.webp"
               alt="Angel Food"
               width={120}
               height={120}

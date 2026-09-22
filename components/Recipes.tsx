@@ -1,11 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { RECIPES, type Recipe } from "@/lib/site";
-import type { Recipe as ApiRecipe } from "@/lib/api";
+import { recipeApi, type Recipe as ApiRecipe } from "@/lib/api";
 import { PublicRecipeCard } from "./PublicRecipeCard";
 import { Reveal } from "./Reveal";
 import { Parallax } from "./Parallax";
@@ -45,8 +46,24 @@ export function RecipeCard({ recipe: r, index }: { recipe: Recipe; index: number
   );
 }
 
-/** Home teaser — latest 8 recipes from the live database, with a heading + link to the full page. */
-export function Recipes({ recipes }: { recipes: ApiRecipe[] }) {
+/** Home teaser — fetches the latest recipes straight from the browser, so a
+ * dashboard edit shows up here without anyone rebuilding the site. */
+export function Recipes() {
+  const [recipes, setRecipes] = useState<ApiRecipe[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    recipeApi
+      .getAll()
+      .then((data) => {
+        if (active) setRecipes(data);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const latest = recipes.slice(-8).reverse();
 
   return (

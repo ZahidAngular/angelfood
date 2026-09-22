@@ -12,6 +12,12 @@ export const metadata: Metadata = {
   description:
     "Browse Angel Food dairy-free cheese products, then find your nearest stockist.",
   alternates: { canonical: "/store" },
+  openGraph: {
+    url: "/store",
+    title: "Store — Angel Food",
+    description:
+      "Browse Angel Food dairy-free cheese products, then find your nearest stockist.",
+  },
 };
 
 export default function StorePage() {

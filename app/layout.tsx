@@ -26,12 +26,12 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 const SITE_DESCRIPTION =
-  "Aotearoa's original vegan cheese company — started a food revolution in 2006. Dairy-free cheese that doesn't ask you to compromise — because doing good should taste incredible.";
+  "Aotearoa's original vegan cheese company since 2006. Shop award winning dairy free cheese, plant based foods nationwide in NZ supermarkets.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Angel Food — Better Vegan Cheese",
+    default: "Vegan Cheese NZ | Dairy Free & Plant Based | Angel Food",
     // Page-level titles already include "— Angel Food", so pass them through.
     template: "%s",
   },
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: "en_NZ",
     url: "/",
-    title: "Angel Food — Better Vegan Cheese",
+    title: "Vegan Cheese NZ | Dairy Free & Plant Based | Angel Food",
     description: SITE_DESCRIPTION,
     images: [
       {
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Angel Food — Better Vegan Cheese",
+    title: "Vegan Cheese NZ | Dairy Free & Plant Based | Angel Food",
     description: SITE_DESCRIPTION,
     images: ["/images/hero.webp"],
   },
@@ -96,7 +96,7 @@ const organizationJsonLd = {
   "@id": `${SITE_URL}/#organization`,
   name: SITE_NAME,
   url: SITE_URL,
-  logo: `${SITE_URL}/images/logo.png`,
+  logo: `${SITE_URL}/images/logo.webp`,
   description: SITE_DESCRIPTION,
   foundingDate: "2006",
   email: "info@angelfood.co.nz",

@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
-import { RecipesGrid } from "@/components/RecipesGrid";
-import { JsonLd } from "@/components/JsonLd";
-import { itemListSchema } from "@/lib/schema";
-import { recipeApi, recipeSlug, type Recipe } from "@/lib/api";
+import { RecipesPageContent } from "@/components/RecipesPageContent";
 
 export const metadata: Metadata = {
   title: "Recipes — Angel Food",
@@ -18,39 +15,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RecipesPage() {
-  const recipes: Recipe[] = await recipeApi.getAll().catch(() => []);
-
+export default function RecipesPage() {
   return (
     <main>
-      {recipes.length > 0 && (
-        <JsonLd
-          data={itemListSchema({
-            name: "Plant-based recipes",
-            url: "/recipes",
-            items: recipes.map((recipe) => ({
-              name: recipe.title,
-              path: `/recipes/${recipeSlug(recipe.title)}`,
-            })),
-          })}
-        />
-      )}
       <PageHeader
         eyebrow="From our kitchen"
         title="Delicious plant-based recipes."
         intro="From cheesy weeknight wins to show-stopping desserts — every recipe is built around Angel Food."
       />
-      <section className="bg-cream pb-24 pt-4 sm:pb-32">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          {recipes.length === 0 ? (
-            <p className="py-16 text-center text-ink-soft">
-              No recipes yet — check back soon!
-            </p>
-          ) : (
-            <RecipesGrid recipes={recipes} />
-          )}
-        </div>
-      </section>
+      <RecipesPageContent />
     </main>
   );
 }

@@ -7,6 +7,12 @@ export const metadata: Metadata = {
   description:
     "Order Angel Food plant-based meals and meats online — butter curry, lasagna, korma, burgers, meatballs and more, by the single pack or by the carton.",
   alternates: { canonical: "/buy-now" },
+  openGraph: {
+    url: "/buy-now",
+    title: "Buy Now — Angel Food",
+    description:
+      "Order Angel Food plant-based ready meals online — butter curry, lasagna, korma and tofu rice bowls, by the single pack or by the carton.",
+  },
 };
 
 export default function BuyNowPage() {

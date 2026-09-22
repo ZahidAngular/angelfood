@@ -3,7 +3,15 @@ import { LegalPage } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions of Trade — Angel Food",
+  description:
+    "The terms and conditions that apply to wholesale and trade accounts with Angel Food.",
   alternates: { canonical: "/terms-of-trade" },
+  openGraph: {
+    url: "/terms-of-trade",
+    title: "Terms & Conditions of Trade — Angel Food",
+    description:
+      "The terms and conditions that apply to wholesale and trade accounts with Angel Food.",
+  },
 };
 
 export default function TermsOfTradePage() {

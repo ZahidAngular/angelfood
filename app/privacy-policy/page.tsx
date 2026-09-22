@@ -3,7 +3,15 @@ import { LegalPage } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — Angel Food",
+  description:
+    "How Angel Food collects, uses and protects your personal information when you shop, contact us or sign up online.",
   alternates: { canonical: "/privacy-policy" },
+  openGraph: {
+    url: "/privacy-policy",
+    title: "Privacy Policy — Angel Food",
+    description:
+      "How Angel Food collects, uses and protects your personal information when you shop, contact us or sign up online.",
+  },
 };
 
 export default function PrivacyPolicyPage() {

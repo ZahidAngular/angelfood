@@ -5,7 +5,7 @@
  */
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://www.angelfood.co.nz";
+  "https://angelfood.co.nz";
 
 export const SITE_NAME = "Angel Food";
 
@@ -110,7 +110,7 @@ export const MEALS: Product[] = [
     blurb:
       "Slow-cooked lentil ragu, tofu ricotta, velvety béchamel and tender pasta sheets — baked to perfection.",
     tag: "Bake",
-    image: "/images/meals/vege-lasagna-v3.jpeg",
+    image: "/images/meals/vege-lasagna-v3.webp",
     accent: "var(--color-gold)",
     weight: "400g",
     ready: "Ready in 4 minutes",
@@ -123,7 +123,7 @@ export const MEALS: Product[] = [
     blurb:
       "Creamy coconut cashew korma with tender veges and aromatic spices.",
     tag: "Simmer",
-    image: "/images/meals/vege-korma-v3.jpeg",
+    image: "/images/meals/vege-korma-v3.webp",
     accent: "var(--color-green-bright)",
     weight: "400g",
     ready: "Ready in 4 minutes",
@@ -136,7 +136,7 @@ export const MEALS: Product[] = [
     blurb:
       "Marinated tofu, vibrant spinach and fragrant jasmine rice drizzled in sesame ginger dressing.",
     tag: "Fresh",
-    image: "/images/meals/tofu-greens-v3.jpeg",
+    image: "/images/meals/tofu-greens-v3.webp",
     accent: "var(--color-coral)",
     weight: "400g",
     ready: "Ready in 4 minutes",
@@ -149,7 +149,7 @@ export const MEALS: Product[] = [
     blurb:
       "Plant-based chicken in a silky tomato-butter curry loaded with aromatic spices, on jasmine rice.",
     tag: "Simmer",
-    image: "/images/meals/butter-curry-v3.jpeg",
+    image: "/images/meals/butter-curry-v3.webp",
     accent: "var(--color-gold)",
     weight: "400g",
     ready: "Ready in 4 minutes",
@@ -165,7 +165,7 @@ export const MEATS: Product[] = [
     tagline: "Juicy & grill-ready",
     blurb: "Stack them in a bun with all the classic fixings.",
     tag: "Grill",
-    image: "/images/meats/packs/burgers.png",
+    image: "/images/meats/packs/burgers.webp",
     accent: "var(--color-coral)",
     weight: "255g",
     healthStar: "4.0",
@@ -178,7 +178,7 @@ export const MEATS: Product[] = [
     blurb:
       "Serve with chips, tuck into tacos or dip into your favourite sauce.",
     tag: "Crumbed",
-    image: "/images/meats/packs/fish-fingers.png",
+    image: "/images/meats/packs/fish-fingers.webp",
     accent: "var(--color-gold)",
     weight: "230g",
     healthStar: "2.0",
@@ -190,7 +190,7 @@ export const MEATS: Product[] = [
     tagline: "Rich Italian style",
     blurb: "Simmer them in your favourite sauce or pile onto a sub.",
     tag: "Simmer",
-    image: "/images/meats/packs/meatballs.png",
+    image: "/images/meats/packs/meatballs.webp",
     accent: "var(--color-green-bright)",
     weight: "200g",
     healthStar: "4.0",
@@ -202,7 +202,7 @@ export const MEATS: Product[] = [
     tagline: "Smoky & tender",
     blurb: "Pile into buns, tacos or loaded fries for an easy crowd-pleaser.",
     tag: "Shred",
-    image: "/images/meats/packs/pulled-pork.png",
+    image: "/images/meats/packs/pulled-pork.webp",
     accent: "var(--color-gold)",
     weight: "200g",
     healthStar: "4.0",
@@ -214,7 +214,7 @@ export const MEATS: Product[] = [
     tagline: "Deli style slices",
     blurb: "Layer into sandwiches, bagels and platters.",
     tag: "Slice",
-    image: "/images/meats/packs/pastrami.png",
+    image: "/images/meats/packs/pastrami.webp",
     accent: "var(--color-coral)",
     weight: "180g",
     healthStar: "4.0",
@@ -226,7 +226,7 @@ export const MEATS: Product[] = [
     tagline: "Light & crispy",
     blurb: "Dip into tartare sauce or serve with a squeeze of lemon.",
     tag: "Fry",
-    image: "/images/meats/packs/seafood-rings.png",
+    image: "/images/meats/packs/seafood-rings.webp",
     accent: "var(--color-gold)",
     weight: "200g",
     healthStar: "3.5",
@@ -666,17 +666,17 @@ export function getProductMeta(
 export const VALUES = [
   {
     title: "Kindness",
-    body: "Everything we make is entirely plant-based. We believe compassion belongs on your plate as much as anywhere else.",
+    body: "Everything we make is 100% plant based. We believe better food should be made with care, compassion and respect for people, animals and our community.",
     icon: "heart",
   },
   {
     title: "Sustainability",
-    body: "Choosing plants over meat and dairy means less land, less water, and far fewer greenhouse gases. Small swaps, real impact.",
+    body: "Choosing plant based food can help reduce reliance on land, water and other resources. We focus on making thoughtful choices throughout what we create.",
     icon: "leaf",
   },
   {
     title: "Joy",
-    body: "Food isn't just fuel. It's joy, culture, collaboration and community — and it should always taste incredible.",
+    body: "Food should be more than an alternative. It should taste delicious, bring people together and make plant based eating something to genuinely enjoy.",
     icon: "sun",
   },
 ];

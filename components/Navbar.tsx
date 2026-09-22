@@ -65,7 +65,7 @@ export function Navbar() {
         >
           <Link href="/" aria-label="Angel Food — home" className="flex items-center">
             <Image
-              src="/images/logo.png"
+              src="/images/logo.webp"
               alt="Angel Food"
               width={120}
               height={120}

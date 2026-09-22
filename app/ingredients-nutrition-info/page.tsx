@@ -11,6 +11,12 @@ export const metadata: Metadata = {
   description:
     "Full ingredients lists and nutrition panels for every Angel Food product.",
   alternates: { canonical: "/ingredients-nutrition-info" },
+  openGraph: {
+    url: "/ingredients-nutrition-info",
+    title: "Ingredients and nutritional info — Angel Food",
+    description:
+      "Full ingredients lists and nutrition panels for every Angel Food product.",
+  },
 };
 
 const CATEGORY_ORDER = ["Cheeses", "Meals", "Meats"] as const;

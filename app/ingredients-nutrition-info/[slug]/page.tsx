@@ -24,8 +24,8 @@ export async function generateMetadata({
   const entry = NUTRITION_INFO.find((n) => n.slug === slug);
   if (!entry) return {};
 
-  const title = `${entry.product} — Ingredients & Nutrition | Angel Food`;
-  const description = `Full ingredients list and nutrition panel for Angel Food ${entry.product}.`;
+  const title = `${entry.product} Ingredients & Nutrition | Angel Food`;
+  const description = `Full ingredients list, allergens and nutrition panel for Angel Food ${entry.product} — 100% plant-based, dairy-free ${entry.category.toLowerCase()}.`;
   const url = `/ingredients-nutrition-info/${slug}`;
 
   return {
