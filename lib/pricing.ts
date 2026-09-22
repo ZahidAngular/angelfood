@@ -48,13 +48,42 @@ export function deliveryFor(
   limit: number = FALLBACK_CARTON_LIMIT,
   upliftPercent: number = FALLBACK_UPLIFT_PERCENT
 ): number {
-  if (cartons <= 0 || ratePerCarton <= 0) return 0;
+  return deliveryBreakdown(cartons, ratePerCarton, limit, upliftPercent).total;
+}
 
-  let total = 0;
-  for (let carton = 1; carton <= cartons; carton++) {
-    total += carton <= limit ? ratePerCarton : ratePerCarton * (1 + upliftPercent / 100);
+export type DeliveryBreakdown = {
+  total: number;
+  /** Cartons charged at the plain rate. */
+  atBase: number;
+  /** Cartons charged the uplifted rate, and what that rate is. */
+  atUplift: number;
+  upliftRate: number;
+};
+
+/**
+ * The same sum, itemised. The summary shows this rather than "cartons × rate",
+ * which stops being true the moment the uplift applies and leaves a customer
+ * looking at a multiplication that doesn't reach the total.
+ */
+export function deliveryBreakdown(
+  cartons: number,
+  ratePerCarton: number,
+  limit: number = FALLBACK_CARTON_LIMIT,
+  upliftPercent: number = FALLBACK_UPLIFT_PERCENT
+): DeliveryBreakdown {
+  const upliftRate = round2(ratePerCarton * (1 + upliftPercent / 100));
+  if (cartons <= 0 || ratePerCarton <= 0) {
+    return { total: 0, atBase: 0, atUplift: 0, upliftRate };
   }
-  return round2(total);
+
+  const atBase = Math.min(cartons, Math.max(0, limit));
+  const atUplift = cartons - atBase;
+  return {
+    total: round2(atBase * ratePerCarton + atUplift * upliftRate),
+    atBase,
+    atUplift,
+    upliftRate,
+  };
 }
 
 export type OrderTotals = {
@@ -75,6 +104,8 @@ export type OrderTotals = {
   shortBy: number;
   /** The rate the freight was worked out from, for showing the customer. */
   rate: DeliveryRate | null;
+  /** How that freight splits across cartons. null when there is no rate. */
+  breakdown: DeliveryBreakdown | null;
 };
 
 export type PricedLine = {
@@ -117,9 +148,10 @@ export function orderTotals(
 
   // Part of a carton still takes a carton's room on the truck.
   const cartons = Math.ceil(round2(cartonFraction));
-  const delivery = rate
-    ? deliveryFor(cartons, rate.totalCharge, freight.limit, freight.upliftPercent)
+  const breakdown = rate
+    ? deliveryBreakdown(cartons, rate.totalCharge, freight.limit, freight.upliftPercent)
     : null;
+  const delivery = breakdown ? breakdown.total : null;
 
   return {
     items,
@@ -130,6 +162,7 @@ export function orderTotals(
     meetsMinimum: items >= MINIMUM_ITEMS,
     shortBy: Math.max(0, MINIMUM_ITEMS - items),
     rate,
+    breakdown,
   };
 }
 

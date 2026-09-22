@@ -14,6 +14,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { Reveal } from "./Reveal";
+import { AddressSearch } from "./AddressSearch";
 import {
   fetchShopProducts,
   itemsPerPack,
@@ -121,6 +122,49 @@ function HowItWorks() {
   );
 }
 
+/**
+ * A product's picture, or a lettered tile when there isn't one — including
+ * when the path is wrong. An order full of broken-image icons reads as a
+ * broken site, which is a much worse failure than a missing photo.
+ */
+export function ProductThumb({
+  src,
+  name,
+  sizes,
+  className = "",
+  rounded = "",
+}: {
+  src: string | null;
+  name: string;
+  sizes: string;
+  className?: string;
+  rounded?: string;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return (
+      <div
+        className={`flex h-full w-full items-center justify-center bg-green/10 font-display font-extrabold text-green/50 ${rounded} ${className}`}
+        aria-hidden
+      >
+        {name.charAt(0)}
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={src}
+      alt=""
+      fill
+      sizes={sizes}
+      onError={() => setFailed(true)}
+      className={`object-cover ${className}`}
+    />
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /* Product card                                                        */
 /* ------------------------------------------------------------------ */
@@ -164,23 +208,12 @@ function ProductCard({ product, index }: { product: ShopProduct; index: number }
     <Reveal delay={(index % 2) * 0.07} className="h-full">
       <article className="flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-line bg-paper">
         <div className="relative aspect-[4/3] overflow-hidden bg-cream">
-          {product.image ? (
-            <Image
-              src={product.image}
-              alt={`Angel Food ${product.name}`}
-              fill
-              sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 90vw"
-              className="object-cover"
-            />
-          ) : (
-            <div
-              className="flex h-full items-center justify-center font-display text-5xl font-extrabold text-cream"
-              style={{ background: "var(--color-green-bright)" }}
-              aria-hidden
-            >
-              {product.name.charAt(0)}
-            </div>
-          )}
+          <ProductThumb
+            src={product.image}
+            name={product.name}
+            sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 90vw"
+            className="text-5xl"
+          />
           {product.weight && (
             <span className="absolute left-4 top-4 rounded-full bg-paper/90 px-3 py-1 text-[0.7rem] font-bold uppercase tracking-[0.12em] text-green backdrop-blur-sm">
               {product.weight}
@@ -355,25 +388,67 @@ export function QuantityStepper({
  */
 export function PostcodeField({ className = "" }: { className?: string }) {
   const postcode = useDeliveryPostcode();
+  const [byAddress, setByAddress] = useState(false);
+  const [noPostcode, setNoPostcode] = useState(false);
 
   return (
     <div className={className}>
-      <label
-        htmlFor="delivery-postcode"
-        className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-green"
-      >
-        <MapPin size={12} /> Delivery postcode
-      </label>
-      <input
-        id="delivery-postcode"
-        type="text"
-        inputMode="numeric"
-        maxLength={4}
-        value={postcode}
-        placeholder="e.g. 1010"
-        onChange={(e) => rememberPostcode(e.target.value.replace(/\D/g, "").slice(0, 4))}
-        className="af-qty w-full rounded-xl border border-line bg-cream px-3.5 py-2.5 text-sm text-ink outline-none transition-colors focus:border-green focus:ring-2 focus:ring-green/15"
-      />
+      <div className="mb-1.5 flex items-baseline justify-between gap-3">
+        <label
+          htmlFor="delivery-postcode"
+          className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-green"
+        >
+          <MapPin size={12} /> Delivery postcode
+        </label>
+        {/* Plenty of people don't know their postcode. Typing a street or a
+            suburb instead finds it, so this is never a dead end. */}
+        <button
+          type="button"
+          onClick={() => {
+            setByAddress((open) => !open);
+            setNoPostcode(false);
+          }}
+          className="text-xs font-semibold text-ink-soft underline transition-colors hover:text-green"
+        >
+          {byAddress ? "Enter it myself" : "Don't know it?"}
+        </button>
+      </div>
+
+      {byAddress ? (
+        <>
+          <AddressSearch
+            onPick={(address) => {
+              if (address.postcode) {
+                rememberPostcode(address.postcode);
+                setByAddress(false);
+                setNoPostcode(false);
+              } else {
+                // The geocoder knows the place but has no postcode for it.
+                setNoPostcode(true);
+              }
+            }}
+          />
+          {noPostcode && (
+            <p className="mt-2 text-xs font-semibold text-coral">
+              No postcode for that one — try a street address, or type the
+              number in yourself.
+            </p>
+          )}
+        </>
+      ) : (
+        <input
+          id="delivery-postcode"
+          type="text"
+          inputMode="numeric"
+          maxLength={4}
+          value={postcode}
+          placeholder="e.g. 1010"
+          onChange={(e) =>
+            rememberPostcode(e.target.value.replace(/D/g, "").slice(0, 4))
+          }
+          className="af-qty w-full rounded-xl border border-line bg-cream px-3.5 py-2.5 text-sm text-ink outline-none transition-colors focus:border-green focus:ring-2 focus:ring-green/15"
+        />
+      )}
     </div>
   );
 }
@@ -418,10 +493,16 @@ export function Totals({
       <div className="flex justify-between">
         <dt className="text-ink-soft">
           Delivery
-          {totals.rate && (
+          {totals.rate && totals.breakdown && (
             <span className="text-ink-soft/70">
               {" "}
-              ({totals.cartons} × {formatPrice(totals.rate.totalCharge)})
+              {totals.breakdown.atUplift === 0
+                ? `(${totals.cartons} × ${formatPrice(totals.rate.totalCharge)})`
+                : `(${totals.breakdown.atBase} × ${formatPrice(
+                    totals.rate.totalCharge
+                  )} + ${totals.breakdown.atUplift} × ${formatPrice(
+                    totals.breakdown.upliftRate
+                  )})`}
             </span>
           )}
         </dt>

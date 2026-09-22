@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   AlertCircle,
@@ -15,7 +14,7 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { AddressSearch } from "./AddressSearch";
-import { OrderNotice, Totals } from "./BuyNow";
+import { OrderNotice, ProductThumb, Totals } from "./BuyNow";
 import { priceOf, useCart } from "@/lib/cart";
 import type { AddressSuggestion } from "@/lib/address-search";
 import { packLabel } from "@/lib/shop";
@@ -703,19 +702,7 @@ function OrderPanel({
                 className="flex items-center gap-3 py-3 lg:first:pt-4"
               >
                 <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
-                  {line.image ? (
-                    <Image
-                      src={line.image}
-                      alt=""
-                      fill
-                      sizes="48px"
-                      className="object-cover"
-                    />
-                  ) : (
-                    <span className="flex h-full items-center justify-center font-display font-extrabold text-green/40">
-                      {line.name.charAt(0)}
-                    </span>
-                  )}
+                  <ProductThumb src={line.image} name={line.name} sizes="48px" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-ink">{line.name}</p>

@@ -1,9 +1,14 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Lock, ShoppingCart, Trash2 } from "lucide-react";
-import { OrderNotice, PostcodeField, QuantityStepper, Totals } from "./BuyNow";
+import {
+  OrderNotice,
+  PostcodeField,
+  ProductThumb,
+  QuantityStepper,
+  Totals,
+} from "./BuyNow";
 import {
   clearCart,
   lineItems,
@@ -44,19 +49,12 @@ export function CartView() {
               className="flex flex-wrap items-center gap-4 p-4 sm:flex-nowrap sm:p-5"
             >
               <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-cream">
-                {line.image ? (
-                  <Image
-                    src={line.image}
-                    alt=""
-                    fill
-                    sizes="80px"
-                    className="object-cover"
-                  />
-                ) : (
-                  <span className="flex h-full items-center justify-center font-display text-2xl font-extrabold text-green/40">
-                    {line.name.charAt(0)}
-                  </span>
-                )}
+                <ProductThumb
+                  src={line.image}
+                  name={line.name}
+                  sizes="80px"
+                  className="text-2xl"
+                />
               </div>
 
               <div className="min-w-0 flex-1">
@@ -131,7 +129,7 @@ export function CartView() {
               href="/buy-now"
               className="mt-3 flex items-center justify-center rounded-full border border-line px-5 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-green transition-colors hover:bg-cream"
             >
-              Add more meals
+              Add more
             </Link>
             <button
               type="button"
