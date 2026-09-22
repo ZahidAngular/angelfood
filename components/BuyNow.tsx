@@ -7,14 +7,12 @@ import {
   ArrowRight,
   Check,
   Loader2,
-  MapPin,
   Minus,
   Plus,
   ShoppingBag,
   Trash2,
 } from "lucide-react";
 import { Reveal } from "./Reveal";
-import { AddressSearch } from "./AddressSearch";
 import {
   fetchShopProducts,
   itemsPerPack,
@@ -24,7 +22,7 @@ import {
   type ShopProduct,
 } from "@/lib/shop";
 import { addToCart, priceOf, removeLine, useCart } from "@/lib/cart";
-import { rememberPostcode, useDeliveryPostcode, useDeliveryRate } from "@/lib/delivery";
+import { useDeliveryRate } from "@/lib/delivery";
 import { formatPrice, itemPrice, orderTotals, MINIMUM_ITEMS } from "@/lib/pricing";
 
 /** How long the button stays on "Added" after something goes in the order. */
@@ -378,82 +376,6 @@ export function QuantityStepper({
 }
 
 /* ------------------------------------------------------------------ */
-/* Postcode                                                            */
-/* ------------------------------------------------------------------ */
-
-/**
- * Freight can't be quoted without knowing where it is going, so the summary
- * asks. The answer is remembered and the checkout picks it up, rather than
- * being asked for twice.
- */
-export function PostcodeField({ className = "" }: { className?: string }) {
-  const postcode = useDeliveryPostcode();
-  const [byAddress, setByAddress] = useState(false);
-  const [noPostcode, setNoPostcode] = useState(false);
-
-  return (
-    <div className={className}>
-      <div className="mb-1.5 flex items-baseline justify-between gap-3">
-        <label
-          htmlFor="delivery-postcode"
-          className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-green"
-        >
-          <MapPin size={12} /> Delivery postcode
-        </label>
-        {/* Plenty of people don't know their postcode. Typing a street or a
-            suburb instead finds it, so this is never a dead end. */}
-        <button
-          type="button"
-          onClick={() => {
-            setByAddress((open) => !open);
-            setNoPostcode(false);
-          }}
-          className="text-xs font-semibold text-ink-soft underline transition-colors hover:text-green"
-        >
-          {byAddress ? "Enter it myself" : "Don't know it?"}
-        </button>
-      </div>
-
-      {byAddress ? (
-        <>
-          <AddressSearch
-            onPick={(address) => {
-              if (address.postcode) {
-                rememberPostcode(address.postcode);
-                setByAddress(false);
-                setNoPostcode(false);
-              } else {
-                // The geocoder knows the place but has no postcode for it.
-                setNoPostcode(true);
-              }
-            }}
-          />
-          {noPostcode && (
-            <p className="mt-2 text-xs font-semibold text-coral">
-              No postcode for that one — try a street address, or type the
-              number in yourself.
-            </p>
-          )}
-        </>
-      ) : (
-        <input
-          id="delivery-postcode"
-          type="text"
-          inputMode="numeric"
-          maxLength={4}
-          value={postcode}
-          placeholder="e.g. 1010"
-          onChange={(e) =>
-            rememberPostcode(e.target.value.replace(/D/g, "").slice(0, 4))
-          }
-          className="af-qty w-full rounded-xl border border-line bg-cream px-3.5 py-2.5 text-sm text-ink outline-none transition-colors focus:border-green focus:ring-2 focus:ring-green/15"
-        />
-      )}
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /* Totals                                                              */
 /* ------------------------------------------------------------------ */
 
@@ -464,19 +386,27 @@ export function PostcodeField({ className = "" }: { className?: string }) {
 export function Totals({
   totals,
   rateState,
+  quoteAtCheckout = false,
   className = "",
 }: {
   totals: ReturnType<typeof orderTotals>;
-  rateState: ReturnType<typeof useDeliveryRate>;
+  rateState?: ReturnType<typeof useDeliveryRate>;
+  /** Before the checkout has an address, freight isn't yet a known figure. */
+  quoteAtCheckout?: boolean;
   className?: string;
 }) {
   const deliveryCell = () => {
     if (totals.delivery !== null) return formatPrice(totals.delivery);
-    if (rateState.status === "loading") return <Loader2 size={14} className="animate-spin" />;
-    if (rateState.status === "not-delivered") return <span className="text-coral">No run</span>;
-    if (rateState.status === "error") return <span className="text-coral">Unavailable</span>;
+    if (quoteAtCheckout) return <span className="text-ink-soft/70">At checkout</span>;
+    if (rateState?.status === "loading") return <Loader2 size={14} className="animate-spin" />;
+    if (rateState?.status === "not-delivered") return <span className="text-coral">No run</span>;
+    if (rateState?.status === "error") return <span className="text-coral">Unavailable</span>;
     return <span className="text-ink-soft/70">Add postcode</span>;
   };
+
+  // With freight still unknown, the bottom line is the goods — calling that
+  // a "total" would be quoting a number the customer will not be charged.
+  const pending = totals.total === null;
 
   return (
     <dl className={`space-y-2 text-sm ${className}`}>
@@ -509,9 +439,15 @@ export function Totals({
         <dd className="flex items-center font-semibold text-ink">{deliveryCell()}</dd>
       </div>
       <div className="flex items-baseline justify-between border-t border-line pt-2.5">
-        <dt className="font-semibold text-ink">Total</dt>
+        <dt className="font-semibold text-ink">
+          {pending && quoteAtCheckout ? "Subtotal" : "Total"}
+        </dt>
         <dd className="font-display text-2xl font-extrabold text-ink">
-          {totals.total === null ? "—" : formatPrice(totals.total)}
+          {pending
+            ? quoteAtCheckout
+              ? formatPrice(totals.subtotal)
+              : "—"
+            : formatPrice(totals.total as number)}
         </dd>
       </div>
     </dl>
@@ -525,7 +461,7 @@ export function OrderNotice({
   className = "mt-3",
 }: {
   totals: ReturnType<typeof orderTotals>;
-  rateState: ReturnType<typeof useDeliveryRate>;
+  rateState?: ReturnType<typeof useDeliveryRate>;
   className?: string;
 }) {
   if (totals.items === 0) return null;
@@ -538,7 +474,7 @@ export function OrderNotice({
     );
   }
 
-  if (rateState.status === "not-delivered") {
+  if (rateState?.status === "not-delivered") {
     return (
       <p className={`rounded-xl bg-coral/10 p-3 text-xs font-semibold leading-relaxed text-ink ${className}`}>
         We don&apos;t have a delivery run to {rateState.postcode} yet —{" "}
@@ -567,9 +503,9 @@ export function OrderNotice({
 
 function OrderSummary() {
   const { lines, items, freight } = useCart();
-  const postcode = useDeliveryPostcode();
-  const rateState = useDeliveryRate(postcode);
-  const totals = orderTotals(lines.map(priceOf), rateState.rate, freight);
+  // No address yet, so no rate: the goods are totalled here and freight is
+  // worked out at the checkout, where the delivery address is asked for.
+  const totals = orderTotals(lines.map(priceOf), null, freight);
 
   return (
     <aside className="lg:sticky lg:top-32 lg:h-fit">
@@ -612,9 +548,8 @@ function OrderSummary() {
               ))}
             </ul>
 
-            <PostcodeField className="mt-4 border-t border-line pt-4" />
-            <Totals totals={totals} rateState={rateState} className="mt-4" />
-            <OrderNotice totals={totals} rateState={rateState} />
+            <Totals totals={totals} quoteAtCheckout className="mt-4 border-t border-line pt-4" />
+            <OrderNotice totals={totals} />
 
             <Link
               href="/cart"

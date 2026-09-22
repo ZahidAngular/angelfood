@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, Lock, ShoppingCart, Trash2 } from "lucide-react";
-import {
-  OrderNotice,
-  PostcodeField,
-  ProductThumb,
-  QuantityStepper,
-  Totals,
-} from "./BuyNow";
+import { OrderNotice, ProductThumb, QuantityStepper, Totals } from "./BuyNow";
 import {
   clearCart,
   lineItems,
@@ -18,14 +12,13 @@ import {
   useCart,
 } from "@/lib/cart";
 import { packLabel } from "@/lib/shop";
-import { useDeliveryPostcode, useDeliveryRate } from "@/lib/delivery";
 import { formatPrice, orderTotals } from "@/lib/pricing";
 
 export function CartView() {
   const { lines, items, freight } = useCart();
-  const postcode = useDeliveryPostcode();
-  const rateState = useDeliveryRate(postcode);
-  const totals = orderTotals(lines.map(priceOf), rateState.rate, freight);
+  // Freight needs an address, and the cart hasn't asked for one — it is
+  // quoted at the checkout, where the delivery step does.
+  const totals = orderTotals(lines.map(priceOf), null, freight);
 
   if (items === 0) return <EmptyCart />;
 
@@ -97,13 +90,13 @@ export function CartView() {
               Summary
             </h2>
 
-            <PostcodeField className="mt-4 border-t border-line pt-4" />
-            <Totals totals={totals} rateState={rateState} className="mt-4" />
+            <Totals totals={totals} quoteAtCheckout className="mt-4 border-t border-line pt-4" />
             <p className="mt-1.5 text-xs text-ink-soft">
-              GST included. Delivery is charged per carton at your postcode&apos;s rate.
+              GST included. Delivery is worked out at checkout, once we know
+              where it&apos;s going — it&apos;s charged per carton.
             </p>
 
-            <OrderNotice totals={totals} rateState={rateState} className="mt-4" />
+            <OrderNotice totals={totals} className="mt-4" />
 
             <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-xs text-ink-soft">
               <Lock size={12} /> Secure payment by Stripe
@@ -111,7 +104,7 @@ export function CartView() {
 
             {/* Below the minimum there is nothing to check out to, so the
                 button becomes the reason why rather than a dead end. */}
-            {totals.meetsMinimum && totals.total !== null ? (
+            {totals.meetsMinimum ? (
               <Link
                 href="/checkout"
                 className="mt-5 flex items-center justify-center gap-2 rounded-full bg-green px-5 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-cream transition-transform hover:scale-[1.03]"
@@ -120,9 +113,7 @@ export function CartView() {
               </Link>
             ) : (
               <p className="mt-5 rounded-full bg-cream px-5 py-3.5 text-center text-sm font-bold uppercase tracking-[0.12em] text-ink-soft">
-                {!totals.meetsMinimum
-                  ? `${totals.shortBy} more to check out`
-                  : "Add a delivery postcode"}
+                {totals.shortBy} more to check out
               </p>
             )}
             <Link
