@@ -13,6 +13,39 @@ const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
   "https://angelfood-api.webappconsulting.com.au/api";
 
+const S3_BUCKET_URL = "https://angelfood-bucket.s3.ap-southeast-2.amazonaws.com/";
+
+/**
+ * Where a product's picture actually lives.
+ *
+ * The database stores a path, not a file, and that path can point at three
+ * different places. Today every product names artwork committed to this repo
+ * under /images — which works, but means the API can name a picture it does
+ * not own, and adding a product there needs a website deploy before it has a
+ * photo. So an uploaded or S3-hosted image resolves too, the same way recipe
+ * photos already do (see `resolveImageUrl` in lib/api.ts), and a product can
+ * be given a picture from the API side whenever that is wanted.
+ */
+export function resolveProductImage(path: string | null): string | null {
+  if (!path) return null;
+  const trimmed = path.trim();
+  if (!trimmed) return null;
+
+  // Already a URL — an S3 object, a CDN, anything absolute.
+  if (trimmed.startsWith("http")) return trimmed;
+
+  // Artwork committed to this repo, served by Next out of /public.
+  if (trimmed.startsWith("/images/")) return trimmed;
+
+  // Uploaded through the API, served from the API host rather than here.
+  if (trimmed.startsWith("/uploads/")) {
+    return `${API_BASE.replace(/\/api$/, "")}${trimmed}`;
+  }
+
+  // Anything else is a bare S3 key, e.g. "products/burgers.webp".
+  return `${S3_BUCKET_URL}${trimmed.replace(/^\/+/, "")}`;
+}
+
 export type PackSize = "unit" | "carton";
 
 /** The pricing half of a product — the part lib/pricing.ts needs. */
@@ -92,7 +125,7 @@ export async function fetchShopProducts(): Promise<ShopProduct[]> {
       name: (pick<string>(row, "name") || code).trim(),
       feedName: (pick<string>(row, "feedName") || "").trim(),
       weight: (pick<string>(row, "weight") || "").trim(),
-      image: (pick<string>(row, "image") || "").trim() || null,
+      image: resolveProductImage(pick<string>(row, "image") || null),
       cartonQty,
       baseCartonPrice,
       baseCartonLimit: num(pick(row, "baseCartonLimit"), 2),
