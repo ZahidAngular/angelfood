@@ -115,5 +115,17 @@ export function orderTotals({
 }
 
 const NZD = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD" });
+const NZD_WHOLE = new Intl.NumberFormat("en-NZ", {
+  style: "currency",
+  currency: "NZD",
+  maximumFractionDigits: 0,
+});
 
 export const formatPrice = (amount: number) => NZD.format(amount);
+
+/**
+ * For prices inside a sentence, where ".00" is just noise: "$15", but still
+ * "$11.90" when the cents carry meaning.
+ */
+export const formatPriceShort = (amount: number) =>
+  Number.isInteger(amount) ? NZD_WHOLE.format(amount) : NZD.format(amount);
