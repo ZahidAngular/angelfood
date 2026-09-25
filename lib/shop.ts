@@ -1,12 +1,13 @@
 "use client";
 
 /**
- * The shop's catalogue and freight rates, both from the Angel Food API.
+ * The shop's catalogue and delivery runs, both from the Angel Food API.
  *
- * What is sold, what a carton holds and what it costs now live in the
- * WebsiteProduct table rather than in this repo, so adding a product or
- * moving a price is a database change and not a deploy. Freight comes from
- * DeliveryRate, one row per postcode off the courier's rate card.
+ * What is sold and what it costs live in the WebsiteProduct table rather than
+ * in this repo, so adding a meal or moving a price is a database change and
+ * not a deploy. DeliveryRate holds one row per postcode we run a truck to —
+ * used now to say *whether* we deliver somewhere and on what day, while the
+ * charge itself is the flat island rate in lib/pricing.ts.
  */
 
 const API_BASE =
@@ -46,17 +47,7 @@ export function resolveProductImage(path: string | null): string | null {
   return `${S3_BUCKET_URL}${trimmed.replace(/^\/+/, "")}`;
 }
 
-export type PackSize = "unit" | "carton";
-
-/** The pricing half of a product — the part lib/pricing.ts needs. */
-export type ProductPricing = {
-  cartonQty: number;
-  baseCartonPrice: number;
-  baseCartonLimit: number;
-  priceIncreasePercentage: number;
-};
-
-export type ShopProduct = ProductPricing & {
+export type ShopProduct = {
   id: number;
   /** Which run of the page it sits under: "Meals", "Meat", … */
   section: string;
@@ -66,6 +57,8 @@ export type ShopProduct = ProductPricing & {
   feedName: string;
   weight: string;
   image: string | null;
+  /** What one of these costs. Meals are sold singly, never by the carton. */
+  unitPrice: number;
 };
 
 export type DeliveryRate = {
@@ -76,7 +69,10 @@ export type DeliveryRate = {
   hub: string;
   /** Sunday everywhere except the Christchurch run. */
   deliveryDay: string;
-  /** What one carton costs to send here. */
+  /**
+   * The courier's own charge for this postcode. Kept for the business's
+   * records; the customer is charged the flat island rate instead.
+   */
   totalCharge: number;
 };
 
@@ -107,12 +103,26 @@ async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
 /** The sections to show, and the order they run in. */
 export const SECTION_ORDER = ["Meals", "Meat"];
 
+/**
+ * Sections held back from online ordering.
+ *
+ * Meat is paused at the client's request: the products stay in the API and on
+ * the shelf, they just aren't sold here for now. Empty this array to offer
+ * them again — nothing else needs changing.
+ */
+export const HIDDEN_SECTIONS = ["Meat"];
+
 export async function fetchShopProducts(): Promise<ShopProduct[]> {
   const rows = await getJson<Record<string, unknown>[]>("/WebsiteProduct");
 
   const products: ShopProduct[] = [];
   for (const row of rows) {
     const code = (pick<string>(row, "code") || "").trim();
+    const section = (pick<string>(row, "section") || "").trim() || "More";
+    if (HIDDEN_SECTIONS.includes(section)) continue;
+
+    // The API prices a carton, because that is how the warehouse thinks. A
+    // meal's price is that divided by what the carton holds.
     const cartonQty = num(pick(row, "cartonQty"));
     const baseCartonPrice = num(pick(row, "baseCartonPrice"));
     // Without a code, a carton size and a price there is nothing to sell.
@@ -120,16 +130,13 @@ export async function fetchShopProducts(): Promise<ShopProduct[]> {
 
     products.push({
       id: num(pick(row, "websiteProudctId", "websiteProductId", "id")),
-      section: (pick<string>(row, "section") || "").trim() || "More",
+      section,
       code,
       name: (pick<string>(row, "name") || code).trim(),
       feedName: (pick<string>(row, "feedName") || "").trim(),
       weight: (pick<string>(row, "weight") || "").trim(),
       image: resolveProductImage(pick<string>(row, "image") || null),
-      cartonQty,
-      baseCartonPrice,
-      baseCartonLimit: num(pick(row, "baseCartonLimit"), 2),
-      priceIncreasePercentage: num(pick(row, "priceIncreasePercentage")),
+      unitPrice: Math.round((baseCartonPrice / cartonQty) * 100) / 100,
     });
   }
 
@@ -157,7 +164,7 @@ export function sectionsOf(products: ShopProduct[]): string[] {
 }
 
 /* ------------------------------------------------------------------ */
-/* Freight                                                             */
+/* Delivery runs                                                       */
 /* ------------------------------------------------------------------ */
 
 /** Raised when a postcode has no delivery run — not an error, an answer. */
@@ -180,6 +187,8 @@ export async function fetchDeliveryRate(
 
   // The API answers 404 for a postcode off the rate card, which is a real
   // answer rather than a failure — the checkout says so instead of guessing.
+  // This is also what enforces "no rural delivery": an RD postcode is not on
+  // a run, so it never gets as far as being charged for.
   if (res.status === 404) throw new NotDeliverableError(normalised);
   if (!res.ok) throw new Error(`Delivery lookup failed: HTTP ${res.status}`);
 
@@ -192,27 +201,4 @@ export async function fetchDeliveryRate(
     deliveryDay: (pick<string>(row, "deliveryDay") || "").trim(),
     totalCharge: num(pick(row, "totalCharge")),
   };
-}
-
-/* ------------------------------------------------------------------ */
-/* Packs                                                               */
-/* ------------------------------------------------------------------ */
-
-/** How a chosen pack reads to a shopper: "Carton (12 × 400g)", or "400g". */
-export function packLabel(
-  packSize: PackSize,
-  product: { cartonQty: number; weight: string }
-): string {
-  if (packSize !== "carton") return product.weight || "Single";
-  return `Carton (${product.cartonQty}${
-    product.weight ? ` × ${product.weight}` : " packs"
-  })`;
-}
-
-/** How many individual items a chosen pack puts into the order. */
-export function itemsPerPack(
-  packSize: PackSize,
-  product: { cartonQty: number }
-): number {
-  return packSize === "carton" ? product.cartonQty : 1;
 }

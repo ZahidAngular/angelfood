@@ -15,7 +15,7 @@
  */
 
 import { useMemo, useSyncExternalStore } from "react";
-import { priceOf, type CartLine } from "./cart";
+import type { CartLine } from "./cart";
 
 /** The endpoint that creates a Stripe Checkout Session. Empty until wired. */
 const CHECKOUT_API_URL = process.env.NEXT_PUBLIC_CHECKOUT_API_URL || "";
@@ -91,24 +91,17 @@ export const emptyCustomer: CheckoutCustomer = {
 export const toCents = (amount: number) => Math.round(amount * 100);
 
 /**
- * Priced in individual items rather than packs, so a carton of twelve goes to
- * Stripe as twelve at the item rate. That way the payment page itemises what
- * the customer actually agreed to rather than one opaque line.
+ * Priced per meal, which is also how they are sold — so the payment page
+ * itemises exactly what the customer picked rather than one opaque line.
  */
-export function toCheckoutLines(
-  cart: CartLine[],
-  describe: (line: CartLine) => string
-): CheckoutLine[] {
-  return cart.map((line) => {
-    const priced = priceOf(line);
-    return {
-      code: line.code,
-      name: line.name,
-      description: describe(line),
-      quantity: priced.items,
-      unitAmount: toCents(priced.items ? priced.price / priced.items : 0),
-    };
-  });
+export function toCheckoutLines(cart: CartLine[]): CheckoutLine[] {
+  return cart.map((line) => ({
+    code: line.code,
+    name: line.name,
+    description: line.weight,
+    quantity: line.quantity,
+    unitAmount: toCents(line.unitPrice),
+  }));
 }
 
 /* ------------------------------------------------------------------ */

@@ -15,15 +15,14 @@ import {
 } from "lucide-react";
 import { AddressSearch } from "./AddressSearch";
 import { OrderNotice, ProductThumb, Totals } from "./BuyNow";
-import { priceOf, useCart } from "@/lib/cart";
+import { useOrder } from "@/lib/cart";
 import type { AddressSuggestion } from "@/lib/address-search";
-import { packLabel } from "@/lib/shop";
 import {
   rememberPostcode,
   useDeliveryPostcode,
   useDeliveryRate,
 } from "@/lib/delivery";
-import { formatPrice, orderTotals, MINIMUM_ITEMS } from "@/lib/pricing";
+import { DELIVERY, formatPrice, islandFor, orderTotals } from "@/lib/pricing";
 import { NZ_REGIONS } from "@/lib/stores";
 import {
   createCheckoutSession,
@@ -43,12 +42,17 @@ import {
 } from "@/lib/checkout";
 
 export function CheckoutForm() {
-  const { lines, items, freight } = useCart();
-  // The delivery step's postcode is the one the summary quotes freight from,
-  // so it is asked for once and shared rather than collected twice.
+  const { lines, bundle, items, remaining } = useOrder();
+  // The delivery step's postcode does two jobs: it says which island the
+  // order is going to, which is what freight is charged on, and it is
+  // looked up against the rate card to check we run a truck there at all.
   const storedPostcode = useDeliveryPostcode();
   const rateState = useDeliveryRate(storedPostcode);
-  const totals = orderTotals(lines.map(priceOf), rateState.rate, freight);
+  const totals = orderTotals({
+    lines,
+    bundle,
+    island: islandFor(storedPostcode),
+  });
 
   // What was typed here last time, and whatever has been typed since. Keeping
   // the two apart means the saved details can arrive from the browser after
@@ -140,6 +144,19 @@ export function CheckoutForm() {
       return;
     }
 
+    // We only run trucks to the postcodes on the rate card, and rural
+    // addresses are not among them. Better to say so now than to take the
+    // money for a delivery we can't make.
+    if (step === "delivery" && rateState.status === "not-delivered") {
+      setErrors({
+        postcode: "Sorry, we don't deliver here — and we can't do rural delivery.",
+      });
+      setTimeout(() => {
+        formRef.current?.querySelector<HTMLElement>('[name="postcode"]')?.focus();
+      }, 0);
+      return;
+    }
+
     goTo(CHECKOUT_STEPS[stepIndex + 1].id);
   }
 
@@ -152,7 +169,7 @@ export function CheckoutForm() {
       const origin = window.location.origin;
       const session = await createCheckoutSession({
         currency: CURRENCY,
-        lines: toCheckoutLines(lines, (line) => packLabel(line.packSize, line)),
+        lines: toCheckoutLines(lines),
         deliveryAmount: toCents(totals.delivery ?? 0),
         customer,
         successUrl: `${origin}/checkout/success`,
@@ -177,10 +194,10 @@ export function CheckoutForm() {
     else advance();
   }
 
-  // Nothing to pay for, or not enough of it — either way the form has no
-  // business being here, and the cart is where it can be fixed.
-  if (items === 0 || !totals.meetsMinimum) {
-    return <NotReadyToPay items={items} shortBy={totals.shortBy} />;
+  // Nothing to pay for, or a carton that isn't exactly full — either way
+  // the form has no business being here, and the cart is where it's fixed.
+  if (items === 0 || !totals.bundleComplete) {
+    return <NotReadyToPay items={items} bundle={bundle} remaining={remaining} />;
   }
 
   return (
@@ -530,7 +547,9 @@ function DeliveryStep({
       </div>
 
       <p className="mt-5 text-xs text-ink-soft">
-        We deliver within New Zealand only — a flat $20 anywhere in the country.
+        New Zealand only: {formatPrice(DELIVERY.northIsland)} to the North
+        Island, {formatPrice(DELIVERY.southIsland)} to the South, and free on
+        orders of {DELIVERY.freeFrom}. Sorry, no rural delivery.
       </p>
     </>
   );
@@ -544,7 +563,7 @@ function ReviewStep({
   onEdit,
 }: {
   customer: CheckoutCustomer;
-  lines: ReturnType<typeof useCart>["lines"];
+  lines: ReturnType<typeof useOrder>["lines"];
   totals: ReturnType<typeof orderTotals>;
   rateState: ReturnType<typeof useDeliveryRate>;
   onEdit: (step: CheckoutStep) => void;
@@ -586,18 +605,12 @@ function ReviewStep({
         </h3>
         <ul className="mt-3 space-y-2 text-sm">
           {lines.map((line) => (
-            <li
-              key={`${line.code}:${line.packSize}`}
-              className="flex justify-between gap-3"
-            >
+            <li key={line.code} className="flex justify-between gap-3">
               <span className="text-ink-soft">
-                {line.quantity} × {line.name}{" "}
-                <span className="text-ink-soft/70">
-                  ({packLabel(line.packSize, line)})
-                </span>
+                {line.quantity} × {line.name}
               </span>
               <span className="shrink-0 font-semibold text-ink">
-                {formatPrice(priceOf(line).price)}
+                {formatPrice(line.quantity * line.unitPrice)}
               </span>
             </li>
           ))}
@@ -651,7 +664,7 @@ function OrderPanel({
   totals,
   rateState,
 }: {
-  lines: ReturnType<typeof useCart>["lines"];
+  lines: ReturnType<typeof useOrder>["lines"];
   totals: ReturnType<typeof orderTotals>;
   rateState: ReturnType<typeof useDeliveryRate>;
 }) {
@@ -673,7 +686,7 @@ function OrderPanel({
           <span className="text-xs font-bold uppercase tracking-[0.18em] text-green">
             Your order
             <span className="ml-2 font-medium normal-case tracking-normal text-ink-soft">
-              ({totals.items} {totals.items === 1 ? "item" : "items"})
+              ({totals.items} {totals.items === 1 ? "meal" : "meals"})
             </span>
           </span>
           <span className="flex shrink-0 items-center gap-2">
@@ -697,21 +710,18 @@ function OrderPanel({
         >
           <ul className="divide-y divide-line">
             {lines.map((line) => (
-              <li
-                key={`${line.code}:${line.packSize}`}
-                className="flex items-center gap-3 py-3 lg:first:pt-4"
-              >
+              <li key={line.code} className="flex items-center gap-3 py-3 lg:first:pt-4">
                 <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cream">
                   <ProductThumb src={line.image} name={line.name} sizes="48px" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-ink">{line.name}</p>
                   <p className="mt-0.5 text-xs text-ink-soft">
-                    {line.quantity} × {packLabel(line.packSize, line)}
+                    {line.quantity} × {formatPrice(line.unitPrice)}
                   </p>
                 </div>
                 <span className="shrink-0 text-sm font-bold text-ink">
-                  {formatPrice(priceOf(line).price)}
+                  {formatPrice(line.quantity * line.unitPrice)}
                 </span>
               </li>
             ))}
@@ -723,7 +733,10 @@ function OrderPanel({
             className="mt-4 border-t border-line pt-4"
           />
           <p className="mt-1.5 text-xs text-ink-soft">
-            GST included. Delivery is per carton at your postcode&apos;s rate.
+            GST included. Delivery is a flat{" "}
+            {formatPrice(DELIVERY.northIsland)} North Island,{" "}
+            {formatPrice(DELIVERY.southIsland)} South — free on{" "}
+            {DELIVERY.freeFrom}.
           </p>
           <OrderNotice totals={totals} rateState={rateState} className="mt-4" />
 
@@ -870,19 +883,33 @@ function SelectField({
 /* Empty                                                               */
 /* ------------------------------------------------------------------ */
 
-function NotReadyToPay({ items, shortBy }: { items: number; shortBy: number }) {
+function NotReadyToPay({
+  items,
+  bundle,
+  remaining,
+}: {
+  items: number;
+  bundle: number;
+  remaining: number;
+}) {
   return (
     <div className="mx-auto max-w-3xl px-5 text-center sm:px-8">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-line bg-paper text-ink-soft">
         <ShoppingCart size={26} />
       </div>
       <h1 className="mt-8 font-display text-[clamp(2.2rem,6vw,4rem)] font-extrabold leading-[0.98] tracking-[-0.03em] text-ink">
-        {items === 0 ? "Nothing to pay for" : "Not quite enough yet"}
+        {items === 0
+          ? "Nothing to pay for"
+          : remaining > 0
+            ? "Not quite a full carton"
+            : "That's a carton and a bit"}
       </h1>
       <p className="mt-5 text-lg text-ink-soft">
         {items === 0
-          ? `Your order is empty — ${MINIMUM_ITEMS} items is the smallest we send.`
-          : `${shortBy} more and you're away — ${MINIMUM_ITEMS} items is the smallest we send.`}
+          ? `Your order is empty — pick ${bundle} meals to get started.`
+          : remaining > 0
+            ? `${remaining} more and your ${bundle}-meal carton is full.`
+            : `That's ${-remaining} too many for a ${bundle}-meal carton.`}
       </p>
       <Link
         href="/buy-now"

@@ -1,168 +1,116 @@
 /**
  * What an order costs.
  *
- * Goods and freight are worked out separately, because they behave
- * differently. A carton costs what a carton costs, however many you take —
- * two cartons is simply twice one. Freight is the opposite: it is charged per
- * carton on the truck, at a rate that depends on where the truck is going, so
- * two cartons to the same address costs twice the delivery.
+ * Meals are sold by the meal, at one price, in a bundle of 12, 18 or 24. The
+ * bundle is not a discount — it is the size of the box being filled — so the
+ * goods are simply the price of a meal times however many are in it.
  *
- * Both halves come from the API rather than living here: carton price, carton
- * size and the freight uplift come from WebsiteProduct, and the per-postcode
- * rate from DeliveryRate. Nothing in this file is a figure someone has to
- * remember to keep in step with the database.
+ * Freight is a flat charge by island rather than the courier's per-postcode
+ * rate: the rate card varies from about $12 to $76 a drop, and the business
+ * charges one averaged figure instead. Twenty-four meals carry their own
+ * freight, so delivery is free at that size.
  */
 
-import type { DeliveryRate, ProductPricing } from "./shop";
+/** Bundle sizes offered, smallest first. The first is also the minimum. */
+export const BUNDLE_SIZES = [12, 18, 24] as const;
+export type BundleSize = (typeof BUNDLE_SIZES)[number];
 
-/** Below this we don't ship: a smaller order costs more to send than it earns. */
-export const MINIMUM_ITEMS = 12;
+export const MINIMUM_ITEMS = BUNDLE_SIZES[0];
 
 /**
- * Freight charged past `baseCartonLimit` cartons, when the products in the
- * order don't say. The products all carry their own figures; this only covers
- * an order of something that somehow arrived without them.
+ * Flat freight, by island. Not read from DeliveryRates: that table is the
+ * courier's actual cost per postcode, which this deliberately averages over.
  */
-const FALLBACK_CARTON_LIMIT = 2;
-const FALLBACK_UPLIFT_PERCENT = 0;
+export const DELIVERY = {
+  northIsland: 15,
+  southIsland: 20,
+  /** At or above this many meals, delivery is on us. */
+  freeFrom: 24,
+} as const;
+
+/**
+ * South Island postcodes start at 7000 — Nelson and Marlborough through
+ * Canterbury, Otago and Southland. Everything below is North Island.
+ */
+const SOUTH_ISLAND_FROM = 7000;
+
+export type Island = "North Island" | "South Island";
+
+/** Which island a postcode is on, or null if it isn't a NZ postcode. */
+export function islandFor(postcode: string): Island | null {
+  const digits = (postcode || "").trim();
+  if (!/^\d{4}$/.test(digits)) return null;
+  return Number(digits) >= SOUTH_ISLAND_FROM ? "South Island" : "North Island";
+}
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
-/** One item's share of a carton — $138 over 12 is $11.50 a meal. */
-export function itemPrice(product: ProductPricing): number {
-  if (!product.cartonQty || !product.baseCartonPrice) return 0;
-  return product.baseCartonPrice / product.cartonQty;
+/** Freight for an order of `items` meals going to `island`. */
+export function deliveryFor(items: number, island: Island | null): number | null {
+  if (items <= 0) return 0;
+  if (items >= DELIVERY.freeFrom) return 0;
+  if (!island) return null;
+  return island === "South Island" ? DELIVERY.southIsland : DELIVERY.northIsland;
 }
 
-/**
- * Freight for a whole order.
- *
- * Each carton on the truck is charged the postcode's rate. Past
- * `limit` cartons each further one is charged `upliftPercent` more, which is
- * what the extra handling on a bigger drop costs — so one carton is the rate,
- * two is exactly double, and a large order climbs from there.
- */
-export function deliveryFor(
-  cartons: number,
-  ratePerCarton: number,
-  limit: number = FALLBACK_CARTON_LIMIT,
-  upliftPercent: number = FALLBACK_UPLIFT_PERCENT
-): number {
-  return deliveryBreakdown(cartons, ratePerCarton, limit, upliftPercent).total;
-}
-
-export type DeliveryBreakdown = {
-  total: number;
-  /** Cartons charged at the plain rate. */
-  atBase: number;
-  /** Cartons charged the uplifted rate, and what that rate is. */
-  atUplift: number;
-  upliftRate: number;
-};
-
-/**
- * The same sum, itemised. The summary shows this rather than "cartons × rate",
- * which stops being true the moment the uplift applies and leaves a customer
- * looking at a multiplication that doesn't reach the total.
- */
-export function deliveryBreakdown(
-  cartons: number,
-  ratePerCarton: number,
-  limit: number = FALLBACK_CARTON_LIMIT,
-  upliftPercent: number = FALLBACK_UPLIFT_PERCENT
-): DeliveryBreakdown {
-  const upliftRate = round2(ratePerCarton * (1 + upliftPercent / 100));
-  if (cartons <= 0 || ratePerCarton <= 0) {
-    return { total: 0, atBase: 0, atUplift: 0, upliftRate };
-  }
-
-  const atBase = Math.min(cartons, Math.max(0, limit));
-  const atUplift = cartons - atBase;
-  return {
-    total: round2(atBase * ratePerCarton + atUplift * upliftRate),
-    atBase,
-    atUplift,
-    upliftRate,
-  };
-}
+/** The part of a cart line the money depends on. */
+export type OrderLine = { quantity: number; unitPrice: number };
 
 export type OrderTotals = {
-  /** Individual packs. A carton of twelve counts as twelve. */
+  /** Meals chosen. */
   items: number;
+  /** The bundle being filled, and how far off it is. */
+  bundle: BundleSize;
+  /** Meals still to choose. Negative means too many for the bundle. */
+  remaining: number;
+  /** True only when the bundle is exactly filled. */
+  bundleComplete: boolean;
   /**
-   * Cartons on the truck, which is what freight is charged on. Loose packs
-   * are grouped into cartons rather than riding free — twelve singles take up
-   * the same space as the carton they came out of.
+   * The price of a meal, when every meal in the order is the same price —
+   * which they are today. null once a mixed order makes "each" a lie.
    */
-  cartons: number;
+  pricePerItem: number | null;
   subtotal: number;
-  /** null until a postcode we deliver to is known — not the same as free. */
+  /** null when freight can't be worked out yet — not the same as free. */
   delivery: number | null;
-  /** null while delivery is unknown, for the same reason. */
   total: number | null;
-  meetsMinimum: boolean;
-  shortBy: number;
-  /** The rate the freight was worked out from, for showing the customer. */
-  rate: DeliveryRate | null;
-  /** How that freight splits across cartons. null when there is no rate. */
-  breakdown: DeliveryBreakdown | null;
+  /** True when this order earns free delivery on size alone. */
+  freeDelivery: boolean;
+  island: Island | null;
 };
 
-export type PricedLine = {
-  /** Items this line puts in the order. */
-  items: number;
-  /** Fraction of a carton it takes up — 6 of a 12-carton meal is half. */
-  cartons: number;
-  price: number;
-};
-
-/** What one cart line costs and how much of a carton it occupies. */
-export function priceLine(
-  product: ProductPricing,
-  packSize: "unit" | "carton",
-  quantity: number
-): PricedLine {
-  const cartonQty = product.cartonQty || 1;
-  const items = quantity * (packSize === "carton" ? cartonQty : 1);
-  return {
-    items,
-    cartons: items / cartonQty,
-    price: round2(items * itemPrice(product)),
-  };
-}
-
-export function orderTotals(
-  lines: PricedLine[],
-  rate: DeliveryRate | null,
-  freight: { limit: number; upliftPercent: number }
-): OrderTotals {
+export function orderTotals({
+  lines,
+  bundle,
+  island,
+}: {
+  lines: OrderLine[];
+  bundle: BundleSize;
+  island: Island | null;
+}): OrderTotals {
   let items = 0;
-  let cartonFraction = 0;
   let subtotal = 0;
-
   for (const line of lines) {
-    items += line.items;
-    cartonFraction += line.cartons;
-    subtotal += line.price;
+    items += line.quantity;
+    subtotal += line.quantity * line.unitPrice;
   }
+  subtotal = round2(subtotal);
 
-  // Part of a carton still takes a carton's room on the truck.
-  const cartons = Math.ceil(round2(cartonFraction));
-  const breakdown = rate
-    ? deliveryBreakdown(cartons, rate.totalCharge, freight.limit, freight.upliftPercent)
-    : null;
-  const delivery = breakdown ? breakdown.total : null;
+  const prices = new Set(lines.map((l) => l.unitPrice));
+  const delivery = deliveryFor(items, island);
+  const freeDelivery = items >= DELIVERY.freeFrom;
 
   return {
     items,
-    cartons,
-    subtotal: round2(subtotal),
+    bundle,
+    remaining: bundle - items,
+    bundleComplete: items === bundle,
+    pricePerItem: prices.size === 1 ? [...prices][0] : null,
+    subtotal,
     delivery,
     total: delivery === null ? null : round2(subtotal + delivery),
-    meetsMinimum: items >= MINIMUM_ITEMS,
-    shortBy: Math.max(0, MINIMUM_ITEMS - items),
-    rate,
-    breakdown,
+    freeDelivery,
+    island,
   };
 }
 

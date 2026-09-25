@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { clearCart } from "@/lib/cart";
+import { clearOrder } from "@/lib/cart";
 import { usePaymentReference } from "@/lib/checkout";
 
 /**
@@ -20,7 +20,7 @@ export function CheckoutSuccess() {
   const reference = usePaymentReference();
 
   useEffect(() => {
-    clearCart();
+    clearOrder();
   }, []);
 
   return (

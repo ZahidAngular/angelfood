@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import { NAV_LINKS } from "@/lib/site";
-import { useCart } from "@/lib/cart";
+import { useOrder } from "@/lib/cart";
 import { SocialLinks } from "./SocialIcons";
 
 /** The order being built on /buy-now, reachable from every page. */
@@ -17,7 +17,7 @@ function CartLink({ count }: { count: number }) {
       href="/cart"
       aria-label={
         count > 0
-          ? `Your order — ${count} ${count === 1 ? "item" : "items"}`
+          ? `Your order — ${count} ${count === 1 ? "meal" : "meals"}`
           : "Your order"
       }
       className="relative flex h-10 w-10 items-center justify-center rounded-full border border-line text-green transition-colors hover:bg-cream-deep"
@@ -36,7 +36,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const { items: cartCount } = useCart();
+  const { items: cartCount } = useOrder();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);

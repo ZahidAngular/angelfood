@@ -3,22 +3,14 @@
 import Link from "next/link";
 import { ArrowRight, Lock, ShoppingCart, Trash2 } from "lucide-react";
 import { OrderNotice, ProductThumb, QuantityStepper, Totals } from "./BuyNow";
-import {
-  clearCart,
-  lineItems,
-  priceOf,
-  removeLine,
-  setLineQuantity,
-  useCart,
-} from "@/lib/cart";
-import { packLabel } from "@/lib/shop";
+import { clearOrder, removeLine, setQuantity, useOrder } from "@/lib/cart";
 import { formatPrice, orderTotals } from "@/lib/pricing";
 
 export function CartView() {
-  const { lines, items, freight } = useCart();
+  const { lines, bundle, items, remaining } = useOrder();
   // Freight needs an address, and the cart hasn't asked for one — it is
   // quoted at the checkout, where the delivery step does.
-  const totals = orderTotals(lines.map(priceOf), null, freight);
+  const totals = orderTotals({ lines, bundle, island: null });
 
   if (items === 0) return <EmptyCart />;
 
@@ -29,8 +21,12 @@ export function CartView() {
           Your order
         </h1>
         <p className="mt-4 text-lg text-ink-soft">
-          {totals.items} {totals.items === 1 ? "item" : "items"} in{" "}
-          {totals.cartons} {totals.cartons === 1 ? "carton" : "cartons"}.
+          {items} of {bundle} meals chosen
+          {remaining > 0
+            ? ` — ${remaining} to go.`
+            : remaining < 0
+              ? ` — ${-remaining} too many.`
+              : "."}
         </p>
       </header>
 
@@ -38,7 +34,7 @@ export function CartView() {
         <ul className="divide-y divide-line overflow-hidden rounded-[1.75rem] border border-line bg-paper">
           {lines.map((line) => (
             <li
-              key={`${line.code}:${line.packSize}`}
+              key={line.code}
               className="flex flex-wrap items-center gap-4 p-4 sm:flex-nowrap sm:p-5"
             >
               <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-cream">
@@ -55,8 +51,8 @@ export function CartView() {
                   {line.name}
                 </p>
                 <p className="mt-1 text-sm text-ink-soft">
-                  {packLabel(line.packSize, line)} ·{" "}
-                  {lineItems(line) === 1 ? "1 item" : `${lineItems(line)} items`}
+                  {formatPrice(line.unitPrice)} each
+                  {line.weight ? ` · ${line.weight}` : ""}
                 </p>
               </div>
 
@@ -64,17 +60,30 @@ export function CartView() {
                   meal, which is why they sit in a spread-out group. */}
               <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-end">
                 <QuantityStepper
-                  label={`${line.name}, ${packLabel(line.packSize, line)}`}
+                  label={line.name}
                   value={line.quantity}
-                  onChange={(next) => setLineQuantity(line.code, line.packSize, next)}
+                  onChange={(next) =>
+                    setQuantity(
+                      {
+                        code: line.code,
+                        name: line.name,
+                        image: line.image,
+                        weight: line.weight,
+                        unitPrice: line.unitPrice,
+                      },
+                      next
+                    )
+                  }
+                  min={0}
+                  max={line.quantity + Math.max(0, remaining)}
                 />
                 <span className="font-display text-lg font-bold text-ink sm:w-24 sm:text-right">
-                  {formatPrice(priceOf(line).price)}
+                  {formatPrice(line.quantity * line.unitPrice)}
                 </span>
                 <button
                   type="button"
-                  onClick={() => removeLine(line.code, line.packSize)}
-                  aria-label={`Remove ${line.name}, ${packLabel(line.packSize, line)}`}
+                  onClick={() => removeLine(line.code)}
+                  aria-label={`Remove ${line.name}`}
                   className="text-ink-soft/60 transition-colors hover:text-coral"
                 >
                   <Trash2 size={16} />
@@ -87,13 +96,13 @@ export function CartView() {
         <aside className="lg:sticky lg:top-32 lg:h-fit">
           <div className="rounded-[1.75rem] border border-line bg-paper p-5 sm:p-6">
             <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-green">
-              Summary
+              {bundle}-meal carton
             </h2>
 
             <Totals totals={totals} quoteAtCheckout className="mt-4 border-t border-line pt-4" />
             <p className="mt-1.5 text-xs text-ink-soft">
               GST included. Delivery is worked out at checkout, once we know
-              where it&apos;s going — it&apos;s charged per carton.
+              where it&apos;s going.
             </p>
 
             <OrderNotice totals={totals} className="mt-4" />
@@ -102,9 +111,9 @@ export function CartView() {
               <Lock size={12} /> Secure payment by Stripe
             </p>
 
-            {/* Below the minimum there is nothing to check out to, so the
-                button becomes the reason why rather than a dead end. */}
-            {totals.meetsMinimum ? (
+            {/* A carton that isn't exactly full isn't an order we can send, so
+                the button becomes the reason why rather than a dead end. */}
+            {totals.bundleComplete ? (
               <Link
                 href="/checkout"
                 className="mt-5 flex items-center justify-center gap-2 rounded-full bg-green px-5 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-cream transition-transform hover:scale-[1.03]"
@@ -113,18 +122,20 @@ export function CartView() {
               </Link>
             ) : (
               <p className="mt-5 rounded-full bg-cream px-5 py-3.5 text-center text-sm font-bold uppercase tracking-[0.12em] text-ink-soft">
-                {totals.shortBy} more to check out
+                {remaining > 0
+                  ? `Add ${remaining} more to check out`
+                  : `Remove ${-remaining} to check out`}
               </p>
             )}
             <Link
               href="/buy-now"
               className="mt-3 flex items-center justify-center rounded-full border border-line px-5 py-3.5 text-sm font-bold uppercase tracking-[0.12em] text-green transition-colors hover:bg-cream"
             >
-              Add more
+              {remaining > 0 ? "Add more meals" : "Change my meals"}
             </Link>
             <button
               type="button"
-              onClick={clearCart}
+              onClick={clearOrder}
               className="mt-4 w-full text-center text-xs font-semibold uppercase tracking-[0.12em] text-ink-soft/70 transition-colors hover:text-coral"
             >
               Clear order

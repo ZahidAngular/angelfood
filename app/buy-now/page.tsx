@@ -5,13 +5,13 @@ import { BuyNow } from "@/components/BuyNow";
 export const metadata: Metadata = {
   title: "Buy Now — Angel Food",
   description:
-    "Order Angel Food plant-based meals and meats online — butter curry, lasagna, korma, burgers, meatballs and more, by the single pack or by the carton.",
+    "Fill your freezer with Angel Food plant-based ready meals — butter curry, lasagna, korma and tofu rice bowls. Cartons of 12, 18 or 24, mixed however you like, delivered across New Zealand.",
   alternates: { canonical: "/buy-now" },
   openGraph: {
     url: "/buy-now",
     title: "Buy Now — Angel Food",
     description:
-      "Order Angel Food plant-based ready meals online — butter curry, lasagna, korma and tofu rice bowls, by the single pack or by the carton.",
+      "Fill your freezer with Angel Food plant-based ready meals. Cartons of 12, 18 or 24, mixed however you like, delivered across New Zealand.",
   },
 };
 
@@ -20,8 +20,8 @@ export default function BuyNowPage() {
     <main>
       <PageHeader
         eyebrow="Buy now"
-        title="By the pack or the carton."
-        intro="Our ready-to-go meals and plant-based meats, straight from us. Take a single pack to try, or a carton for the weeks you'd rather not think about dinner."
+        title="Fill your freezer."
+        intro="Our ready-to-go meals, straight from us. Pick a carton of 12, 18 or 24 and fill it with whatever you fancy — free delivery when you take 24."
       />
       <BuyNow />
     </main>
