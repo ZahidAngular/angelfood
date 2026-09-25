@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import { AddressSearch } from "./AddressSearch";
 import { OrderNotice, ProductThumb, Totals } from "./BuyNow";
-import { useOrder } from "@/lib/cart";
+import { clearOrder, useOrder } from "@/lib/cart";
+import { placeOrder, rememberReceipt } from "@/lib/orders";
 import type { AddressSuggestion } from "@/lib/address-search";
 import {
   rememberPostcode,
@@ -25,17 +26,12 @@ import {
 import { DELIVERY, formatPrice, islandFor, orderTotals } from "@/lib/pricing";
 import { NZ_REGIONS } from "@/lib/stores";
 import {
-  createCheckoutSession,
   errorsForStep,
-  paymentsConfigured,
   saveCustomer,
   stepForField,
-  toCents,
-  toCheckoutLines,
   usePaymentCancelled,
   useSavedCustomer,
   CHECKOUT_STEPS,
-  CURRENCY,
   type CheckoutCustomer,
   type CheckoutStep,
   type FieldErrors,
@@ -160,27 +156,37 @@ export function CheckoutForm() {
     goTo(CHECKOUT_STEPS[stepIndex + 1].id);
   }
 
-  async function pay() {
+  /**
+   * Places the order.
+   *
+   * There is no payment step: the order is taken and settled with the
+   * customer afterwards, which is not something the website says out loud.
+   * The figures on this page are a quote — the server prices the order again
+   * from the catalogue, and what it returns is what was actually charged.
+   */
+  async function placeTheOrder() {
     setSubmitting(true);
     setSubmitError("");
     saveCustomer(customer);
 
     try {
-      const origin = window.location.origin;
-      const session = await createCheckoutSession({
-        currency: CURRENCY,
-        lines: toCheckoutLines(lines),
-        deliveryAmount: toCents(totals.delivery ?? 0),
-        customer,
-        successUrl: `${origin}/checkout/success`,
-        cancelUrl: `${origin}/checkout?cancelled=1`,
-      });
-      // Stripe's hosted page takes it from here — this tab goes to Stripe.
-      window.location.assign(session.url);
+      const order = await placeOrder(customer, lines, bundle);
+
+      // Kept before navigating so the confirmation page has something to show
+      // even though the order itself is about to be cleared.
+      rememberReceipt(order);
+      clearOrder();
+
+      window.location.assign(
+        `/checkout/success?order=${encodeURIComponent(order.orderNumber)}` +
+          `&token=${encodeURIComponent(order.trackingToken)}`
+      );
     } catch (err) {
-      console.error("[checkout] could not start payment:", err);
+      console.error("[checkout] could not place the order:", err);
       setSubmitError(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again."
       );
       setSubmitting(false);
     }
@@ -190,7 +196,7 @@ export function CheckoutForm() {
     e.preventDefault();
     if (submitting) return;
     // One form across every step, so Enter does the obvious thing throughout.
-    if (step === "review") void pay();
+    if (step === "review") void placeTheOrder();
     else advance();
   }
 
@@ -386,11 +392,13 @@ function StepButton({
         </>
       ) : submitting ? (
         <>
-          <Loader2 size={16} className="animate-spin" /> Taking you to Stripe…
+          <Loader2 size={16} className="animate-spin" /> Placing your order…
         </>
       ) : (
         <>
-          <Lock size={15} /> Pay {formatPrice(total)}
+          {/* Not "Pay": nothing is charged here. The button should promise
+              what the next screen actually does. */}
+          <Check size={16} /> Place order · {formatPrice(total)}
         </>
       )}
     </button>
@@ -620,8 +628,8 @@ function ReviewStep({
 
       <p className="flex items-start gap-2 text-xs leading-relaxed text-ink-soft">
         <Lock size={13} className="mt-0.5 shrink-0 text-green" />
-        Next is Stripe&apos;s secure payment page. Your card details go straight
-        to them and never touch this site.
+        We&apos;ll email your confirmation straight away, and again each time
+        your order moves. Nothing is charged on this page.
       </p>
     </div>
   );
@@ -741,16 +749,8 @@ function OrderPanel({
           <OrderNotice totals={totals} rateState={rateState} className="mt-4" />
 
           <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-ink-soft">
-            <Lock size={12} /> Card details are handled by Stripe, never by us.
+            <Lock size={12} /> We&apos;ll confirm your order by email.
           </p>
-
-          {!paymentsConfigured() && (
-            <p className="mt-4 rounded-xl border border-dashed border-coral/50 bg-coral/5 p-3 text-xs leading-relaxed text-ink">
-              <span className="font-bold">Payments aren&apos;t connected yet.</span>{" "}
-              This checkout is complete but the Stripe session endpoint
-              hasn&apos;t been set up, so paying will fail until it is.
-            </p>
-          )}
         </div>
       </div>
     </aside>

@@ -118,7 +118,7 @@ export type FieldErrors = Partial<Record<keyof CheckoutCustomer, string>>;
 export const CHECKOUT_STEPS = [
   { id: "details", label: "Details", heading: "Your details" },
   { id: "delivery", label: "Delivery", heading: "Where it's going" },
-  { id: "review", label: "Review", heading: "Review and pay" },
+  { id: "review", label: "Review", heading: "Review your order" },
 ] as const;
 
 export type CheckoutStep = (typeof CHECKOUT_STEPS)[number]["id"];
