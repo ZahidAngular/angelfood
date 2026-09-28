@@ -846,11 +846,7 @@ function OrderSummary() {
         )}
 
         <p className="mt-5 border-t border-line pt-4 text-xs leading-relaxed text-ink-soft">
-          Delivered across the North Island and Christchurch, or{" "}
-          <Link href="/where-to-buy" className="font-semibold text-green underline">
-            find a stockist
-          </Link>{" "}
-          to buy today.
+          Delivered across Aotearoa (No Rural Delivery at this stage)
         </p>
       </div>
     </aside>

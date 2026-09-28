@@ -21,7 +21,7 @@ export default function BuyNowPage() {
       <PageHeader
         eyebrow="Buy now"
         title="Fill your freezer."
-        intro="Our ready-to-go meals, straight from us. Pick a carton of 12, 18 or 24 and fill it with whatever you fancy — free delivery when you take 24."
+        intro="Our ready-to-go meals come straight from us, snap frozen to lock in freshness. Pick a carton of 12, 18 or 24 and fill it with whatever you fancy — free delivery when you take 24."
       />
       <BuyNow />
     </main>

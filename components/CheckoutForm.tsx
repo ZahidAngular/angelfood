@@ -103,10 +103,24 @@ export function CheckoutForm() {
     if (found.postcode) rememberPostcode(found.postcode);
     setErrors({});
 
-    // Picking a suburb leaves exactly one thing to type; put the cursor in it.
-    if (found.kind === "locality") {
+    // Only a house-level match carries a postcode — a road or a suburb gives
+    // OSM's postal-area code, which is not on the courier's rate card. So the
+    // cursor goes to whatever is still missing rather than leaving the
+    // customer to discover it at the delivery gate.
+    const focusOn =
+      found.kind === "locality"
+        ? "address1"
+        : found.kind === "street"
+          ? "address1"
+          : found.postcode
+            ? null
+            : "postcode";
+
+    if (focusOn) {
       setTimeout(() => {
-        formRef.current?.querySelector<HTMLElement>('[name="address1"]')?.focus();
+        formRef.current
+          ?.querySelector<HTMLElement>(`[name="${focusOn}"]`)
+          ?.focus();
       }, 0);
     }
   }

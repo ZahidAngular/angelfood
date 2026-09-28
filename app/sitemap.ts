@@ -26,9 +26,11 @@ const STATIC_ROUTES: {
   { path: "/ingredients-nutrition-info", changeFrequency: "monthly", priority: 0.6 },
   { path: "/cheese-made-easy-and-dairy-free", changeFrequency: "monthly", priority: 0.6 },
   { path: "/store", changeFrequency: "monthly", priority: 0.4 },
+  { path: "/help-centre", changeFrequency: "monthly", priority: 0.6 },
   { path: "/privacy-policy", changeFrequency: "yearly", priority: 0.2 },
   { path: "/terms-of-website-use", changeFrequency: "yearly", priority: 0.2 },
   { path: "/terms-of-trade", changeFrequency: "yearly", priority: 0.2 },
+  { path: "/online-store-terms", changeFrequency: "yearly", priority: 0.3 },
   { path: "/social-media-giveaway-ts-cs", changeFrequency: "yearly", priority: 0.2 },
 ];
 

@@ -200,10 +200,16 @@ export function AddressSearch({
                 <span className="block truncate text-sm font-semibold text-ink">
                   {result.label}
                 </span>
-                {result.detail && (
+                {(result.detail || result.missing) && (
                   <span className="block truncate text-xs text-ink-soft">
                     {result.detail}
-                    {result.kind === "locality" && " · add the street below"}
+                    {/* Say what is still needed. A road without its houses
+                        gives no number and no postcode we can trust, and
+                        finding that out at the delivery step is too late. */}
+                    {result.missing === "number" &&
+                      `${result.detail ? " · " : ""}add your number and postcode`}
+                    {result.missing === "street" &&
+                      `${result.detail ? " · " : ""}add your street and postcode`}
                   </span>
                 )}
               </span>
