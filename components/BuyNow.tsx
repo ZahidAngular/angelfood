@@ -798,7 +798,7 @@ export function OrderTerms({ className = "" }: { className?: string }) {
       <p>Delivered across Aotearoa (No Rural Delivery at this stage)</p>
       <p className="mt-2.5 flex flex-col items-start gap-1.5">
         <Link href="/help-centre" {...linkProps}>
-          Online Ordering - help centre
+          Online Ordering FAQs
           <span className="sr-only"> (opens in a new tab)</span>
         </Link>
         <Link href="/online-store-terms" {...linkProps}>
@@ -836,8 +836,8 @@ function OrderSummary() {
 
         {items === 0 ? (
           <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-            Nothing in it yet. Pick {bundle} meals in any mix you like — as many
-            of one as you fancy.
+            Nothing in it yet. Build your own box of {bundle}
+            {" meals — mix and match to your heart's content."}
           </p>
         ) : (
           <>
