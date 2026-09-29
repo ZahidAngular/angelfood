@@ -778,23 +778,32 @@ export function OrderNotice({
  * three copies is three chances for one of them to quietly say something else.
  */
 export function OrderTerms({ className = "" }: { className?: string }) {
+  // Opened in their own tab, so reading the terms never costs someone the
+  // basket they were halfway through filling.
+  //
+  // rel is set because target="_blank" hands the opened page a reference back
+  // to this one, and the new tab is announced in the link's accessible name —
+  // a window opening unannounced is disorienting if you cannot see it happen.
+  const linkProps = {
+    target: "_blank",
+    rel: "noopener noreferrer",
+    className:
+      "font-semibold text-green underline decoration-green/30 underline-offset-2 transition-colors hover:text-ink",
+  } as const;
+
   return (
     <div
       className={`border-t border-line pt-4 text-xs leading-relaxed text-ink-soft ${className}`}
     >
       <p>Delivered across Aotearoa (No Rural Delivery at this stage)</p>
-      <p className="mt-2.5 flex flex-col gap-1.5">
-        <Link
-          href="/help-centre"
-          className="font-semibold text-green underline decoration-green/30 underline-offset-2 transition-colors hover:text-ink"
-        >
+      <p className="mt-2.5 flex flex-col items-start gap-1.5">
+        <Link href="/help-centre" {...linkProps}>
           Online Ordering - help centre
+          <span className="sr-only"> (opens in a new tab)</span>
         </Link>
-        <Link
-          href="/online-store-terms"
-          className="font-semibold text-green underline decoration-green/30 underline-offset-2 transition-colors hover:text-ink"
-        >
+        <Link href="/online-store-terms" {...linkProps}>
           Online Store - terms &amp; conditions
+          <span className="sr-only"> (opens in a new tab)</span>
         </Link>
       </p>
     </div>
