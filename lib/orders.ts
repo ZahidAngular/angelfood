@@ -171,6 +171,75 @@ export async function fetchTracking(
 }
 
 /* ------------------------------------------------------------------ */
+/* Paying                                                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Whether card payment is switched on, and in which mode.
+ *
+ * Asked of the server rather than assumed, so the checkout can say something
+ * honest when Stripe is not configured instead of sending someone to a
+ * payment page that cannot exist.
+ */
+export type StripeConfig = {
+  configured: boolean;
+  publishableKey: string;
+  liveMode: boolean;
+};
+
+export async function fetchStripeConfig(): Promise<StripeConfig> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/Stripe/Config`, { cache: "no-store" });
+    if (!res.ok) throw new Error(String(res.status));
+    return (await res.json()) as StripeConfig;
+  } catch {
+    return { configured: false, publishableKey: "", liveMode: false };
+  }
+}
+
+/**
+ * Asks for the hosted payment page for an order.
+ *
+ * Both halves of the tracking key go up: without the token anyone could ask
+ * for a payment page against someone else's order number and read their
+ * basket back off it.
+ */
+export async function createPaymentSession(
+  orderNumber: string,
+  token: string
+): Promise<string> {
+  const url =
+    `${API_BASE_URL}/Stripe/CheckoutSession` +
+    `?orderNumber=${encodeURIComponent(orderNumber)}` +
+    `&token=${encodeURIComponent(token)}`;
+
+  const res = await fetch(url, { method: "POST", cache: "no-store" });
+  const text = await res.text();
+
+  let payload: unknown = null;
+  try {
+    payload = text ? JSON.parse(text) : null;
+  } catch {
+    // A gateway error page rather than the API.
+  }
+
+  if (!res.ok) {
+    const message =
+      payload && typeof payload === "object" && "message" in payload
+        ? String((payload as { message: unknown }).message)
+        : "";
+    throw new OrderRefusedError(
+      message || "We couldn't start the payment. Please try again."
+    );
+  }
+
+  const session = payload as { url?: string };
+  if (!session?.url) throw new OrderRefusedError("Stripe didn't return a payment page.");
+
+  return session.url;
+}
+
+/* ------------------------------------------------------------------ */
 /* The link                                                            */
 /* ------------------------------------------------------------------ */
 

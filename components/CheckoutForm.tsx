@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 import { AddressSearch } from "./AddressSearch";
 import { OrderNotice, ProductThumb, Totals } from "./BuyNow";
-import { clearOrder, useOrder } from "@/lib/cart";
-import { placeOrder, rememberReceipt } from "@/lib/orders";
+import { useOrder } from "@/lib/cart";
+import { createPaymentSession, placeOrder, rememberReceipt } from "@/lib/orders";
 import type { AddressSuggestion } from "@/lib/address-search";
 import {
   rememberPostcode,
@@ -186,15 +186,22 @@ export function CheckoutForm() {
     try {
       const order = await placeOrder(customer, lines, bundle);
 
-      // Kept before navigating so the confirmation page has something to show
-      // even though the order itself is about to be cleared.
+      // Kept before leaving the page, so a customer who abandons the payment
+      // and comes back still has their order number and tracking link.
       rememberReceipt(order);
-      clearOrder();
 
-      window.location.assign(
-        `/checkout/success?order=${encodeURIComponent(order.orderNumber)}` +
-          `&token=${encodeURIComponent(order.trackingToken)}`
+      // Hand off to Stripe. The order is recorded either way; what the
+      // payment decides is whether it gets confirmed and emailed.
+      const paymentUrl = await createPaymentSession(
+        order.orderNumber,
+        order.trackingToken
       );
+
+      // Deliberately not cleared here. The basket is only emptied once the
+      // payment has actually gone through — someone who backs out of Stripe
+      // should find their meals still in it, not an empty cart and an order
+      // they never paid for.
+      window.location.assign(paymentUrl);
     } catch (err) {
       console.error("[checkout] could not place the order:", err);
       setSubmitError(
@@ -406,13 +413,11 @@ function StepButton({
         </>
       ) : submitting ? (
         <>
-          <Loader2 size={16} className="animate-spin" /> Placing your order…
+          <Loader2 size={16} className="animate-spin" /> Taking you to Stripe…
         </>
       ) : (
         <>
-          {/* Not "Pay": nothing is charged here. The button should promise
-              what the next screen actually does. */}
-          <Check size={16} /> Place order · {formatPrice(total)}
+          <Lock size={15} /> Pay {formatPrice(total)}
         </>
       )}
     </button>
@@ -642,8 +647,8 @@ function ReviewStep({
 
       <p className="flex items-start gap-2 text-xs leading-relaxed text-ink-soft">
         <Lock size={13} className="mt-0.5 shrink-0 text-green" />
-        We&apos;ll email your confirmation straight away, and again each time
-        your order moves. Nothing is charged on this page.
+        Next is Stripe&apos;s secure payment page. Your card details go
+        straight to them and never touch this site.
       </p>
     </div>
   );
@@ -763,7 +768,7 @@ function OrderPanel({
           <OrderNotice totals={totals} rateState={rateState} className="mt-4" />
 
           <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-ink-soft">
-            <Lock size={12} /> We&apos;ll confirm your order by email.
+            <Lock size={12} /> Card details are handled by Stripe, never by us.
           </p>
         </div>
       </div>
