@@ -14,7 +14,7 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { AddressSearch } from "./AddressSearch";
-import { OrderNotice, ProductThumb, Totals } from "./BuyNow";
+import { OrderNotice, OrderTerms, ProductThumb, Totals } from "./BuyNow";
 import { useOrder } from "@/lib/cart";
 import { createPaymentSession, placeOrder, rememberReceipt } from "@/lib/orders";
 import type { AddressSuggestion } from "@/lib/address-search";
@@ -770,6 +770,8 @@ function OrderPanel({
           <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-ink-soft">
             <Lock size={12} /> Card details are handled by Stripe, never by us.
           </p>
+
+          <OrderTerms className="mt-5" />
         </div>
       </div>
     </aside>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, Lock, ShoppingCart, Trash2 } from "lucide-react";
-import { OrderNotice, ProductThumb, QuantityStepper, Totals } from "./BuyNow";
+import { OrderNotice, OrderTerms, ProductThumb, QuantityStepper, Totals } from "./BuyNow";
 import { clearOrder, removeLine, setQuantity, useOrder } from "@/lib/cart";
 import { formatPrice, orderTotals } from "@/lib/pricing";
 
@@ -140,6 +140,8 @@ export function CartView() {
             >
               Clear order
             </button>
+
+            <OrderTerms className="mt-5" />
           </div>
         </aside>
       </div>

@@ -770,6 +770,37 @@ export function OrderNotice({
   return null;
 }
 
+/**
+ * The small print under every order summary.
+ *
+ * Shared by the buy-now panel, the cart and the checkout rather than written
+ * out three times: these are the terms someone is agreeing to by ordering, and
+ * three copies is three chances for one of them to quietly say something else.
+ */
+export function OrderTerms({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={`border-t border-line pt-4 text-xs leading-relaxed text-ink-soft ${className}`}
+    >
+      <p>Delivered across Aotearoa (No Rural Delivery at this stage)</p>
+      <p className="mt-2.5 flex flex-col gap-1.5">
+        <Link
+          href="/help-centre"
+          className="font-semibold text-green underline decoration-green/30 underline-offset-2 transition-colors hover:text-ink"
+        >
+          Online Ordering - help centre
+        </Link>
+        <Link
+          href="/online-store-terms"
+          className="font-semibold text-green underline decoration-green/30 underline-offset-2 transition-colors hover:text-ink"
+        >
+          Online Store - terms &amp; conditions
+        </Link>
+      </p>
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /* Order summary                                                       */
 /* ------------------------------------------------------------------ */
@@ -845,9 +876,7 @@ function OrderSummary() {
           </>
         )}
 
-        <p className="mt-5 border-t border-line pt-4 text-xs leading-relaxed text-ink-soft">
-          Delivered across Aotearoa (No Rural Delivery at this stage)
-        </p>
+        <OrderTerms className="mt-5" />
       </div>
     </aside>
   );
