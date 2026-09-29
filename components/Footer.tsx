@@ -125,7 +125,7 @@ export function Footer() {
             <ul className="mt-5 space-y-3">
               {[
                 ...NAV_LINKS,
-                { label: "Help centre", href: "/help-centre" },
+                { label: "Online Ordering FAQs", href: "/help-centre" },
                 { label: "Blog", href: "/alices-vegan-food-blog" },
               ].map((l) => (
                 <li key={l.href}>
