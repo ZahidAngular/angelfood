@@ -2,17 +2,19 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { StoreLocator } from "@/components/StoreLocator";
 import { Stockists } from "@/components/Stockists";
+import { OG_DEFAULTS } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: "Where to Buy — Angel Food",
   description:
-    "Find Angel Food vegan cheese on shelves across Aotearoa — PAK'nSAVE, New World, Woolworths, Four Square and more. Search by town, filter by product, and get directions.",
+    "Find Angel Food vegan cheese on shelves across Aotearoa — PAK'nSAVE, New World, Woolworths, Four Square and more. Search by town and filter by product.",
   alternates: { canonical: "/where-to-buy" },
   openGraph: {
+    ...OG_DEFAULTS,
     url: "/where-to-buy",
     title: "Where to Buy — Angel Food",
     description:
-      "Find Angel Food vegan cheese on shelves across Aotearoa — PAK'nSAVE, New World, Woolworths, Four Square and more. Search by town, filter by product, and get directions.",
+      "Find Angel Food vegan cheese on shelves across Aotearoa — PAK'nSAVE, New World, Woolworths, Four Square and more. Search by town and filter by product.",
   },
 };
 

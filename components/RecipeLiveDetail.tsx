@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { recipeApi, recipeMatchesSlug, type Recipe } from "@/lib/api";
+import { relatedRecipes } from "@/lib/related-recipes";
 import { RecipeDetailView } from "./RecipeDetailView";
 
 /** Renders instantly from the build-time snapshot, then quietly refetches the
@@ -28,7 +29,7 @@ export function RecipeLiveDetail({
         const fresh = all.find((r) => recipeMatchesSlug(r.title, slug));
         if (fresh) {
           setRecipe(fresh);
-          setRelated(all.filter((r) => r.id !== fresh.id).slice(0, 4));
+          setRelated(relatedRecipes(all, fresh));
         }
       })
       .catch(() => {});

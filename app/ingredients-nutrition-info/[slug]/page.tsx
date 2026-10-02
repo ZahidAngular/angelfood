@@ -10,6 +10,7 @@ import { NutritionCard } from "@/components/NutritionCard";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { JsonLd } from "@/components/JsonLd";
 import { productSchema } from "@/lib/schema";
+import { OG_DEFAULTS } from "@/lib/og";
 
 export function generateStaticParams() {
   return NUTRITION_INFO.map((entry) => ({ slug: entry.slug }));
@@ -32,7 +33,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { url, title, description },
+    openGraph: { ...OG_DEFAULTS, url, title, description },
   };
 }
 

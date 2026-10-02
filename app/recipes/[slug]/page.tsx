@@ -9,6 +9,8 @@ import {
   type Recipe,
 } from "@/lib/api";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
+import { relatedRecipes } from "@/lib/related-recipes";
+import { clip, padDescription } from "@/lib/og";
 import { RecipeLiveDetail } from "@/components/RecipeLiveDetail";
 
 async function findRecipeBySlug(slug: string): Promise<Recipe | null> {
@@ -38,9 +40,18 @@ export async function generateMetadata({
   const recipe = await findRecipeBySlug(slug);
   if (!recipe) return {};
 
-  const title = `${recipe.title} | Angel Food`;
-  const description =
-    recipe.description || `${recipe.title} — a plant-based recipe from Angel Food.`;
+  const fullTitle = `${recipe.title} | Angel Food`;
+  const title = fullTitle.length > 60 ? recipe.title : fullTitle;
+  const description = clip(
+    padDescription(
+      recipe.description || `${recipe.title} — a plant-based recipe from Angel Food.`,
+      [
+        "Full recipe on Angel Food.",
+        "Get the full ingredients and method on Angel Food.",
+        "Get the full ingredients list and step-by-step method for this plant-based recipe from Angel Food.",
+      ]
+    )
+  );
   const image = resolveImageUrl(recipe.imageUrl) || `${SITE_URL}/images/hero.webp`;
   // Always the canonical slug, never the one that was requested — a recipe can
   // be reached by two addresses, and this is what points search engines at the
@@ -78,7 +89,7 @@ export default async function RecipeDetailPage({
   const recipe = allRecipes.find((r) => recipeMatchesSlug(r.title, slug)) ?? null;
   if (!recipe) notFound();
 
-  const related = allRecipes.filter((r) => r.id !== recipe.id).slice(0, 4);
+  const related = relatedRecipes(allRecipes, recipe);
 
   const image = resolveImageUrl(recipe.imageUrl);
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { Subscribe } from "@/components/Subscribe";
+import { OG_DEFAULTS } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: "Subscribe — Angel Food",
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
     "Join the Angel Food newsletter for new recipes, product drops and exclusive offers — straight to your inbox, no spam.",
   alternates: { canonical: "/subscribe" },
   openGraph: {
+    ...OG_DEFAULTS,
     url: "/subscribe",
     title: "Subscribe — Angel Food",
     description:

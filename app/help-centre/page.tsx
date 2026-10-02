@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { HelpCentre } from "@/components/HelpCentre";
+import { OG_DEFAULTS } from "@/lib/og";
 
 const DESCRIPTION =
   "Answers to common questions about ordering Angel Food — where we deliver, how orders arrive, and how to store and heat your snap-frozen meals.";
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: "/help-centre" },
   openGraph: {
+    ...OG_DEFAULTS,
     url: "/help-centre",
     title: "Help Centre — Angel Food",
     description: DESCRIPTION,

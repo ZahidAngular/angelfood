@@ -53,9 +53,9 @@ export function Contact() {
                 </p>
               </Reveal>
               <Reveal delay={0.05}>
-                <h2 className="mt-4 font-display text-[clamp(2.2rem,5.5vw,4rem)] font-extrabold leading-[0.98] tracking-[-0.02em] text-ink">
+                <h1 className="mt-4 font-display text-[clamp(2.2rem,5.5vw,4rem)] font-extrabold leading-[0.98] tracking-[-0.02em] text-ink">
                   Got questions? We&apos;d love to hear from you.
-                </h2>
+                </h1>
               </Reveal>
             </Parallax>
             <Reveal delay={0.1}>

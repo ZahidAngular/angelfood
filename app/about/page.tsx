@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { Story } from "@/components/Story";
 import { Values } from "@/components/Values";
+import { OG_DEFAULTS } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: "Our Story — Angel Food",
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
     "Founded by Alice Shopland in 2006, Angel Food is Aotearoa's original vegan cheese company — a little company that's big on doing good.",
   alternates: { canonical: "/about" },
   openGraph: {
+    ...OG_DEFAULTS,
     url: "/about",
     title: "Our Story — Angel Food",
     description:

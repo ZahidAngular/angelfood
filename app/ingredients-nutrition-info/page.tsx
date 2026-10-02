@@ -5,17 +5,19 @@ import { NutritionCard } from "@/components/NutritionCard";
 import { JsonLd } from "@/components/JsonLd";
 import { itemListSchema } from "@/lib/schema";
 import { NUTRITION_INFO } from "@/lib/site";
+import { OG_DEFAULTS } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: "Ingredients and nutritional info — Angel Food",
   description:
-    "Full ingredients lists and nutrition panels for every Angel Food product.",
+    "Full ingredients lists and nutrition panels for every Angel Food product — dairy-free cheeses, plant-based meats and ready meals.",
   alternates: { canonical: "/ingredients-nutrition-info" },
   openGraph: {
+    ...OG_DEFAULTS,
     url: "/ingredients-nutrition-info",
     title: "Ingredients and nutritional info — Angel Food",
     description:
-      "Full ingredients lists and nutrition panels for every Angel Food product.",
+      "Full ingredients lists and nutrition panels for every Angel Food product — dairy-free cheeses, plant-based meats and ready meals.",
   },
 };
 

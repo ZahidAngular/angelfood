@@ -19,6 +19,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Reveal } from "@/components/Reveal";
 import { RevealImage } from "@/components/RevealImage";
 import { ScrollProgress } from "@/components/ScrollProgress";
+import { padDescription } from "@/lib/og";
 
 export function generateStaticParams() {
   return BLOG_POSTS.map((post) => ({ slug: post.slug }));
@@ -83,15 +84,19 @@ export async function generateMetadata({
   const title = `${post.title} — ${SITE_NAME}`;
   const url = `${BLOG_BASE_PATH}/${post.slug}`;
 
+  const description = padDescription(post.description, [
+    "Read more on the Angel Food blog.",
+  ]);
+
   return {
     title,
-    description: post.description,
+    description,
     alternates: { canonical: url },
     openGraph: {
       type: "article",
       url,
       title,
-      description: post.description,
+      description,
       publishedTime: post.date,
       authors: [post.author],
       images: [{ url: post.image, alt: post.imageAlt }],
@@ -99,7 +104,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title,
-      description: post.description,
+      description,
       images: [post.image],
     },
   };

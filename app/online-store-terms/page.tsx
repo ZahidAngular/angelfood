@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/LegalPage";
+import { OG_DEFAULTS } from "@/lib/og";
 
 const DESCRIPTION =
   "The terms that apply to orders placed through the Angel Food online store — prices, delivery, receiving frozen meals, changes and cancellations.";
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: "/online-store-terms" },
   openGraph: {
+    ...OG_DEFAULTS,
     url: "/online-store-terms",
     title: "Online Store Terms & Conditions — Angel Food",
     description: DESCRIPTION,

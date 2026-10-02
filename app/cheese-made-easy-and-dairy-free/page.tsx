@@ -2,16 +2,17 @@ import type { Metadata } from "next";
 import { Reveal } from "@/components/Reveal";
 import { RevealImage } from "@/components/RevealImage";
 import { CourseSignupForm } from "@/components/CourseSignupForm";
+import { OG_DEFAULTS } from "@/lib/og";
 
 const DESCRIPTION =
   "Discover delicious dairy-free cheese options with Angel Food. Join our free 4-day course and enjoy flavorful, plant-based cheeses since 2006.";
 
 export const metadata: Metadata = {
-  title:
-    "Cheese Made Easy and Dairy-Free | Explore Dairy-Free Cheeses Today — Angel Food",
+  title: "Cheese Made Easy and Dairy-Free | Angel Food",
   description: DESCRIPTION,
   alternates: { canonical: "/cheese-made-easy-and-dairy-free" },
   openGraph: {
+    ...OG_DEFAULTS,
     url: "/cheese-made-easy-and-dairy-free",
     title: "Cheese Made Easy (and Dairy-Free) — Angel Food",
     description: DESCRIPTION,

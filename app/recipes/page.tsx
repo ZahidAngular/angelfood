@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { RecipesPageContent } from "@/components/RecipesPageContent";
+import { OG_DEFAULTS } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: "Recipes — Angel Food",
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
     "Delicious plant-based recipes for every occasion — cheesecakes, fritters, soups, salads and more, all made with Angel Food vegan cheese.",
   alternates: { canonical: "/recipes" },
   openGraph: {
+    ...OG_DEFAULTS,
     url: "/recipes",
     title: "Recipes — Angel Food",
     description:

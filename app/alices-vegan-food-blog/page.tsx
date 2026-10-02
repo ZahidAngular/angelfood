@@ -4,15 +4,17 @@ import { Reveal } from "@/components/Reveal";
 import { JsonLd } from "@/components/JsonLd";
 import { itemListSchema } from "@/lib/schema";
 import { BLOG_BASE_PATH, getBlogPosts } from "@/lib/blog";
+import { OG_DEFAULTS } from "@/lib/og";
 
 const DESCRIPTION =
-  "Vegan food ideas, tips and inspiration from Alice Shopland — sandwiches, pizza, pasta, cheeseboards and more.";
+  "Vegan food ideas, tips and inspiration from Alice Shopland, Angel Food's founder — sandwiches, pizza, pasta, cheeseboards and more.";
 
 export const metadata: Metadata = {
   title: "Alice’s Vegan Food Blog — Angel Food",
   description: DESCRIPTION,
   alternates: { canonical: BLOG_BASE_PATH },
   openGraph: {
+    ...OG_DEFAULTS,
     url: BLOG_BASE_PATH,
     title: "Alice’s Vegan Food Blog — Angel Food",
     description: DESCRIPTION,

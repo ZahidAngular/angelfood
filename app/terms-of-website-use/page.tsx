@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/LegalPage";
+import { OG_DEFAULTS } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: "Terms of Website Use — Angel Food",
   description:
-    "The terms and conditions that apply to using the Angel Food website.",
+    "The terms and conditions that apply to using the Angel Food website. Please read them before using any part of the site.",
   alternates: { canonical: "/terms-of-website-use" },
   openGraph: {
+    ...OG_DEFAULTS,
     url: "/terms-of-website-use",
     title: "Terms of Website Use — Angel Food",
     description:
-      "The terms and conditions that apply to using the Angel Food website.",
+      "The terms and conditions that apply to using the Angel Food website. Please read them before using any part of the site.",
   },
 };
 

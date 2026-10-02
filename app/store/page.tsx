@@ -6,17 +6,19 @@ import { Reveal } from "@/components/Reveal";
 import { JsonLd } from "@/components/JsonLd";
 import { itemListSchema } from "@/lib/schema";
 import { STORE_PRODUCTS } from "@/lib/store";
+import { OG_DEFAULTS } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: "Store — Angel Food",
   description:
-    "Browse Angel Food dairy-free cheese products, then find your nearest stockist.",
+    "Browse Angel Food dairy-free cheese products, then find your nearest stockist in supermarkets and stores across Aotearoa New Zealand.",
   alternates: { canonical: "/store" },
   openGraph: {
+    ...OG_DEFAULTS,
     url: "/store",
     title: "Store — Angel Food",
     description:
-      "Browse Angel Food dairy-free cheese products, then find your nearest stockist.",
+      "Browse Angel Food dairy-free cheese products, then find your nearest stockist in supermarkets and stores across Aotearoa New Zealand.",
   },
 };
 

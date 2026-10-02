@@ -8,6 +8,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { JsonLd } from "@/components/JsonLd";
 import { productSchema } from "@/lib/schema";
 import { STORE_PRODUCTS, getStoreProduct } from "@/lib/store";
+import { OG_DEFAULTS } from "@/lib/og";
 
 export function generateStaticParams() {
   return STORE_PRODUCTS.map((product) => ({ slug: product.slug }));
@@ -27,6 +28,7 @@ export async function generateMetadata({
     description: `${product.intro} ${product.usedFor.join(", ")}. ${product.format}.`,
     alternates: { canonical: `/store/p/${product.slug}` },
     openGraph: {
+      ...OG_DEFAULTS,
       url: `/store/p/${product.slug}`,
       title: `${product.name} — Angel Food`,
       images: [{ url: product.image, alt: product.imageAlt }],

@@ -10,6 +10,7 @@ import {
   type Recipe,
 } from "@/lib/api";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
+import { relatedRecipes } from "@/lib/related-recipes";
 import { RecipeDetailView } from "@/components/RecipeDetailView";
 
 /**
@@ -43,7 +44,7 @@ export default function RecipeFallbackPage() {
         }
 
         setRecipe(match);
-        setRelated(all.filter((r) => r.id !== match.id).slice(0, 4));
+        setRelated(relatedRecipes(all, match));
         setStatus("found");
 
         // Best-effort tags for a page the build never knew about — a real

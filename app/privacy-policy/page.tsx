@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/LegalPage";
+import { OG_DEFAULTS } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — Angel Food",
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
     "How Angel Food collects, uses and protects your personal information when you shop, contact us or sign up online.",
   alternates: { canonical: "/privacy-policy" },
   openGraph: {
+    ...OG_DEFAULTS,
     url: "/privacy-policy",
     title: "Privacy Policy — Angel Food",
     description:

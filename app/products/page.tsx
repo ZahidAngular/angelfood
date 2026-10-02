@@ -8,6 +8,7 @@ import { ProductCategoryNav } from "@/components/ProductCategoryNav";
 import { JsonLd } from "@/components/JsonLd";
 import { itemListSchema } from "@/lib/schema";
 import { PRODUCTS, MEATS, MEALS, getNutritionSlug } from "@/lib/site";
+import { OG_DEFAULTS } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: "Products — Angel Food Vegan Cheese",
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
     "Seven dairy-free cheese heroes, plant-based meats and ready-to-go meals. Grated, cream cheese, sour cream, feta, cheddar, mozza, parmesan and more.",
   alternates: { canonical: "/products" },
   openGraph: {
+    ...OG_DEFAULTS,
     url: "/products",
     title: "Products — Angel Food Vegan Cheese",
     description:
