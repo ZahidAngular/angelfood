@@ -48,6 +48,12 @@ export function Footer() {
               Recipes, new drops and the occasional cheesy pun — straight to your
               inbox. No spam, promise.
             </p>
+            <Link
+              href="/subscribe"
+              className="mt-3 inline-block text-sm font-semibold text-gold underline underline-offset-2 transition-colors hover:text-cream"
+            >
+              View as a page →
+            </Link>
           </Reveal>
           <Reveal delay={0.1}>
             {status === "success" ? (

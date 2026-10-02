@@ -97,6 +97,7 @@ const organizationJsonLd = {
   name: SITE_NAME,
   url: SITE_URL,
   logo: `${SITE_URL}/images/logo.webp`,
+  image: `${SITE_URL}/images/logo.webp`,
   description: SITE_DESCRIPTION,
   foundingDate: "2006",
   email: "info@angelfood.co.nz",
