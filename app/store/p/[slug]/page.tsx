@@ -5,8 +5,6 @@ import { notFound } from "next/navigation";
 import { MapPin } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { JsonLd } from "@/components/JsonLd";
-import { productSchema } from "@/lib/schema";
 import { STORE_PRODUCTS, getStoreProduct } from "@/lib/store";
 import { OG_DEFAULTS } from "@/lib/og";
 
@@ -47,16 +45,6 @@ export default async function StoreProductPage({
 
   return (
     <main className="bg-cream pb-24 pt-36 sm:pb-32 sm:pt-44">
-      <JsonLd
-        data={productSchema({
-          name: product.name,
-          description: `${product.intro} ${product.usedFor.join(", ")}. ${product.format}.`,
-          image: product.image,
-          url: `/store/p/${product.slug}`,
-          sku: product.productCode,
-        })}
-      />
-
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <Breadcrumbs
           crumbs={[
