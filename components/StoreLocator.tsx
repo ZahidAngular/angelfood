@@ -19,6 +19,8 @@ import {
   Minimize2,
 } from "lucide-react";
 import {
+  ALL_BANNER,
+  OTHER_BANNER,
   BANNERS,
   fetchBannerStores,
   groupByCategory,
@@ -39,6 +41,11 @@ const BANNER_RING = Object.fromEntries(
 const BANNER_MARK = Object.fromEntries(
   BANNERS.map((b) => [b.name, b.mark])
 ) as Record<string, string>;
+
+// Fresh Choice and the foodservice accounts belong to no banner, so they get
+// the house colours rather than falling through to an undefined pin.
+BANNER_COLOR[OTHER_BANNER.name] = OTHER_BANNER.color;
+BANNER_RING[OTHER_BANNER.name] = OTHER_BANNER.ring;
 
 const NZ_CENTER: [number, number] = [-41.0, 173.5];
 
@@ -69,7 +76,7 @@ const escapeHtml = (s: string) =>
 /** A white rounded pin carrying the store's brand logo, with a pointer tail. */
 function brandedPin(store: Store) {
   const ring = BANNER_RING[store.banner] ?? "#14422c";
-  const mark = BANNER_MARK[store.banner];
+  const mark = BANNER_MARK[store.banner] ?? OTHER_BANNER.mark;
   return `<span class="af-mark" style="--ring:${ring}"><img src="${mark}" alt="${escapeHtml(
     store.banner
   )}" draggable="false"/></span>`;
@@ -161,7 +168,15 @@ export function StoreLocator() {
     let landed = 0;
     let anySucceeded = false;
 
-    BANNERS.forEach((banner) => {
+    // The combined feed goes out with them rather than instead of them. It is
+    // the only source for the stores that belong to no banner, but it is also
+    // the slow one — usually a couple of seconds, sometimes eleven, and it has
+    // been seen to time out. The banners land first and the map is usable;
+    // those extra stores drop in when they arrive, or not at all, and nobody
+    // waits either way.
+    const feeds = [...BANNERS, ALL_BANNER];
+
+    feeds.forEach((banner) => {
       fetchBannerStores(banner)
         .then((result) => {
           if (cancelled) return;
@@ -176,7 +191,7 @@ export function StoreLocator() {
           if (cancelled) return;
           landed++;
           setLoadedBanners(landed);
-          if (!anySucceeded && landed === BANNERS.length) setLoadError(true);
+          if (!anySucceeded && landed === feeds.length) setLoadError(true);
         });
     });
 
@@ -678,6 +693,11 @@ export function StoreLocator() {
     setNotice("");
   }
 
+  // "All" is the no-narrowing state, which an empty selection already was —
+  // it is that state given a button, so the default reads as a deliberate
+  // choice rather than as nothing being chosen. Picking a banner drops it;
+  // dropping the last banner comes back to it.
+  const showingAll = banners.length === 0;
   const toggleBanner = (name: string) =>
     setBanners((prev) =>
       prev.includes(name) ? prev.filter((b) => b !== name) : [...prev, name]
@@ -820,6 +840,26 @@ export function StoreLocator() {
 
                 {/* banner chips */}
                 <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setBanners([])}
+                    aria-pressed={showingAll}
+                    className={`inline-flex items-center gap-2 rounded-full border py-1.5 pl-1.5 pr-3.5 text-sm font-semibold transition-all ${
+                      showingAll
+                        ? "border-transparent bg-green text-cream shadow-sm"
+                        : "border-line bg-paper text-ink-soft hover:bg-cream"
+                    }`}
+                  >
+                    <span className="grid h-6 w-6 place-items-center rounded-full bg-paper shadow-sm ring-1 ring-black/5">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={OTHER_BANNER.mark}
+                        alt=""
+                        className="h-4 w-4 object-contain"
+                      />
+                    </span>
+                    All stockists
+                  </button>
+
                   {BANNERS.map((b) => {
                     const on = banners.includes(b.name);
                     return (

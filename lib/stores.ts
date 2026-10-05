@@ -31,7 +31,48 @@ export const BANNERS = [
   { id: 4, name: "Woolworths", color: "#178841", ring: "#178841", mark: "/images/logos/marks/woolworths.webp" },
 ] as const;
 
-export type BannerName = (typeof BANNERS)[number]["name"];
+/**
+ * The whole stockist list in one request.
+ *
+ * A strict superset of the four banners: the same 313 stores plus a handful
+ * that belong to no banner at all — Fresh Choice, and a few foodservice
+ * accounts — which the per-banner feeds never return, so they have been
+ * missing from the map entirely.
+ *
+ * Fetched alongside the banners rather than instead of them. It is usually
+ * two or three seconds but has been seen at eleven and occasionally times
+ * out, while each banner answers in about one; hanging the whole page on it
+ * would trade a working map for a complete one.
+ */
+export const ALL_BANNER = { id: 0, name: "All" } as const;
+
+/** Stores the feed gives no banner for. Not a chip — somewhere for pins to live. */
+export const OTHER_BANNER = {
+  name: "Other",
+  color: "#14422c",
+  ring: "#14422c",
+  mark: "/images/logos/marks/independent.svg",
+} as const;
+
+export type BannerName = (typeof BANNERS)[number]["name"] | typeof OTHER_BANNER.name;
+
+/**
+ * Which banner a store belongs to, read off its name.
+ *
+ * Needed only for the combined feed, which returns no banner field at all —
+ * every row's `category` comes back empty. Checked against all 313 stores
+ * whose banner the per-banner feeds state outright: it agrees with every one.
+ */
+export function bannerFromName(name: string | null): BannerName {
+  const n = (name || "").toLowerCase();
+  if (n.includes("pak") && n.includes("sav")) return "PAK'nSAVE";
+  if (n.includes("four square")) return "Four Square";
+  if (n.includes("new world")) return "New World";
+  // CDOWN is how the feed writes the Countdown stores that became Woolworths.
+  if (n.includes("woolworth") || n.includes("countdown") || n.startsWith("cdown"))
+    return "Woolworths";
+  return OTHER_BANNER.name;
+}
 
 /** A product name paired with the category the feed files it under. */
 export type ProductInfo = { name: string; category: string };
@@ -288,7 +329,7 @@ type ApiStore = {
   inventory: { id: number; name: string; category: string | null }[] | null;
 };
 
-type BannerConfig = (typeof BANNERS)[number];
+type BannerConfig = (typeof BANNERS)[number] | typeof ALL_BANNER;
 
 /** What one banner's feed yields: its stores, plus the categories it named. */
 export type BannerStores = {
@@ -297,6 +338,17 @@ export type BannerStores = {
   /** Retail product name -> category, for the rows that carried one. */
   categories: Record<string, string>;
 };
+
+/**
+ * A stockist's own name, without the account number the feed appends —
+ * "Fresh Choice Nelson City (600005)" is a shop; the number is bookkeeping.
+ */
+function tidyStoreName(name: string | null): string {
+  return (name || "")
+    .replace(/\s*\(\d+\)\s*$/, "")
+    .replace(/\s*-\s*\d+\s*$/, "")
+    .trim();
+}
 
 /** One banner's rows, turned into presentable stores. Throws on fetch failure. */
 export async function fetchBannerStores(
@@ -345,11 +397,31 @@ export async function fetchBannerStores(
       if (category && !categories[name]) categories[name] = category;
     }
 
+    // The combined feed states no banner, so it is read off the name. A
+    // per-banner feed does not need reading: it has already said which it is.
+    const storeBanner: BannerName =
+      banner.id === ALL_BANNER.id
+        ? bannerFromName(row.name)
+        : (banner.name as BannerName);
+
+    // Supermarket rows carry no real name — "CDOWN - New - Halswell WWNZ -
+    // 9736" is not something to show anyone — so those are rebuilt as
+    // "<banner> <suburb>". The handful that belong to no banner do have
+    // usable names, and are the only places where the feed's own is better
+    // than anything we could assemble.
+    const storeName =
+      storeBanner === OTHER_BANNER.name
+        ? tidyStoreName(row.name) || (locality ? `Angel Food ${locality}` : "Stockist")
+        : locality
+          ? `${storeBanner} ${locality}`
+          : storeBanner;
+
     stores.push({
-      id: `${banner.id}-${row.id}`,
-      // Real names are absent from the feed, so build "<banner> <suburb>".
-      name: locality ? `${banner.name} ${locality}` : banner.name,
-      banner: banner.name,
+      // The raw row id, because the same store comes back from both its
+      // banner's feed and the combined one, and the two must collapse.
+      id: String(row.id),
+      name: storeName,
+      banner: storeBanner,
       address: cleaned,
       postcode: postcode || (row.postCode ?? ""),
       region,
@@ -365,13 +437,16 @@ export async function fetchBannerStores(
 
 /** Merges a set of per-banner store lists into one sorted, deduped StoreData. */
 export function mergeStoreData(banners: BannerStores[]): StoreData {
-  const stores: Store[] = [];
   const names = new Set<string>();
   // Pooled across banners so a product only one banner categorised is still
   // filed correctly for every store that stocks it.
   const categories: Record<string, string> = {};
   const regions = new Set<string>();
   let skipped = 0;
+
+  // Keyed by store id, because the combined feed returns the same stores as
+  // the per-banner ones and pushing both would show every supermarket twice.
+  const byId = new Map<string, Store>();
 
   for (const banner of banners) {
     skipped += banner.skipped;
@@ -381,11 +456,34 @@ export function mergeStoreData(banners: BannerStores[]): StoreData {
     for (const store of banner.stores) {
       store.products.forEach((p) => names.add(p));
       if (store.region) regions.add(store.region);
-      stores.push(store);
+
+      const seen = byId.get(store.id);
+      // A banner's own feed states its banner outright; the combined one has
+      // it inferred from the name. They agree today, but where they could
+      // not, the feed that knows wins.
+      if (!seen || (seen.banner === "Other" && store.banner !== "Other")) {
+        byId.set(store.id, store);
+      }
     }
   }
 
-  stores.sort((a, b) => a.name.localeCompare(b.name));
+  // A second pass on position, because the feed carries a few shops twice
+  // under different ids — "2 Winter Street Mangapapa" appears once plainly and
+  // once tagged with a supplier number. Same address, same coordinates, two
+  // records, which an id-keyed pass cannot see and which would otherwise
+  // stack two identical pins on one spot.
+  const byPlace = new Map<string, Store>();
+  for (const store of byId.values()) {
+    const place = `${store.lat.toFixed(5)},${store.lng.toFixed(5)}`;
+    const seen = byPlace.get(place);
+    // Where two records describe one shop, keep the fuller one: a duplicate
+    // often carries only part of the range.
+    if (!seen || store.products.length > seen.products.length) {
+      byPlace.set(place, store);
+    }
+  }
+
+  const stores = [...byPlace.values()].sort((a, b) => a.name.localeCompare(b.name));
 
   return {
     stores,

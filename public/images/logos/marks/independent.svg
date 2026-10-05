@@ -1,0 +1,32 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Independent stockist">
+  <!--
+    The mark for stockists that belong to no supermarket banner — Fresh Choice,
+    delis, caterers, foodservice. Drawn as a shopfront rather than a logo,
+    because the thing they have in common is being a shop of their own.
+
+    Sits beside the four banner logos at 16px inside a white circle, so it is
+    built from a handful of thick shapes: anything finer turns to mud at that
+    size. Angel Food green with a gold awning, which reads as "ours" without
+    pretending to be a brand that exists.
+
+    The awning spans x=16..84, which is 68 units: eight scallops of 8.5 land
+    exactly on its right edge. At 9 apiece they overshot and left a tab
+    hanging off the side.
+  -->
+  <rect width="100" height="100" rx="12" fill="#14422c"/>
+
+  <!-- Awning, gold, with a scalloped lower edge. -->
+  <path d="M16 30h68v16H16z" fill="#e7a330"/>
+  <path d="M16 46c4.25 0 4.25 6 8.5 6s4.25-6 8.5-6 4.25 6 8.5 6 4.25-6 8.5-6 4.25 6 8.5 6 4.25-6 8.5-6 4.25 6 8.5 6 4.25-6 8.5-6v-2H16z"
+        fill="#e7a330"/>
+
+  <!-- Shopfront body. -->
+  <rect x="22" y="54" width="56" height="30" fill="#f6efe1"/>
+
+  <!-- Doorway, cut back to the green so it reads as an opening. -->
+  <rect x="42" y="64" width="16" height="20" rx="2" fill="#14422c"/>
+
+  <!-- A window each side, square and solid. -->
+  <rect x="28" y="62" width="10" height="9" rx="1.5" fill="#14422c"/>
+  <rect x="62" y="62" width="10" height="9" rx="1.5" fill="#14422c"/>
+</svg>
