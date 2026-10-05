@@ -340,14 +340,43 @@ export type BannerStores = {
 };
 
 /**
- * A stockist's own name, without the account number the feed appends —
- * "Fresh Choice Nelson City (600005)" is a shop; the number is bookkeeping.
+ * A stockist's own name, as something to show a customer.
+ *
+ * The feed appends an account code to almost every name — "Pak n Save Dunedin
+ * (9029) /", "New World Albany 427701" — so the codes and trailing slashes
+ * come off. What is left is the real name of the shop, which is what people
+ * look for and what the stores are called in your own lists.
+ *
+ * This used to be thrown away and rebuilt as "<banner> <suburb>" from the
+ * address, on the belief that the feed had no real names. It has them for 321
+ * of 322 rows. Rebuilding them lost the distinctions that matter — New World
+ * Centre City and New World Fendalton both became "New World Dunedin" and
+ * "New World Christchurch" — and made stores look missing when they were
+ * there under a name nobody would search for.
+ *
+ * Returns "" when the name really is just an internal code, and the caller
+ * falls back to "<banner> <suburb>" for that one row.
  */
 function tidyStoreName(name: string | null): string {
-  return (name || "")
-    .replace(/\s*\(\d+\)\s*$/, "")
-    .replace(/\s*-\s*\d+\s*$/, "")
-    .trim();
+  let n = (name || "").trim();
+
+  n = n.replace(/\s*\/\s*$/, "");            // "... /"
+  n = n.replace(/\s*\(\s*\d+\s*\)\s*$/, ""); // "... (307645)"
+  n = n.replace(/\s*-\s*\d{3,}\s*$/, "");    // "... - 419401"
+  n = n.replace(/\s+\d{4,}\s*$/, "");        // "... 427701"
+  n = n.replace(/^[\s\-–]+|[\s\-–]+$/g, "");
+
+  // "CDOWN - New - Halswell WWNZ" is a warehouse reference, not a shopfront.
+  if (/CDOWN|WWNZ/i.test(n)) return "";
+  // Too few letters to be a name at all.
+  if (n.replace(/[^A-Za-z]/g, "").length < 4) return "";
+
+  // The feed spells the banners several ways; show them the way the chips do.
+  n = n.replace(/^Woolworths\s+NZ\b/i, "Woolworths");
+  n = n.replace(/^Pak\s*'?\s*n'?\s*Save\b/i, "PAK'nSAVE");
+  n = n.replace(/^Fresh\s*Choice\b/i, "Fresh Choice");
+
+  return n.trim();
 }
 
 /** One banner's rows, turned into presentable stores. Throws on fetch failure. */
@@ -410,11 +439,8 @@ export async function fetchBannerStores(
     // usable names, and are the only places where the feed's own is better
     // than anything we could assemble.
     const storeName =
-      storeBanner === OTHER_BANNER.name
-        ? tidyStoreName(row.name) || (locality ? `Angel Food ${locality}` : "Stockist")
-        : locality
-          ? `${storeBanner} ${locality}`
-          : storeBanner;
+      tidyStoreName(row.name) ||
+      (locality ? `${storeBanner} ${locality}` : storeBanner);
 
     stores.push({
       // The raw row id, because the same store comes back from both its
