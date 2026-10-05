@@ -59,7 +59,7 @@ export function PackCard({
       >
         <Image
           src={product.image}
-          alt={`Angel Food ${product.name} pack`}
+          alt={product.alt ?? `Angel Food ${product.name} pack`}
           fill
           sizes="(min-width: 1024px) 24vw, (min-width: 640px) 45vw, 90vw"
           className={`transition-transform duration-[900ms] ease-out group-hover:scale-[1.04] ${

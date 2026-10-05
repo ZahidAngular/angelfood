@@ -9,8 +9,8 @@ export function Meals() {
         <RangeSectionHeader
           eyebrow="Meals"
           count={MEALS.length}
-          title="Ready-to-go plant goodness."
-          intro="Wholesome vegan meals for the nights you'd rather not cook — all the comfort, none of the compromise."
+          title="Ready-to-Go Plant Based Meals"
+          intro="Wholesome, ready-to-go plant-based meals for the nights you'd rather not cook all the comfort, none of the compromise. NZ's easiest way to eat plant-based food at home."
         />
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">

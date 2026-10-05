@@ -28,6 +28,11 @@ export type Product = {
   tag: string;
   image: string;
   accent: string;
+  /**
+   * Alt text for the product photo, written for search as well as for
+   * screen readers. Falls back to the product name where it is unset.
+   */
+  alt?: string;
   /** The strapline printed across the bottom of the pack. */
   tagline?: string;
   /** Line under the name on the pack, e.g. "With Cumin Rice & Broccoli". */
@@ -46,7 +51,8 @@ export const PRODUCTS: Product[] = [
   {
     name: "Grated",
     blurb:
-      "The MVP in your fridge for Friday pizza, taco Tuesday, and all your toastie cravings. Plant-based, vegan, dairy-free, gluten-free.",
+      "The MVP in your fridge for Friday pizza, taco Tuesday and all your toastie cravings our best-selling dairy-free grated cheese.",
+    alt: "Angel Food dairy-free grated vegan cheese NZ",
     tag: "Melts",
     image: "/images/grated.webp",
     accent: "var(--color-gold)",
@@ -54,7 +60,8 @@ export const PRODUCTS: Product[] = [
   {
     name: "Cream Cheese",
     blurb:
-      "Our award-winning star for cheesecakes and bagels. Creamy, spreadable, luxurious. Plant-based, vegan, dairy-free, gluten-free.",
+      "Our award winning plant-based cream cheese creamy, spreadable and luxurious, perfect for cheesecakes and bagels.",
+    alt: "Angel Food vegan cream cheese New Zealand",
     tag: "Spread",
     image: "/images/cream-cheese.webp",
     accent: "var(--color-green-bright)",
@@ -62,7 +69,8 @@ export const PRODUCTS: Product[] = [
   {
     name: "Sour Cream",
     blurb:
-      "The creamy-tangy dollop on your nachos and the swirl in your pumpkin soup. Plant-based, vegan, dairy-free, gluten-free.",
+      "The creamy-tangy dollop for your nachos and the swirl in your pumpkin soup 100% dairy-free sour cream.",
+    alt: "Angel Food plant-based sour cream NZ",
     tag: "Spoon",
     image: "/images/sour-cream.webp",
     accent: "var(--color-coral)",
@@ -70,7 +78,8 @@ export const PRODUCTS: Product[] = [
   {
     name: "Feta",
     blurb:
-      "Bursting with the salty-creamy-tangy vibe you'd expect. A treat on pizza, in muffins and salads. Plant-based, vegan, dairy-free, gluten-free.",
+      "Award-winning vegan feta, bursting with the salty-creamy-tangy flavour you'd expect a treat on pizza, in muffins and salads.",
+    alt: "Angel Food vegan feta cheese New Zealand",
     tag: "Crumble",
     image: "/images/feta.webp",
     accent: "var(--color-green-bright)",
@@ -78,7 +87,8 @@ export const PRODUCTS: Product[] = [
   {
     name: "Cheddar Block",
     blurb:
-      "The block-in-a-tub that will save your sandwiches and cosy up to your crackers. Plant-based, vegan, dairy-free, gluten-free.",
+      "The block-in-a-tub plant-based cheddar that saves your sandwiches and cosies up to your crackers.",
+    alt: "Angel Food dairy-free cheddar block NZ",
     tag: "Slice",
     image: "/images/cheddar.webp",
     accent: "var(--color-gold)",
@@ -86,7 +96,8 @@ export const PRODUCTS: Product[] = [
   {
     name: "Mozza Block",
     blurb:
-      "Tip it out of the tub and slice it or grate it onto your pizza or into your quesadilla. Plant-based, vegan, dairy-free, gluten-free.",
+      "Slice it or grate it our vegan mozzarella block melts beautifully onto pizza or into your quesadilla.",
+    alt: "Angel Food plant-based mozzarella block New Zealand",
     tag: "Grate",
     image: "/images/mozza.webp",
     accent: "var(--color-coral)",
@@ -94,7 +105,8 @@ export const PRODUCTS: Product[] = [
   {
     name: "Parmesan",
     blurb:
-      "The finishing touch for pasta — also great on baked beans, mash and fresh tomato. Plant-based, vegan, dairy-free, gluten-free.",
+      "The finishing touch for pasta our dairy-free parmesan is also great on baked beans, mash and fresh tomato.",
+    alt: "Angel Food vegan parmesan NZ",
     tag: "Finish",
     image: "/images/parmesan.webp",
     accent: "var(--color-gold)",
@@ -108,7 +120,8 @@ export const MEALS: Product[] = [
     tagline: "A true classic, reimagined",
     subtitle: "Cheesy Plant-based",
     blurb:
-      "Slow-cooked lentil ragu, tofu ricotta, velvety béchamel and tender pasta sheets — baked to perfection.",
+      "Slow-cooked lentil ragu, tofu ricotta, velvety béchamel and tender pasta sheets, baked to perfection our best-selling plant-based ready meal.",
+    alt: "Angel Food plant-based vege lasagna NZ",
     tag: "Bake",
     image: "/images/meals/vege-lasagna-v3.webp",
     accent: "var(--color-gold)",
@@ -121,7 +134,8 @@ export const MEALS: Product[] = [
     tagline: "Comforting & full of flavour",
     subtitle: "With Cumin Rice & Broccoli",
     blurb:
-      "Creamy coconut cashew korma with tender veges and aromatic spices.",
+      "Creamy coconut cashew korma with tender veges and aromatic spices a comforting plant-based dinner.",
+    alt: "Angel Food vegan vege korma New Zealand",
     tag: "Simmer",
     image: "/images/meals/vege-korma-v3.webp",
     accent: "var(--color-green-bright)",
@@ -135,6 +149,7 @@ export const MEALS: Product[] = [
     subtitle: "With Spinach & Zingy Dressing",
     blurb:
       "Marinated tofu, vibrant spinach and fragrant jasmine rice drizzled in sesame ginger dressing.",
+    alt: "Angel Food plant-based tofu and greens bowl NZ",
     tag: "Fresh",
     image: "/images/meals/tofu-greens-v3.webp",
     accent: "var(--color-coral)",
@@ -148,6 +163,7 @@ export const MEALS: Product[] = [
     subtitle: "With Plant Chicken & Rice",
     blurb:
       "Plant-based chicken in a silky tomato-butter curry loaded with aromatic spices, on jasmine rice.",
+    alt: "Angel Food plant-based butter curry New Zealand",
     tag: "Simmer",
     image: "/images/meals/butter-curry-v3.webp",
     accent: "var(--color-gold)",
@@ -163,7 +179,9 @@ export const MEATS: Product[] = [
   {
     name: "Burgers",
     tagline: "Juicy & grill-ready",
-    blurb: "Stack them in a bun with all the classic fixings.",
+    blurb:
+      "Plant-based burger patties stack them in a bun with all the classic fixings.",
+    alt: "Angel Food plant-based burger patties NZ",
     tag: "Grill",
     image: "/images/meats/packs/burgers.webp",
     accent: "var(--color-coral)",
@@ -176,7 +194,8 @@ export const MEATS: Product[] = [
     name: "Fish Fingers",
     tagline: "Crispy golden crumb",
     blurb:
-      "Serve with chips, tuck into tacos or dip into your favourite sauce.",
+      "Dairy free, meat-free fish fingers serve with chips, tuck into tacos or dip into your favourite sauce.",
+    alt: "Angel Food vegan fish fingers New Zealand",
     tag: "Crumbed",
     image: "/images/meats/packs/fish-fingers.webp",
     accent: "var(--color-gold)",
@@ -188,7 +207,9 @@ export const MEATS: Product[] = [
   {
     name: "Meatballs",
     tagline: "Rich Italian style",
-    blurb: "Simmer them in your favourite sauce or pile onto a sub.",
+    blurb:
+      "Plant based meatballs simmer in your favourite sauce or pile onto a sub.",
+    alt: "Angel Food plant-based meatballs NZ",
     tag: "Simmer",
     image: "/images/meats/packs/meatballs.webp",
     accent: "var(--color-green-bright)",
@@ -200,7 +221,9 @@ export const MEATS: Product[] = [
   {
     name: "Pulled Pork",
     tagline: "Smoky & tender",
-    blurb: "Pile into buns, tacos or loaded fries for an easy crowd-pleaser.",
+    blurb:
+      "Vegan pulled pork pile into buns, tacos or loaded fries for an easy crowd-pleaser.",
+    alt: "Angel Food plant-based pulled pork New Zealand",
     tag: "Shred",
     image: "/images/meats/packs/pulled-pork.webp",
     accent: "var(--color-gold)",
@@ -212,7 +235,9 @@ export const MEATS: Product[] = [
   {
     name: "Pastrami",
     tagline: "Deli style slices",
-    blurb: "Layer into sandwiches, bagels and platters.",
+    blurb:
+      "Plant-based pastrami layer into sandwiches, bagels and platters.",
+    alt: "Angel Food vegan pastrami NZ",
     tag: "Slice",
     image: "/images/meats/packs/pastrami.webp",
     accent: "var(--color-coral)",
@@ -224,7 +249,9 @@ export const MEATS: Product[] = [
   {
     name: "Seafood Rings",
     tagline: "Light & crispy",
-    blurb: "Dip into tartare sauce or serve with a squeeze of lemon.",
+    blurb:
+      "Dairy free, meat-free seafood rings dip into tartare sauce or serve with a squeeze of lemon.",
+    alt: "Angel Food plant-based seafood rings New Zealand",
     tag: "Fry",
     image: "/images/meats/packs/seafood-rings.webp",
     accent: "var(--color-gold)",

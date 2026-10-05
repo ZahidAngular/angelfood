@@ -87,8 +87,8 @@ export function Products() {
         <RangeSectionHeader
           eyebrow="Cheeses"
           count={PRODUCTS.length}
-          title="Cheese for every craving."
-          intro="Seven dairy-free heroes built for real life — pizza nights, cheeseboards, toasties and everything in between."
+          title="Plant-Based Cheese Seven Dairy Free Heroes"
+          intro="Real melt, real creaminess, zero dairy. Our seven cheese heroes are built for real Kiwi life pizza nights, cheeseboards, toasties and everything in between. Every product is plant-based, vegan, dairy-free and gluten-free."
         />
       </div>
 
@@ -215,7 +215,7 @@ function ProductCard({
         <motion.div style={{ x: imgX }} className="relative h-full w-full">
           <Image
             src={p.image}
-            alt={`Angel Food ${p.name}`}
+            alt={p.alt ?? `Angel Food ${p.name}`}
             fill
             sizes="40vw"
             className="object-contain transition-transform duration-500 group-hover:scale-105"

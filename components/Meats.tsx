@@ -9,8 +9,8 @@ export function Meats() {
         <RangeSectionHeader
           eyebrow="Meats"
           count={MEATS.length}
-          title="Plant-based meat, done right."
-          intro="Burgers, fish fingers, meatballs and pulled pork — all your favourites, deliciously plant-based."
+          title="Plant Based Meat Done Right"
+          intro="Burgers, fish fingers, meatballs, pulled pork and more all your favourite meats, deliciously plant-based. Made for Kiwi kitchens that want real flavour without the meat."
         />
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
