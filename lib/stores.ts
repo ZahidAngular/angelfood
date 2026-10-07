@@ -2,9 +2,10 @@
  * Live stockist data for the Where to Buy store locator.
  *
  * Source: the Angel Food banner API. Store rows come back with `name: null`,
- * coordinates as strings (occasionally unparseable), abbreviated duplicate
- * product names, and supplier/vendor codes glued onto the address — so
- * everything below is about turning that into something presentable.
+ * coordinates as strings (occasionally unparseable), product names in the
+ * warehouse's spelling rather than the shop's, and supplier/vendor codes glued
+ * onto the address — so everything below is about turning that into something
+ * presentable.
  */
 
 const API_BASE =
@@ -232,37 +233,70 @@ function parseAddress(raw: string | null | undefined) {
 /* Product names                                                       */
 /* ------------------------------------------------------------------ */
 
-/** The API ships the same product under abbreviated and full spellings. */
-const PRODUCT_ALIASES: Record<string, string> = {
-  "But Chck & Rice PlntBsd400g": "Butter Chicken & Rice 400g",
-  "Butter Chck&Rice Plant Based 400g": "Butter Chicken & Rice 400g",
-  "Lasagne Plnt Bsd Chsy400g": "Cheesy Lasagne 400g",
-  "Lasagne Plant Based Cheesy 400g": "Cheesy Lasagne 400g",
-  "Rice Bowl Tofu & Spinch400g": "Tofu & Spinach Rice Bowl 400g",
-  "Rice Bowl Tofu & Spinch 400g": "Tofu & Spinach Rice Bowl 400g",
-  "VegKrm CmnRce Rst Brc400g": "Veg Korma & Cumin Rice 400g",
-  "VegKrm Cmn Rce Rst Brc 400g": "Veg Korma & Cumin Rice 400g",
-  "Grated Mozzarella Bnb 10kg": "Grated Mozzarella 10kg (Food Service)",
-};
+/**
+ * What the shop calls each product, keyed by the name the stockist feed uses.
+ *
+ * The two systems name the same product differently: the stockist feed sends
+ * "VegKrm Cmn Rce Rst Brc 400g" where the shop sells "Vege Korma". The
+ * WebsiteProduct table already carries both — `feedName` is the stockist
+ * spelling, `name` is the product — so the mapping comes from there rather
+ * than from a list kept in this file. A hardcoded list used to do this and had
+ * drifted: it rendered "Butter Chck&Rice Plant Based 400g" as "Butter Chicken
+ * & Rice", a product of that name not being something Angel Food sells.
+ *
+ * Fetched once and shared: all five banner requests await the same promise,
+ * so this costs one request rather than five, and runs alongside them rather
+ * than before them.
+ */
+type ApiProduct = { name?: string | null; feedName?: string | null };
 
-const canonProduct = (n: string | null | undefined) => {
-  const t = (n || "").trim();
-  return t ? PRODUCT_ALIASES[t] ?? t : "";
-};
+let catalogueNames: Promise<Record<string, string>> | null = null;
 
-/** Not a current retail product — drop it entirely. */
-const DISCONTINUED = /smoked cheddar/i;
+function productNames(): Promise<Record<string, string>> {
+  if (!catalogueNames) {
+    catalogueNames = fetch(`${API_BASE}/WebsiteProduct`, {
+      next: { revalidate: REVALIDATE_SECONDS },
+    })
+      .then((res) => (res.ok ? (res.json() as Promise<ApiProduct[]>) : []))
+      .then((rows) => {
+        const map: Record<string, string> = {};
+        for (const row of rows ?? []) {
+          const feedName = (row.feedName || "").trim();
+          const name = (row.name || "").trim();
+          if (feedName && name) map[feedName] = name;
+        }
+        return map;
+      })
+      // A name the shop has not mapped still reads fine off the feed, so a
+      // catalogue that will not load is worth carrying on without.
+      .catch(() => ({}));
+  }
+  return catalogueNames;
+}
 
 /**
- * Retail display name: drops food-service-only lines and discontinued
- * products, and strips the trailing pack size so e.g. "Sour Cream Tub 200g"
- * and "Sour Cream Tub 240g" both collapse to "Sour Cream Tub".
+ * The name to show a customer.
+ *
+ * The shop's name wins where there is one. Otherwise the feed's own wording
+ * stands with the pack size taken off, so that "Cheddar Tub 220g" and
+ * "Cheddar Block 350g" — one product in two sizes, and absent from the shop's
+ * catalogue because they are stocked rather than sold here — read as one
+ * "Cheddar" entry instead of two near-identical lines in the filter.
  */
-function toRetailName(canon: string): string | null {
-  if (!canon) return null;
-  if (/food service/i.test(canon)) return null;
-  if (DISCONTINUED.test(canon)) return null;
-  return canon
+function toRetailName(
+  raw: string | null | undefined,
+  catalogue: Record<string, string>
+): string | null {
+  const name = (raw || "").trim();
+  if (!name) return null;
+
+  const fromCatalogue = catalogue[name];
+  if (fromCatalogue) return fromCatalogue;
+
+  // 10kg lines are for kitchens, not for the people reading this map.
+  if (/food service/i.test(name)) return null;
+
+  return name
     .replace(/\s*\d+(\.\d+)?\s*(g|kg)\s*$/i, "")
     .replace(/\s+(Block|Tub)\s*$/i, "")
     .trim();
@@ -383,10 +417,13 @@ function tidyStoreName(name: string | null): string {
 export async function fetchBannerStores(
   banner: BannerConfig
 ): Promise<BannerStores> {
-  const res = await fetch(
-    `${API_BASE}/ProductContact/GetStoreWithLocations?bannerCategoryId=${banner.id}`,
-    { next: { revalidate: REVALIDATE_SECONDS } }
-  );
+  const [res, catalogue] = await Promise.all([
+    fetch(
+      `${API_BASE}/ProductContact/GetStoreWithLocations?bannerCategoryId=${banner.id}`,
+      { next: { revalidate: REVALIDATE_SECONDS } }
+    ),
+    productNames(),
+  ]);
   if (!res.ok) throw new Error(`${banner.name}: HTTP ${res.status}`);
   const payload = (await res.json()) as { storeData: ApiStore[] };
 
@@ -416,7 +453,7 @@ export async function fetchBannerStores(
 
     const inventory = new Set<string>();
     for (const item of row.inventory ?? []) {
-      const name = toRetailName(canonProduct(item.name));
+      const name = toRetailName(item.name, catalogue);
       if (!name) continue;
       inventory.add(name);
       // Some rows arrive with no category at all (the 350g blocks), and a
