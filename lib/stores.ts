@@ -278,10 +278,14 @@ function productNames(): Promise<Record<string, string>> {
  * The name to show a customer.
  *
  * The shop's name wins where there is one. Otherwise the feed's own wording
- * stands with the pack size taken off, so that "Cheddar Tub 220g" and
- * "Cheddar Block 350g" — one product in two sizes, and absent from the shop's
- * catalogue because they are stocked rather than sold here — read as one
- * "Cheddar" entry instead of two near-identical lines in the filter.
+ * stands as it is: the catalogue covers what the shop sells — meals and meat —
+ * so the cheeses, which are stocked rather than sold here, have no name in it
+ * and the feed is the only place their real name exists. "Cream Cheese Tub
+ * 200g" is what that product is called, so that is what the map says.
+ *
+ * The pack size used to come off, which read tidily but answered a question
+ * nobody asked: it turned the 220g tub and the 350g block into one "Cheddar"
+ * and left a shopper unable to see which of the two a shop actually stocks.
  */
 function toRetailName(
   raw: string | null | undefined,
@@ -296,10 +300,7 @@ function toRetailName(
   // 10kg lines are for kitchens, not for the people reading this map.
   if (/food service/i.test(name)) return null;
 
-  return name
-    .replace(/\s*\d+(\.\d+)?\s*(g|kg)\s*$/i, "")
-    .replace(/\s+(Block|Tub)\s*$/i, "")
-    .trim();
+  return name;
 }
 
 /* ------------------------------------------------------------------ */
