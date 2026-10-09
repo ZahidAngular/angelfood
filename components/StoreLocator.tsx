@@ -19,7 +19,7 @@ import {
   Minimize2,
 } from "lucide-react";
 import {
-  ALL_BANNER,
+  OTHER_FEED,
   OTHER_BANNER,
   BANNERS,
   fetchBannerStores,
@@ -168,13 +168,13 @@ export function StoreLocator() {
     let landed = 0;
     let anySucceeded = false;
 
-    // The combined feed goes out with them rather than instead of them. It is
-    // the only source for the stores that belong to no banner, but it is also
-    // the slow one — usually a couple of seconds, sometimes eleven, and it has
-    // been seen to time out. The banners land first and the map is usable;
-    // those extra stores drop in when they arrive, or not at all, and nobody
-    // waits either way.
-    const feeds = [...BANNERS, ALL_BANNER];
+    // The unbannered stockists are fetched alongside the banners rather than
+    // before them. That feed is the only source for shops belonging to no
+    // chain, but it is also the slow one — usually a couple of seconds,
+    // sometimes eleven, and it has been seen to time out. The banners land
+    // first and the map is usable; the rest drop in when they arrive, or not
+    // at all, and nobody waits either way.
+    const feeds = [...BANNERS, OTHER_FEED];
 
     feeds.forEach((banner) => {
       fetchBannerStores(banner)
@@ -693,11 +693,12 @@ export function StoreLocator() {
     setNotice("");
   }
 
-  // "All" is the no-narrowing state, which an empty selection already was —
-  // it is that state given a button, so the default reads as a deliberate
-  // choice rather than as nothing being chosen. Picking a banner drops it;
-  // dropping the last banner comes back to it.
-  const showingAll = banners.length === 0;
+  // "Other" is a banner like the four chains: the stockists that belong to no
+  // supermarket group — Fresh Choice, delis, caterers, foodservice — which the
+  // feed returns under bannerCategoryId=0 and which carry no logo of their own.
+  // With nothing picked the map still shows every stockist, as it always has;
+  // the chips narrow, and dropping the last one comes back to everything.
+  const showingOther = banners.includes(OTHER_BANNER.name);
   const toggleBanner = (name: string) =>
     setBanners((prev) =>
       prev.includes(name) ? prev.filter((b) => b !== name) : [...prev, name]
@@ -841,13 +842,14 @@ export function StoreLocator() {
                 {/* banner chips */}
                 <div className="flex flex-wrap gap-2">
                   <button
-                    onClick={() => setBanners([])}
-                    aria-pressed={showingAll}
+                    onClick={() => toggleBanner(OTHER_BANNER.name)}
+                    aria-pressed={showingOther}
                     className={`inline-flex items-center gap-2 rounded-full border py-1.5 pl-1.5 pr-3.5 text-sm font-semibold transition-all ${
-                      showingAll
-                        ? "border-transparent bg-green text-cream shadow-sm"
+                      showingOther
+                        ? "border-transparent text-cream shadow-sm"
                         : "border-line bg-paper text-ink-soft hover:bg-cream"
                     }`}
+                    style={showingOther ? { background: OTHER_BANNER.color } : undefined}
                   >
                     <span className="grid h-6 w-6 place-items-center rounded-full bg-paper shadow-sm ring-1 ring-black/5">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -857,7 +859,7 @@ export function StoreLocator() {
                         className="h-4 w-4 object-contain"
                       />
                     </span>
-                    All stockists
+                    {OTHER_BANNER.name}
                   </button>
 
                   {BANNERS.map((b) => {
@@ -1121,8 +1123,10 @@ export function StoreLocator() {
                   Stocked at
                 </p>
                 <ul className="space-y-1.5">
-                  {BANNERS.map((b) => (
-                    <li key={b.id} className="flex items-center gap-2 text-xs font-medium text-ink">
+                  {/* Other last: it is the catch-all, and the four chains are
+                      what most people are scanning this list for. */}
+                  {[...BANNERS, OTHER_BANNER].map((b) => (
+                    <li key={b.name} className="flex items-center gap-2 text-xs font-medium text-ink">
                       <span
                         className="grid h-5 w-5 place-items-center rounded-md bg-paper shadow-sm"
                         style={{ border: `1.5px solid ${b.ring}` }}

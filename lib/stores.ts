@@ -33,19 +33,19 @@ export const BANNERS = [
 ] as const;
 
 /**
- * The whole stockist list in one request.
+ * The stockists that belong to no supermarket group.
  *
- * A strict superset of the four banners: the same 313 stores plus a handful
- * that belong to no banner at all — Fresh Choice, and a few foodservice
- * accounts — which the per-banner feeds never return, so they have been
- * missing from the map entirely.
+ * Fresh Choice, delis, caterers and foodservice accounts — the shops the four
+ * banner feeds never return, and which were missing from the map entirely
+ * until this feed was added. It returned the whole list when it was first
+ * used here; it now returns only these, which is what the "Other" chip shows.
  *
- * Fetched alongside the banners rather than instead of them. It is usually
- * two or three seconds but has been seen at eleven and occasionally times
- * out, while each banner answers in about one; hanging the whole page on it
- * would trade a working map for a complete one.
+ * Fetched alongside the banners rather than before them. It has been the slow
+ * one — usually a couple of seconds, once eleven, and it has timed out —
+ * while each banner answers in about one, so the banners land first and these
+ * drop in when they arrive.
  */
-export const ALL_BANNER = { id: 0, name: "All" } as const;
+export const OTHER_FEED = { id: 0, name: "Other" } as const;
 
 /** Stores the feed gives no banner for. Not a chip — somewhere for pins to live. */
 export const OTHER_BANNER = {
@@ -60,9 +60,13 @@ export type BannerName = (typeof BANNERS)[number]["name"] | typeof OTHER_BANNER.
 /**
  * Which banner a store belongs to, read off its name.
  *
- * Needed only for the combined feed, which returns no banner field at all —
- * every row's `category` comes back empty. Checked against all 313 stores
- * whose banner the per-banner feeds state outright: it agrees with every one.
+ * Needed only for the unbannered feed, which returns no banner field at all —
+ * every row's `category` comes back empty. Those rows are all "Other" today,
+ * so this mostly confirms what the feed already implies; it stays because the
+ * feed has carried banner stores before and would again without warning, and
+ * a misfiled pin is worse than a redundant check. Verified against all 313
+ * stores whose banner the per-banner feeds state outright: it agrees with
+ * every one.
  */
 export function bannerFromName(name: string | null): BannerName {
   const n = (name || "").toLowerCase();
@@ -364,7 +368,7 @@ type ApiStore = {
   inventory: { id: number; name: string; category: string | null }[] | null;
 };
 
-type BannerConfig = (typeof BANNERS)[number] | typeof ALL_BANNER;
+type BannerConfig = (typeof BANNERS)[number] | typeof OTHER_FEED;
 
 /** What one banner's feed yields: its stores, plus the categories it named. */
 export type BannerStores = {
@@ -464,10 +468,10 @@ export async function fetchBannerStores(
       if (category && !categories[name]) categories[name] = category;
     }
 
-    // The combined feed states no banner, so it is read off the name. A
+    // The unbannered feed states no banner, so it is read off the name. A
     // per-banner feed does not need reading: it has already said which it is.
     const storeBanner: BannerName =
-      banner.id === ALL_BANNER.id
+      banner.id === OTHER_FEED.id
         ? bannerFromName(row.name)
         : (banner.name as BannerName);
 
@@ -508,8 +512,11 @@ export function mergeStoreData(banners: BannerStores[]): StoreData {
   const regions = new Set<string>();
   let skipped = 0;
 
-  // Keyed by store id, because the combined feed returns the same stores as
-  // the per-banner ones and pushing both would show every supermarket twice.
+  // Keyed by store id. The five feeds no longer overlap — the unbannered one
+  // returns only shops the banners do not — but it has returned the whole list
+  // before, and did here until recently, when pushing both would have shown
+  // every supermarket twice. Cheap to keep, and the thing that breaks if that
+  // changes again is not obvious.
   const byId = new Map<string, Store>();
 
   for (const banner of banners) {
