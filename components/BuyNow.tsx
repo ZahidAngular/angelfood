@@ -23,12 +23,19 @@ import { removeLine, setBundle, setQuantity, useOrder } from "@/lib/cart";
 import { useDeliveryRate } from "@/lib/delivery";
 import {
   BUNDLE_SIZES,
+  FREE_DELIVERY_OFFERED,
   DELIVERY,
   formatPrice,
   formatPriceShort,
   orderTotals,
   type BundleSize,
 } from "@/lib/pricing";
+
+/**
+ * How many carton choices to lay out. Widened from the literal length that
+ * `as const` gives, which cannot be compared against the counts it is not.
+ */
+const cartonColumns: number = BUNDLE_SIZES.length;
 
 export function BuyNow() {
   // The catalogue is the API's: what is sold and what it costs both come from
@@ -167,7 +174,10 @@ function Facts({ pricePerItem }: { pricePerItem: number }) {
         DELIVERY.southIsland
       )} South`,
     },
-    { icon: Gift, text: `Free delivery at ${DELIVERY.freeFrom}`, lead: true },
+    // Only worth saying while a carton that size is actually on sale.
+    ...(FREE_DELIVERY_OFFERED
+      ? [{ icon: Gift, text: `Free delivery at ${DELIVERY.freeFrom}`, lead: true }]
+      : []),
     { icon: Ban, text: "No rural delivery" },
   ];
 
@@ -254,7 +264,19 @@ function BundlePicker({ pricePerItem }: { pricePerItem: number }) {
 
       <fieldset>
         <legend className="sr-only">Carton size</legend>
-        <div className="grid gap-3 sm:grid-cols-3">
+        {/* Columns follow however many cartons are on sale, so dropping one
+            does not leave the rest stranded at a third of the width. Widened
+            to number because `as const` pins the length to a literal, and a
+            literal cannot be compared against the counts it is not. */}
+        <div
+          className={`grid gap-3 ${
+            cartonColumns >= 3
+              ? "sm:grid-cols-3"
+              : cartonColumns === 2
+                ? "sm:grid-cols-2"
+                : "sm:max-w-sm"
+          }`}
+        >
           {BUNDLE_SIZES.map((size) => (
             <CartonOption
               key={size}

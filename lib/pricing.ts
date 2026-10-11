@@ -11,8 +11,18 @@
  * freight, so delivery is free at that size.
  */
 
-/** Bundle sizes offered, smallest first. The first is also the minimum. */
-export const BUNDLE_SIZES = [12, 18, 24] as const;
+/**
+ * Bundle sizes offered, smallest first. The first is also the minimum.
+ *
+ * 18 and 24 are commented out rather than deleted: they are not being sold
+ * at the moment, and putting them back is meant to be uncommenting a line
+ * rather than reconstructing one.
+ */
+export const BUNDLE_SIZES = [
+  12,
+  // 18,
+  // 24,
+] as const;
 export type BundleSize = (typeof BUNDLE_SIZES)[number];
 
 export const MINIMUM_ITEMS = BUNDLE_SIZES[0];
@@ -27,6 +37,19 @@ export const DELIVERY = {
   /** At or above this many meals, delivery is on us. */
   freeFrom: 24,
 } as const;
+
+/**
+ * Whether free delivery is something a customer can actually reach.
+ *
+ * It is offered at 24 meals, and 24 is not currently a carton anyone can buy,
+ * so advertising it would be promising something the page will not let you
+ * take. The rule stays in the pricing either way — an order of 24 placed by
+ * any other route still ships free — but the promise is only shown when a
+ * carton on sale is big enough to earn it. Restoring the 24 carton brings the
+ * wording back on its own.
+ */
+export const FREE_DELIVERY_OFFERED: boolean =
+  (BUNDLE_SIZES as readonly number[]).some((size) => size >= DELIVERY.freeFrom);
 
 /**
  * South Island postcodes start at 7000 — Nelson and Marlborough through

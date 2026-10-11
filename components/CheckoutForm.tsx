@@ -23,7 +23,13 @@ import {
   useDeliveryPostcode,
   useDeliveryRate,
 } from "@/lib/delivery";
-import { DELIVERY, formatPrice, islandFor, orderTotals } from "@/lib/pricing";
+import {
+  DELIVERY,
+  FREE_DELIVERY_OFFERED,
+  formatPrice,
+  islandFor,
+  orderTotals,
+} from "@/lib/pricing";
 import { NZ_REGIONS } from "@/lib/stores";
 import {
   errorsForStep,
@@ -575,8 +581,9 @@ function DeliveryStep({
 
       <p className="mt-5 text-xs text-ink-soft">
         New Zealand only: {formatPrice(DELIVERY.northIsland)} to the North
-        Island, {formatPrice(DELIVERY.southIsland)} to the South, and free on
-        orders of {DELIVERY.freeFrom}. Sorry, no rural delivery.
+        Island, {formatPrice(DELIVERY.southIsland)} to the South
+        {FREE_DELIVERY_OFFERED ? `, and free on orders of ${DELIVERY.freeFrom}` : ""}.
+        Sorry, no rural delivery.
       </p>
     </>
   );
@@ -762,8 +769,8 @@ function OrderPanel({
           <p className="mt-1.5 text-xs text-ink-soft">
             GST included. Delivery is a flat{" "}
             {formatPrice(DELIVERY.northIsland)} North Island,{" "}
-            {formatPrice(DELIVERY.southIsland)} South — free on{" "}
-            {DELIVERY.freeFrom}.
+            {formatPrice(DELIVERY.southIsland)} South
+            {FREE_DELIVERY_OFFERED ? ` — free on ${DELIVERY.freeFrom}` : ""}.
           </p>
           <OrderNotice totals={totals} rateState={rateState} className="mt-4" />
 
