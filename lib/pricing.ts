@@ -54,6 +54,16 @@ export const DELIVERY_VARIES_BY_ISLAND: boolean =
   (DELIVERY.northIsland as number) !== (DELIVERY.southIsland as number);
 
 /**
+ * Where the van actually goes.
+ *
+ * North Island only from October 2026. The rate card still holds South Island
+ * postcodes and the charge above still names a South Island price, so this is
+ * the one place that decides, and adding the South back is this line rather
+ * than a hunt through everything that mentions freight.
+ */
+export const DELIVERS_TO: readonly Island[] = ["North Island"];
+
+/**
  * Whether free delivery is something a customer can actually reach.
  *
  * It is offered at 24 meals, and 24 is not currently a carton anyone can buy,
@@ -83,11 +93,21 @@ export function islandFor(postcode: string): Island | null {
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
-/** Freight for an order of `items` meals going to `island`. */
+/**
+ * Freight for an order of `items` meals going to `island`.
+ *
+ * Null means "no price": either nowhere has been named yet, or nowhere we go.
+ * The caller shows the first as "not worked out" and the second as "we do not
+ * deliver there", which is the honest reading of both.
+ */
 export function deliveryFor(items: number, island: Island | null): number | null {
   if (items <= 0) return 0;
-  if (items >= DELIVERY.freeFrom) return 0;
   if (!island) return null;
+  // The run is North Island only, so a South Island order has no price rather
+  // than a free one — checked before the free-delivery rule, which would
+  // otherwise quote $0 for somewhere no van goes.
+  if (!DELIVERS_TO.includes(island)) return null;
+  if (items >= DELIVERY.freeFrom) return 0;
   return island === "South Island" ? DELIVERY.southIsland : DELIVERY.northIsland;
 }
 

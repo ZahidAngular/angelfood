@@ -30,6 +30,7 @@ import {
   DELIVERY,
   formatPrice,
   formatPriceShort,
+  islandFor,
   orderTotals,
   type BundleSize,
 } from "@/lib/pricing";
@@ -793,10 +794,20 @@ export function OrderNotice({
   }
 
   if (rateState?.status === "not-delivered") {
+    // Two reasons share this state: somewhere off the rate card or rural, and
+    // the whole South Island. Naming the right one saves a customer in central
+    // Christchurch wondering why they have been called rural.
+    const southIsland = islandFor(rateState.postcode) === "South Island";
     return (
       <p className={warn}>
-        We don&apos;t have a delivery run to {rateState.postcode}
-        {" — we can't do rural addresses. "}
+        {southIsland ? (
+          <>Delivery isn&apos;t available to {rateState.postcode} — we only deliver to the North Island at the moment. </>
+        ) : (
+          <>
+            We don&apos;t have a delivery run to {rateState.postcode}
+            {" — we can't do rural addresses. "}
+          </>
+        )}
         <Link href="/where-to-buy" className="underline">
           Find a stockist
         </Link>{" "}

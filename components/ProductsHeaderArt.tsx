@@ -22,7 +22,7 @@ type Pack = {
 
 const PACKS: Pack[] = [
   {
-    src: "/images/meals/vege-lasagna-v3.webp",
+    src: "/images/meals/vege-lasagna.webp",
     alt: "Angel Food plant-based vege lasagna NZ",
     className: "right-0 top-0 w-[54%]",
     rotate: -9,

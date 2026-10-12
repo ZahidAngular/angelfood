@@ -166,7 +166,12 @@ export function CheckoutForm() {
     // money for a delivery we can't make.
     if (step === "delivery" && rateState.status === "not-delivered") {
       setErrors({
-        postcode: "Sorry, we don't deliver here — and we can't do rural delivery.",
+        // Two different reasons wear the same state, and saying "no rural
+        // delivery" to someone in central Christchurch would be baffling.
+        postcode:
+          islandFor(rateState.postcode) === "South Island"
+            ? "Sorry, we only deliver to the North Island at the moment."
+            : "Sorry, we don't deliver here — and we can't do rural delivery.",
       });
       setTimeout(() => {
         formRef.current?.querySelector<HTMLElement>('[name="postcode"]')?.focus();

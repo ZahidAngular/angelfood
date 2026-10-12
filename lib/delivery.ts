@@ -12,6 +12,7 @@
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { fetchDeliveryRate, NotDeliverableError, type DeliveryRate } from "./shop";
+import { islandFor } from "./pricing";
 
 const POSTCODE_KEY = "angelfood-postcode";
 
@@ -92,6 +93,15 @@ export function useDeliveryRate(postcode: string): RateState {
     const settle = (state: RateState) => {
       if (!signal.aborted) setAnswer({ postcode: code, state });
     };
+
+    // The run is North Island only. The rate card still carries South Island
+    // postcodes, so asking would come back with a price for a van that does
+    // not go there — the answer has to be given here rather than looked up.
+    if (islandFor(code) === "South Island") {
+      settle({ status: "not-delivered", rate: null, postcode: code });
+      return;
+    }
+
     try {
       settle({ status: "ready", rate: await fetchDeliveryRate(code, signal) });
     } catch (err) {
