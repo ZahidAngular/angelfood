@@ -488,12 +488,20 @@ export function ProductThumb({
   sizes,
   className = "",
   rounded = "",
+  fit = "cover",
 }: {
   src: string | null;
   name: string;
   sizes: string;
   className?: string;
   rounded?: string;
+  /**
+   * "cover" fills the frame and crops whatever does not fit, which is right
+   * for a photograph that carries its own background. "contain" fits the
+   * whole image in and leaves the frame showing around it — which is what a
+   * cut-out wants, because the thing that would be cropped is the plate.
+   */
+  fit?: "cover" | "contain";
 }) {
   const [failed, setFailed] = useState(false);
 
@@ -515,7 +523,7 @@ export function ProductThumb({
       fill
       sizes={sizes}
       onError={() => setFailed(true)}
-      className={`object-cover ${className}`}
+      className={`${fit === "contain" ? "object-contain" : "object-cover"} ${className}`}
     />
   );
 }
@@ -557,11 +565,15 @@ function ProductCard({ product, index }: { product: ShopProduct; index: number }
         }`}
       >
         <div className="relative aspect-[4/3] overflow-hidden bg-cream">
+          {/* The meal photographs are cut out of their background, so the
+              whole square is fitted in rather than filled with — a 4:3 window
+              cropping a square would take the top and bottom off the plate. */}
           <ProductThumb
             src={product.image}
             name={product.name}
             sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 90vw"
             className="text-5xl"
+            fit="contain"
           />
           {product.weight && (
             <span className="absolute left-4 top-4 rounded-full bg-paper/90 px-3 py-1 text-[0.7rem] font-bold uppercase tracking-[0.12em] text-green backdrop-blur-sm">
