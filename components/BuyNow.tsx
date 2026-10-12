@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
+  ArrowUpRight,
   Ban,
   Check,
   Gift,
@@ -21,6 +22,7 @@ import { Reveal } from "./Reveal";
 import { fetchShopProducts, sectionsOf, type ShopProduct } from "@/lib/shop";
 import { removeLine, setBundle, setQuantity, useOrder } from "@/lib/cart";
 import { useDeliveryRate } from "@/lib/delivery";
+import { getNutritionSlug } from "@/lib/site";
 import {
   BUNDLE_SIZES,
   DELIVERY_VARIES_BY_ISLAND,
@@ -521,6 +523,7 @@ function ProductCard({ product, index }: { product: ShopProduct; index: number }
   const quantity = quantityOf(product.code);
   const inOrder = quantity > 0;
   const cartonFull = remaining <= 0;
+  const detailSlug = getNutritionSlug(product.name);
 
   const change = (next: number) =>
     setQuantity(
@@ -568,6 +571,21 @@ function ProductCard({ product, index }: { product: ShopProduct; index: number }
           <p className="mt-1 text-sm font-semibold text-green">
             {formatPrice(product.unitPrice)} each
           </p>
+
+          {/* What is in it, and what it does nutritionally — the two questions
+              a card this size cannot answer and the reason someone hesitates
+              over Add. The page already exists for every product the shop
+              sells; it was only ever missing a way in from here. Hidden rather
+              than shown broken if a product ever arrives without one. */}
+          {detailSlug && (
+            <Link
+              href={`/ingredients-nutrition-info/${detailSlug}`}
+              className="mt-2 inline-flex w-fit items-center gap-1 text-xs font-semibold text-ink-soft underline decoration-line underline-offset-4 transition-colors hover:text-green hover:decoration-green"
+            >
+              Ingredients &amp; nutrition
+              <ArrowUpRight size={13} className="shrink-0" />
+            </Link>
+          )}
 
           {/* mt-auto pins the controls to the card's bottom edge, so a row of
               cards lines up however much sits above them. */}
