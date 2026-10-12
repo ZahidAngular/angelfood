@@ -20,7 +20,13 @@ import {
 } from "lucide-react";
 import { Reveal } from "./Reveal";
 import { fetchShopProducts, sectionsOf, type ShopProduct } from "@/lib/shop";
-import { removeLine, setBundle, setQuantity, useOrder } from "@/lib/cart";
+import {
+  removeLine,
+  repriceFromCatalogue,
+  setBundle,
+  setQuantity,
+  useOrder,
+} from "@/lib/cart";
 import { useDeliveryRate } from "@/lib/delivery";
 import { getNutritionSlug } from "@/lib/site";
 import {
@@ -52,7 +58,12 @@ export function BuyNow() {
 
     fetchShopProducts()
       .then((loaded) => {
-        if (!cancelled) setProducts(loaded);
+        if (cancelled) return;
+        setProducts(loaded);
+        // A carton saved before a price change still holds the old figure, so
+        // the catalogue arriving is the moment to settle it — otherwise the
+        // summary and the card beside it disagree.
+        repriceFromCatalogue(loaded);
       })
       .catch((err) => {
         console.error("[buy-now] catalogue failed to load:", err);

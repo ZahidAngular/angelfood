@@ -13,8 +13,9 @@
  * again refreshes that figure, so a price moved in the database catches up.
  */
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { BUNDLE_SIZES, type BundleSize } from "./pricing";
+import { fetchShopProducts } from "./shop";
 
 // v4: no pack sizes — meals are single items — and the bundle size travels
 // with the lines.
@@ -206,6 +207,64 @@ export function removeLine(code: string) {
 
 export function clearOrder() {
   commit({ bundle: snapshot().bundle, lines: [] });
+}
+
+/**
+ * Brings the saved order up to date with the catalogue.
+ *
+ * A line keeps the price it was added at, and the order lives in local storage
+ * for as long as the browser holds it — so a carton filled before a price
+ * change still showed the old figure days later, with the card beside it
+ * showing the new one. The server works the real price out again when the
+ * order is placed, so nobody was ever charged the stale number; it just made
+ * the page contradict itself.
+ *
+ * Also drops anything no longer in the catalogue, which is otherwise a line
+ * that cannot be bought sitting in the carton taking up a slot.
+ */
+/**
+ * Fetches the catalogue once per page load and reprices the saved order against
+ * it. Pages that show a price but have no catalogue of their own — the cart
+ * and the checkout, both reachable straight from the basket icon — call this
+ * so they do not quote yesterday's figure.
+ */
+let catalogueCheck: Promise<void> | null = null;
+
+export function useLivePrices() {
+  useEffect(() => {
+    if (!catalogueCheck) {
+      catalogueCheck = fetchShopProducts()
+        .then(repriceFromCatalogue)
+        // A catalogue that will not load leaves the saved prices alone, which
+        // is the same position as before this existed.
+        .catch(() => undefined);
+    }
+  }, []);
+}
+
+export function repriceFromCatalogue(
+  products: readonly { code: string; name: string; unitPrice: number }[]
+) {
+  if (!products.length) return;
+
+  const current = snapshot();
+  if (!current.lines.length) return;
+
+  const byCode = new Map(products.map((p) => [p.code, p]));
+  let changed = false;
+
+  const lines = current.lines.flatMap((line) => {
+    const live = byCode.get(line.code);
+    if (!live) {
+      changed = true;
+      return [];
+    }
+    if (live.unitPrice === line.unitPrice && live.name === line.name) return [line];
+    changed = true;
+    return [{ ...line, unitPrice: live.unitPrice, name: live.name }];
+  });
+
+  if (changed) commit({ ...current, lines });
 }
 
 /* ------------------------------------------------------------------ */

@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { AddressSearch } from "./AddressSearch";
 import { OrderNotice, OrderTerms, ProductThumb, Totals } from "./BuyNow";
-import { useOrder } from "@/lib/cart";
+import { useLivePrices, useOrder } from "@/lib/cart";
 import { createPaymentSession, placeOrder, rememberReceipt } from "@/lib/orders";
 import type { AddressSuggestion } from "@/lib/address-search";
 import {
@@ -46,6 +46,9 @@ import {
 
 export function CheckoutForm() {
   const { lines, bundle, items, remaining } = useOrder();
+  // Prices here come from the saved order, so check them against the
+  // catalogue — this page is reachable without passing buy-now.
+  useLivePrices();
   // The delivery step's postcode does two jobs: it says which island the
   // order is going to, which is what freight is charged on, and it is
   // looked up against the rate card to check we run a truck there at all.

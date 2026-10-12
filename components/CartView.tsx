@@ -3,11 +3,20 @@
 import Link from "next/link";
 import { ArrowRight, Lock, ShoppingCart, Trash2 } from "lucide-react";
 import { OrderNotice, OrderTerms, ProductThumb, QuantityStepper, Totals } from "./BuyNow";
-import { clearOrder, removeLine, setQuantity, useOrder } from "@/lib/cart";
+import {
+  clearOrder,
+  removeLine,
+  setQuantity,
+  useLivePrices,
+  useOrder,
+} from "@/lib/cart";
 import { formatPrice, orderTotals } from "@/lib/pricing";
 
 export function CartView() {
   const { lines, bundle, items, remaining } = useOrder();
+  // Prices here come from the saved order, so check them against the
+  // catalogue — this page is reachable without passing buy-now.
+  useLivePrices();
   // Freight needs an address, and the cart hasn't asked for one — it is
   // quoted at the checkout, where the delivery step does.
   const totals = orderTotals({ lines, bundle, island: null });
