@@ -9,7 +9,10 @@
     "cleanUrls": true,
     "trailingSlash": false,
     "rewrites": [
-      { "source": "/recipes/**", "destination": "/recipes/fallback.html" }
+      {
+        "source": "/recipes/**",
+        "destination": "/recipes/fallback.html"
+      }
     ],
     "redirects": [
       {
@@ -64,6 +67,15 @@
       }
     ],
     "headers": [
+      {
+        "source": "/images/meals/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=300, must-revalidate"
+          }
+        ]
+      },
       {
         "source": "**",
         "headers": [
