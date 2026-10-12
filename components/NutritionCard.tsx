@@ -4,15 +4,6 @@ import { ArrowRight } from "lucide-react";
 import { getProductMeta, type NutritionEntry } from "@/lib/site";
 
 /**
- * Every product blurb ends with the same dietary sentence ("Plant-based, vegan,
- * …"). On a card that repeats for every tile and crowds out the part that
- * actually distinguishes the product, so trim it for the summary cards only.
- */
-function cardBlurb(blurb: string): string {
-  return blurb.replace(/\s*Plant-based[^.]*\.\s*$/i, "").trim();
-}
-
-/**
  * Product tile used on the ingredients & nutrition index and on the "more
  * <category>" strip at the bottom of each detail page — pack shot, name, short
  * description, and a call to action pinned to the bottom-left of the card.
@@ -48,9 +39,15 @@ export function NutritionCard({ entry }: { entry: NutritionEntry }) {
           <h3 className="font-display text-lg font-bold leading-tight tracking-tight text-ink transition-colors group-hover:text-green">
             {entry.product}
           </h3>
+          {/* Shown whole, with line-clamp doing the shortening. A trim used to
+              run here, written to drop a closing "Plant-based, vegan, ..."
+              sentence that no blurb carries any more. It matched the phrase
+              wherever it fell and took the rest of the sentence with it, so
+              "Tender plant-based chicken in a silky tomato curry ..." read on
+              the card as "Tender". */}
           {meta && (
             <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-soft">
-              {cardBlurb(meta.blurb)}
+              {meta.blurb}
             </p>
           )}
         </div>
