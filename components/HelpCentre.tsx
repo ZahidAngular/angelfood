@@ -28,9 +28,12 @@ const SECTIONS: Section[] = [
         a: (
           <>
             We&apos;re preparing to deliver our snap-frozen meals directly to
-            homes across New Zealand. Available delivery areas will appear at
-            checkout. If your address isn&apos;t accepted, get in touch and
-            we&apos;ll see what options are available.
+            homes throughout New Zealand (but not to rural addresses because of
+            the difficulty of keeping the meals frozen during longer transit
+            time). In the initial phase, though, we are only able to deliver in
+            the North Island. Available delivery areas will appear at checkout.
+            If your address isn&apos;t accepted, get in touch and we&apos;ll see
+            what options are available.
           </>
         ),
       },
@@ -38,7 +41,7 @@ const SECTIONS: Section[] = [
         q: "When will my order arrive?",
         a: (
           <>
-            We dispatch frozen meal orders on [confirmed dispatch days]. Once
+            We dispatch frozen meal orders on Tuesdays and Wednesdays. Once
             your order is on its way, we&apos;ll email you a tracking link.
             Delivery times may vary by location and around public holidays.
           </>
@@ -49,7 +52,7 @@ const SECTIONS: Section[] = [
         a: (
           <>
             Your delivery charge will be shown at checkout before you pay.
-            [Add confirmed regional rates and any free-delivery thresholds.]
+            Freight in the North Island is a flat rate of $15.
           </>
         ),
       },

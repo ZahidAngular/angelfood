@@ -189,7 +189,7 @@ function Facts({ pricePerItem }: { pricePerItem: number }) {
         ? `${formatPriceShort(DELIVERY.northIsland)} North Island, ${formatPriceShort(
             DELIVERY.southIsland
           )} South`
-        : `${formatPriceShort(DELIVERY.northIsland)} delivery nationwide`,
+        : `${formatPriceShort(DELIVERY.northIsland)} North Island only`,
     },
     // Only worth saying while a carton that size is actually on sale.
     ...(FREE_DELIVERY_OFFERED
@@ -866,7 +866,7 @@ export function OrderTerms({ className = "" }: { className?: string }) {
     <div
       className={`border-t border-line pt-4 text-xs leading-relaxed text-ink-soft ${className}`}
     >
-      <p>Delivered across Aotearoa (No Rural Delivery at this stage)</p>
+      <p>North Island delivery only. Rural addresses excluded.</p>
       <p className="mt-2.5 flex flex-col items-start gap-1.5">
         <Link href="/help-centre" {...linkProps}>
           Online Ordering FAQs
