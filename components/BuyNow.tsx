@@ -23,6 +23,7 @@ import { removeLine, setBundle, setQuantity, useOrder } from "@/lib/cart";
 import { useDeliveryRate } from "@/lib/delivery";
 import {
   BUNDLE_SIZES,
+  DELIVERY_VARIES_BY_ISLAND,
   FREE_DELIVERY_OFFERED,
   DELIVERY,
   formatPrice,
@@ -84,7 +85,7 @@ export function BuyNow() {
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-12">
           <div>
-            <SectionHeading step={2} title="Pick your meals">
+            <SectionHeading step={1} title="Pick your meals">
               {products && products.length > 0
                 ? `${products.length} to choose from`
                 : ""}
@@ -170,9 +171,11 @@ function Facts({ pricePerItem }: { pricePerItem: number }) {
     { icon: Shuffle, text: "Mix any meals you like", phone: false },
     {
       icon: Truck,
-      text: `${formatPriceShort(DELIVERY.northIsland)} North Island, ${formatPriceShort(
-        DELIVERY.southIsland
-      )} South`,
+      text: DELIVERY_VARIES_BY_ISLAND
+        ? `${formatPriceShort(DELIVERY.northIsland)} North Island, ${formatPriceShort(
+            DELIVERY.southIsland
+          )} South`
+        : `${formatPriceShort(DELIVERY.northIsland)} delivery nationwide`,
     },
     // Only worth saying while a carton that size is actually on sale.
     ...(FREE_DELIVERY_OFFERED
@@ -260,7 +263,11 @@ function BundlePicker({ pricePerItem }: { pricePerItem: number }) {
 
   return (
     <div className="mt-6">
-      <SectionHeading step={1} title="Choose your carton" />
+      {/* Only one carton is on sale, so there is no choice to introduce and
+          the heading was announcing a decision nobody makes. Put this back
+          alongside the 18 and 24 in BUNDLE_SIZES, and renumber the heading
+          below to 2 again. */}
+      {/* <SectionHeading step={1} title="Choose your carton" /> */}
 
       <fieldset>
         <legend className="sr-only">Carton size</legend>
@@ -358,9 +365,11 @@ function CartonOption({
         >
           {free
             ? "Delivered free, anywhere we go"
-            : `plus ${formatPriceShort(DELIVERY.northIsland)}–${formatPriceShort(
-                DELIVERY.southIsland
-              )} delivery`}
+            : DELIVERY_VARIES_BY_ISLAND
+              ? `plus ${formatPriceShort(DELIVERY.northIsland)}–${formatPriceShort(
+                  DELIVERY.southIsland
+                )} delivery`
+              : `plus ${formatPriceShort(DELIVERY.northIsland)} delivery`}
         </span>
       </span>
     </label>

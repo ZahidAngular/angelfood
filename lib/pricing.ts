@@ -33,10 +33,25 @@ export const MINIMUM_ITEMS = BUNDLE_SIZES[0];
  */
 export const DELIVERY = {
   northIsland: 15,
-  southIsland: 20,
+  /**
+   * The same as the North Island since October 2026. The two are kept apart
+   * rather than collapsed into one figure because the islands genuinely cost
+   * different amounts to reach — the rate card runs from about $12 to $76 a
+   * drop — and charging them apart again is a number here rather than a
+   * change to everything that quotes freight.
+   */
+  southIsland: 15,
   /** At or above this many meals, delivery is on us. */
   freeFrom: 24,
 } as const;
+
+/**
+ * Whether the islands are charged differently at the moment. The carton card
+ * is shown before anyone has said where the order is going, so it can only
+ * quote a range while they differ, and a single figure once they do not.
+ */
+export const DELIVERY_VARIES_BY_ISLAND: boolean =
+  (DELIVERY.northIsland as number) !== (DELIVERY.southIsland as number);
 
 /**
  * Whether free delivery is something a customer can actually reach.
