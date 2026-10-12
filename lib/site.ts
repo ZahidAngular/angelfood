@@ -120,7 +120,7 @@ export const MEALS: Product[] = [
     tagline: "A true classic, reimagined",
     subtitle: "Cheesy Plant-based",
     blurb:
-      "Slow-cooked lentil ragu, tofu ricotta, velvety béchamel and tender pasta sheets, baked to perfection our best-selling plant-based ready meal.",
+      "Tender pasta layered with slow-cooked lentil ragù, creamy tofu ricotta and velvety béchamel — a deliciously comforting plant-based take on an Italian favourite.",
     alt: "Angel Food plant-based vege lasagna NZ",
     tag: "Bake",
     image: "/images/meals/vege-lasagna-v2.webp",
@@ -130,11 +130,11 @@ export const MEALS: Product[] = [
     claims: ["Plant based", "Dairy free", "No artificial colours"],
   },
   {
-    name: "Vege Korma",
+    name: "Creamy Vege Korma",
     tagline: "Comforting & full of flavour",
     subtitle: "With Cumin Rice & Broccoli",
     blurb:
-      "Creamy coconut cashew korma with tender veges and aromatic spices a comforting plant-based dinner.",
+      "Tender vegetables nestled in a luscious coconut and cashew sauce with fragrant, gently warming spices — mellow, creamy and made to savour.",
     alt: "Angel Food vegan vege korma New Zealand",
     tag: "Simmer",
     image: "/images/meals/vege-korma-v2.webp",
@@ -144,11 +144,11 @@ export const MEALS: Product[] = [
     claims: ["Plant based", "Dairy free", "No artificial colours"],
   },
   {
-    name: "Tofu & Greens",
+    name: "Tofu & Greens Bowl",
     tagline: "Clean, balanced & plant-powered",
     subtitle: "With Spinach & Zingy Dressing",
     blurb:
-      "Marinated tofu, vibrant spinach and fragrant jasmine rice drizzled in sesame ginger dressing.",
+      "Flavourful marinated tofu, vibrant spinach and fragrant jasmine rice, finished with a savoury sesame-ginger dressing — a delicious balance of greens, grains and flavour.",
     alt: "Angel Food plant-based tofu and greens bowl NZ",
     tag: "Fresh",
     image: "/images/meals/tofu-greens-v2.webp",
@@ -162,7 +162,7 @@ export const MEALS: Product[] = [
     tagline: "All the comfort, none of the dairy",
     subtitle: "With Plant Chicken & Rice",
     blurb:
-      "Plant-based chicken in a silky tomato-butter curry loaded with aromatic spices, on jasmine rice.",
+      "Tender plant-based chicken in a silky tomato curry with warming aromatic spices, served over fragrant jasmine rice — rich, creamy comfort in every spoonful.",
     alt: "Angel Food plant-based butter curry New Zealand",
     tag: "Simmer",
     image: "/images/meals/butter-curry-v2.webp",
@@ -172,11 +172,11 @@ export const MEALS: Product[] = [
     claims: ["Plant based", "Dairy free", "No artificial colours"],
   },
   {
-    name: "Savoury Mince & Mash",
+    name: "Savoury Plant-Based Mince & Mash",
     tagline: "Classic comfort by the forkful",
     subtitle: "Plant-Based Mince & Potato Mash",
     blurb:
-      "Rich, savoury plant-based mince in a hearty onion gravy, topped with velvety potato mash.",
+      "Rich, savoury plant-based mince in a hearty onion gravy, topped with velvety potato mash — classic comfort by the forkful.",
     alt: "Angel Food plant-based savoury mince and mash NZ",
     tag: "Comfort",
     image: "/images/meals/mince-mash-v2.webp",
@@ -190,7 +190,7 @@ export const MEALS: Product[] = [
     tagline: "Hearty, aromatic & deeply satisfying",
     subtitle: "With Kidney Beans & Fluffy Rice",
     blurb:
-      "Tender black lentils and kidney beans in a rich, warmly spiced tomato sauce, served over fluffy rice.",
+      "Tender black lentils and kidney beans in a rich, warmly spiced tomato sauce, served over fluffy rice — hearty, aromatic and deeply satisfying.",
     alt: "Angel Food plant-based spiced black lentils and rice NZ",
     tag: "Simmer",
     image: "/images/meals/black-lentils-v2.webp",
@@ -204,7 +204,7 @@ export const MEALS: Product[] = [
     tagline: "Earthy, warming & full of flavour",
     subtitle: "With Spinach Sauce & Indian Spices",
     blurb:
-      "Tender tofu nestled in a luscious spinach sauce with fragrant Indian spices, served over fluffy quinoa.",
+      "Tender tofu nestled in a luscious spinach sauce with fragrant Indian spices, served over fluffy quinoa — earthy, warming and full of flavour.",
     alt: "Angel Food plant-based saag tofu and quinoa NZ",
     tag: "Simmer",
     image: "/images/meals/saag-tofu-v2.webp",
@@ -214,11 +214,11 @@ export const MEALS: Product[] = [
     claims: ["Plant based", "Dairy free", "No artificial colours"],
   },
   {
-    name: "Chicken Stir-Fry Noodles",
+    name: "Plant-Based Chicken Stir-Fry Noodles",
     tagline: "Savoury, fragrant & deliciously slurpable",
     subtitle: "Plant Chicken in Garlic-Ginger Sauce",
     blurb:
-      "Plant-based chicken, colourful vegetables and tangled noodles tossed in a glossy garlic-ginger sauce.",
+      "Tender plant-based chicken, colourful vegetables and tangled noodles tossed in a glossy garlic-ginger sauce — savoury, fragrant and deliciously slurpable.",
     alt: "Angel Food plant-based chicken stir-fry noodles NZ",
     tag: "Stir-fry",
     image: "/images/meals/chicken-stir-fry-v2.webp",
@@ -232,7 +232,7 @@ export const MEALS: Product[] = [
     tagline: "Fragrant, creamy & gently warming",
     subtitle: "With Lemongrass & Coconut",
     blurb:
-      "Tofu and tender vegetables in a silky coconut green curry, fragrant with lemongrass and a gentle chilli warmth.",
+      "Tofu and tender vegetables in a silky coconut green curry, fragrant with lemongrass and a gentle chilli warmth — served over fluffy rice to soak up every delicious spoonful.",
     alt: "Angel Food plant-based Thai green tofu curry NZ",
     tag: "Simmer",
     image: "/images/meals/thai-green-curry-v2.webp",
@@ -499,7 +499,7 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     },
   },
   {
-    product: "Tofu & Greens",
+    product: "Tofu & Greens Bowl",
     slug: "tofu-and-greens-bowl",
     category: "Meals",
     ingredients:
@@ -541,7 +541,7 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     },
   },
   {
-    product: "Vege Korma",
+    product: "Creamy Vege Korma",
     slug: "creamy-vege-korma",
     category: "Meals",
     ingredients:
