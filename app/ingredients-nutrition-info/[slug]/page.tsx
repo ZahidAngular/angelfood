@@ -131,9 +131,26 @@ export default async function NutritionDetailPage({
                   <h2 className="font-display text-xl font-bold tracking-tight text-ink">
                     Ingredients
                   </h2>
-                  <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-                    {entry.ingredients}
-                  </p>
+                  {/* A meal can be listed before its panel has been signed
+                      off. Saying so is the only honest thing to print: an
+                      ingredients page is read by people who need to know, and
+                      a blank one invites the reader to assume. */}
+                  {entry.ingredients ? (
+                    <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                      {entry.ingredients}
+                    </p>
+                  ) : (
+                    <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                      The full ingredients list and nutrition panel for this
+                      meal are being confirmed and will be published here
+                      shortly. If you need them before then — particularly for
+                      an allergy —{" "}
+                      <Link href="/contact" className="font-semibold text-green underline">
+                        get in touch
+                      </Link>{" "}
+                      and we will send them to you.
+                    </p>
+                  )}
                 </div>
               </Reveal>
 
@@ -180,14 +197,19 @@ export default async function NutritionDetailPage({
                 </Reveal>
               )}
 
-              <Reveal delay={0.15}>
-                <div className="mt-8">
-                  <h2 className="mb-3 font-display text-xl font-bold tracking-tight text-ink">
-                    Nutrition information
-                  </h2>
-                  <NutritionTable facts={entry.nutrition} />
-                </div>
-              </Reveal>
+              {/* An empty table is worse than no table: it reads as a panel
+                  that happens to have nothing in it rather than one that has
+                  not been published. */}
+              {entry.nutrition.rows.length > 0 && (
+                <Reveal delay={0.15}>
+                  <div className="mt-8">
+                    <h2 className="mb-3 font-display text-xl font-bold tracking-tight text-ink">
+                      Nutrition information
+                    </h2>
+                    <NutritionTable facts={entry.nutrition} />
+                  </div>
+                </Reveal>
+              )}
             </div>
           </div>
         </div>

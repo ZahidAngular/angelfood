@@ -683,6 +683,18 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     },
   },
   {
+    product: "Thai Green Tofu Curry",
+    slug: "thai-green-tofu-curry",
+    category: "Meals",
+    // Listed so the range reads complete, with its panel still to come. The
+    // page says so rather than showing an empty ingredients list, and the
+    // nutrition table is left out entirely until there is one — an empty
+    // table reads as a product with no nutrition rather than a panel not yet
+    // published. Fill these three in and both appear on their own.
+    ingredients: "",
+    nutrition: { rows: [] },
+  },
+  {
     product: "Cream Cheese",
     slug: "cream-cheese",
     category: "Cheeses",
