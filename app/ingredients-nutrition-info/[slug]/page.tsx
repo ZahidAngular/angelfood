@@ -137,13 +137,17 @@ export default async function NutritionDetailPage({
                 </div>
               </Reveal>
 
+              {/* Set on green rather than left as another paragraph. Someone
+                  reading this page for an allergy is reading it for this, and
+                  a block of ingredients either side is the easiest thing in
+                  the world to skim past. */}
               {entry.allergens && (
                 <Reveal delay={0.12}>
-                  <div className="mt-8">
-                    <h2 className="font-display text-xl font-bold tracking-tight text-ink">
-                      Allergens
+                  <div className="mt-8 rounded-2xl bg-green p-5 text-cream sm:p-6">
+                    <h2 className="font-display text-xl font-bold tracking-tight text-cream">
+                      Allergen info
                     </h2>
-                    <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                    <p className="mt-2 text-sm font-medium leading-relaxed text-cream/90">
                       {entry.allergens}
                     </p>
                   </div>

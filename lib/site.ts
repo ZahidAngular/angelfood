@@ -504,6 +504,8 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     category: "Meals",
     ingredients:
       "INGREDIENTS: Turmeric Rice (Cooked Basmati Rice, Water, Oil, Ginger Garlic Paste, Turmeric Powder, Onion Powder, Garlic Powder, Coconut Milk, Salt), Crispy Tofu (Firm Tofu, Paprika, Salt, Sugar, Soy Milk, Oil), Garlic Spinach (Spinach, Oil, Vegan Butter [Plant Oils, Water, Salt], Garlic, Salt).",
+    allergens:
+      "Contains: Soy. May contain: Sesame, Peanut, Cashew, Wheat, Mustard.",
     nutrition: {
       servingsPerPack: "1",
       servingSize: "400g",
@@ -525,6 +527,8 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     category: "Meals",
     ingredients:
       "INGREDIENTS: Diced tomatoes, Tofu ricotta (tofu, coconut milk, nutritional yeast, olive oil, herbs, onion powder, salt), Lasagna sheets (durum wheat semolina), Marinara (tomatoes, tomato paste, onions, garlic, lentils, olive oil, parsley, oregano, sugar, salt), Spinach, Vegan cheese (Water, Modified Starch (1404, 1414, 1450), Coconut Oil, Salt, Natural Flavour, Mineral Salt (Calcium Phosphate), Yeast Extract, Acidity Regulator (Lactic acid, Citric acid), Preservative (Potassium sorbate), Colour (Carotene 160a).), Soy milk, Garlic, Salt, Herbs and spices.",
+    allergens:
+      "Contains: Soy, Wheat, Gluten, Coconut. May contain: Tree nuts, Sesame, Mustard, Peanuts.",
     nutrition: {
       servingsPerPack: "1",
       servingSize: "400g",
@@ -546,6 +550,8 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     category: "Meals",
     ingredients:
       "INGREDIENTS: Cooked basmati rice (rice, water, cumin seeds, salt), Korma sauce (tomato paste, soy milk, coconut cream, water, ginger and garlic paste, vegan butter (plant oils, water, salt), cashew paste, oil, curry powder, sugar, salt, cardamom, pandan extract, spinach), Mixed vegetables (chickpeas, green beans, cauliflower, peas), Roasted broccoli (broccoli, oil, salt), Herbs and spices.",
+    allergens:
+      "Contains: Soy, Cashew, Coconut, Milk. May contain: Sesame, Wheat, Gluten, Mustard, Peanuts, Tree nuts.",
     nutrition: {
       servingsPerPack: "1",
       servingSize: "400g",
@@ -567,6 +573,8 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     category: "Meals",
     ingredients:
       "INGREDIENTS: Cooked Basmati Rice (Water, Basmati Rice, Salt), Butter Sauce [Tomato Paste. Water, Soy Milk, Canola Oil, Cashew Paste (Cashews, Water), Ginger, Garlic, Vegan Butter (Plant Oils, Water, Salt), Brown Sugar, Paprika, Kashmiri Chilli, Fenugreek, Kitchen King Masala (Spices, Salt), Garam Masala (Spices), Cardamom Powder, Salt], Vegan Chicken (Soy Protein, Water, Vegetable Oils, Wheat Protein, Natural Flavours, Salt), Fenugreek Leaves.",
+    allergens:
+      "Contains: Soya, Cashew. May contain: Wheat, Peanut, Sesame, Mustard.",
     nutrition: {
       servingsPerPack: "1",
       servingSize: "400g",
