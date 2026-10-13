@@ -860,16 +860,41 @@ export const NUTRITION_INFO: NutritionEntry[] = [
   },
 ];
 
+/**
+ * Names this site has called a product before, and what it calls it now.
+ *
+ * The shop catalogue is a database the site reads rather than a file it
+ * ships, so a product renamed here is renamed there separately and the two
+ * are briefly out of step. Both lookups below match on the name, so during
+ * that gap buy-now was asking for "Vege Korma" while this file only knew
+ * "Creamy Vege Korma" — and the ingredients link simply vanished from the
+ * card rather than erroring, which is the kind of thing nobody notices for
+ * a week.
+ *
+ * Entries can go once the catalogue has caught up, but they cost nothing and
+ * an old name in a bookmark or a spreadsheet still resolves.
+ */
+const EARLIER_NAMES: Record<string, string> = {
+  "Tofu & Greens": "Tofu & Greens Bowl",
+  "Vege Korma": "Creamy Vege Korma",
+  "Savoury Mince & Mash": "Savoury Plant-Based Mince & Mash",
+  "Chicken Stir-Fry Noodles": "Plant-Based Chicken Stir-Fry Noodles",
+};
+
+const currentName = (name: string) => EARLIER_NAMES[name] ?? name;
+
 export function getNutritionSlug(productName: string): string | undefined {
-  return NUTRITION_INFO.find((n) => n.product === productName)?.slug;
+  const name = currentName(productName);
+  return NUTRITION_INFO.find((n) => n.product === name)?.slug;
 }
 
 /** Looks up the homepage photo + description for a product by name. */
 export function getProductMeta(
   productName: string
 ): { image: string; blurb: string } | undefined {
+  const name = currentName(productName);
   const all = [...PRODUCTS, ...MEALS, ...MEATS];
-  return all.find((p) => p.name === productName);
+  return all.find((p) => p.name === name);
 }
 
 export const VALUES = [
