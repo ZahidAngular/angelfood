@@ -591,6 +591,98 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     },
   },
   {
+    product: "Savoury Plant-Based Mince & Mash",
+    slug: "savoury-mince-and-mash",
+    category: "Meals",
+    ingredients:
+      "INGREDIENTS: Vegan casserole gravy (31.25%) [onion gravy (onion, water, canola oil, ginger, garlic, coriander, cumin, Kashmiri chilli, turmeric, garam masala, fenugreek leaves, salt), tomato-garlic sauce (tomato sauce, garlic, oil, flavour enhancer (621)), tomato paste, vegan Worcestershire sauce (water, salt, acidity regulator (260), colour (150d), spices, preservative (211), flavour), dark soy sauce (water, salt, defatted soybeans, wheat, colour (150a), preservative (202), sweetener (955)), canola oil, garlic, vegetable stock powder (sea salt, maize maltodextrin, vegetable flavour, yeast extract, spinach, celery, cabbage, canola oil, olive oil, sugar, potassium chloride, parsley), brown sugar, black pepper, thyme, paprika, vinegar, parsley, thickener (1422)], hydrated textured soy protein (25%) (water, textured soy protein), cooked vegetables (25%) (potato, carrot, peas, onion), mashed potatoes (12.5%) (potato, plant butter, water, salt, white pepper), rolled oats (6.25%).",
+    allergens:
+      "Contains: Soy, Wheat, Oats, Gluten.",
+    nutrition: {
+      servingsPerPack: "1",
+      servingSize: "400g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "1800", per100g: "450" },
+        { label: "Protein (g)", perServe: "21", per100g: "5.3" },
+        { label: "Fat, Total (g)", perServe: "12", per100g: "3.0" },
+        { label: "Saturated (g)", perServe: "3", per100g: "0.8" },
+        { label: "Carbohydrate (g)", perServe: "55", per100g: "13.8" },
+        { label: "Sugars (g)", perServe: "9", per100g: "2.3" },
+        { label: "Dietary fibre (g)", perServe: "11", per100g: "2.8" },
+        { label: "Sodium (mg)", perServe: "1400", per100g: "350" },
+      ],
+    },
+  },
+  {
+    product: "Spiced Black Lentils & Rice",
+    slug: "spiced-black-lentils-and-rice",
+    category: "Meals",
+    ingredients:
+      "INGREDIENTS: Water, basmati rice, black urad lentils, onion gravy (onion, water, canola oil, ginger, garlic, coriander, cumin, Kashmiri chilli, turmeric, garam masala, fenugreek leaves, salt), kidney beans (rajma), tomato paste, canola oil, chana dal (split chickpeas), plant butter, ginger, garlic, coriander, cumin, Kashmiri chilli powder, garam masala, salt, fenugreek leaves (kasoori methi), turmeric, black pepper.",
+    allergens:
+      "May contain: Soy.",
+    nutrition: {
+      servingsPerPack: "1",
+      servingSize: "400g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "2140", per100g: "535" },
+        { label: "Protein (g)", perServe: "22.5", per100g: "5.6" },
+        { label: "Fat, Total (g)", perServe: "9.5", per100g: "2.4" },
+        { label: "Saturated (g)", perServe: "1.8", per100g: "0.5" },
+        { label: "Carbohydrate (g)", perServe: "76.0", per100g: "19.0" },
+        { label: "Sugars (g)", perServe: "5.0", per100g: "1.3" },
+        { label: "Dietary fibre (g)", perServe: "15.0", per100g: "3.8" },
+        { label: "Sodium (mg)", perServe: "350", per100g: "88" },
+      ],
+    },
+  },
+  {
+    product: "Saag Tofu & Quinoa",
+    slug: "saag-tofu-and-quinoa",
+    category: "Meals",
+    ingredients:
+      "INGREDIENTS: Spinach gravy (37.5%) [spinach, onion gravy (onion, water, canola oil, ginger, garlic, coriander, cumin, Kashmiri chilli, turmeric, garam masala, fenugreek leaves, salt), tomato paste, CASHEW paste, plant butter, canola oil, ginger, garlic, water, Massel vegetable stock powder, coriander, cumin, garam masala, mild chilli, turmeric, black pepper, salt, modified starch (1422)], firm tofu (25%) (Soybeans, water, coagulant), cooked quinoa (20%), mixed vegetables (17.5%) (carrot, peas, sweet corn, green beans).",
+    allergens:
+      "Contains: Soy, Cashew.",
+    nutrition: {
+      servingsPerPack: "1",
+      servingSize: "400g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "1890", per100g: "473" },
+        { label: "Protein (g)", perServe: "22.9", per100g: "5.7" },
+        { label: "Fat, Total (g)", perServe: "22.8", per100g: "5.7" },
+        { label: "Saturated (g)", perServe: "4.4", per100g: "1.1" },
+        { label: "Carbohydrate (g)", perServe: "39.7", per100g: "9.9" },
+        { label: "Sugars (g)", perServe: "8.4", per100g: "2.1" },
+        { label: "Dietary fibre (g)", perServe: "8.6", per100g: "2.2" },
+        { label: "Sodium (mg)", perServe: "640", per100g: "160" },
+      ],
+    },
+  },
+  {
+    product: "Plant-Based Chicken Stir-Fry Noodles",
+    slug: "chicken-stir-fry-noodles",
+    category: "Meals",
+    ingredients:
+      "INGREDIENTS: Cooked eggless noodles (30%) (wheat noodles, water), hydrated sliced soy protein (25%) (soy protein, water), garlic dark-soy sauce (25%) [water, dark soy sauce (soy sauce (70%) (water, salt, defatted soybeans, wheat), colour (150a), salt, preservative (202), sweetener (955)), garlic, vinegar, sugar, vegetable oil, corn starch, flavour enhancer (621), white pepper, black pepper], mixed vegetables (20%) (green beans, carrots, broccoli, cauliflower, baby corn, capsicum).",
+    allergens:
+      "Contains: Soy, Wheat, Gluten.",
+    nutrition: {
+      servingsPerPack: "1",
+      servingSize: "400g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "1750", per100g: "438" },
+        { label: "Protein (g)", perServe: "25.0", per100g: "6.3" },
+        { label: "Fat, Total (g)", perServe: "8.0", per100g: "2.0" },
+        { label: "Saturated (g)", perServe: "1.2", per100g: "0.3" },
+        { label: "Carbohydrate (g)", perServe: "55.0", per100g: "13.8" },
+        { label: "Sugars (g)", perServe: "10.0", per100g: "2.5" },
+        { label: "Dietary fibre (g)", perServe: "7.0", per100g: "1.8" },
+        { label: "Sodium (mg)", perServe: "1200", per100g: "300" },
+      ],
+    },
+  },
+  {
     product: "Cream Cheese",
     slug: "cream-cheese",
     category: "Cheeses",
