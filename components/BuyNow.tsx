@@ -37,6 +37,8 @@ import {
   formatPrice,
   formatPriceShort,
   islandFor,
+  PRE_SALE,
+  regularBundlePrice,
   orderTotals,
   type BundleSize,
 } from "@/lib/pricing";
@@ -99,7 +101,7 @@ export function BuyNow() {
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-12">
           <div>
-            <SectionHeading step={1} title="Pick your meals">
+            <SectionHeading title="Pick your meals">
               {products && products.length > 0
                 ? `${products.length} to choose from`
                 : ""}
@@ -248,14 +250,17 @@ function SectionHeading({
   title,
   children,
 }: {
-  step: number;
+  /** Omitted when there is only one step, where a lone "1" numbers nothing. */
+  step?: number;
   title: string;
   children?: React.ReactNode;
 }) {
   return (
     <div className="mb-5 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
       <h2 className="flex items-baseline gap-2.5 font-display text-2xl font-bold tracking-[-0.02em] text-ink">
-        <span className="text-base font-extrabold text-green">{step}</span>
+        {step !== undefined && (
+          <span className="text-base font-extrabold text-green">{step}</span>
+        )}
         {title}
       </h2>
       {children && <span className="text-sm text-ink-soft">{children}</span>}
@@ -282,6 +287,12 @@ function BundlePicker({ pricePerItem }: { pricePerItem: number }) {
           alongside the 18 and 24 in BUNDLE_SIZES, and renumber the heading
           below to 2 again. */}
       {/* <SectionHeading step={1} title="Choose your carton" /> */}
+
+      {PRE_SALE.active && (
+        <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-coral">
+          Pre-sale special deal
+        </p>
+      )}
 
       <fieldset>
         <legend className="sr-only">Carton size</legend>
@@ -385,6 +396,33 @@ function CartonOption({
                 )} delivery`
               : `plus ${formatPriceShort(DELIVERY.northIsland)} delivery`}
         </span>
+      </span>
+
+      {/* What the carton costs the rest of the time, so the saving reads as a
+          comparison rather than a claim.
+
+          Shown only while the catalogue is actually cheaper than the regular
+          price. The figure above is the live one and is also what the server
+          charges, so without that check a pre-sale switched on here but not
+          in the catalogue would print "$154.80" directly above "regular price
+          $154.80" — a discount announced and not given. */}
+      {PRE_SALE.active && pricePerItem > 0 && pricePerItem < PRE_SALE.regularPerMeal && (
+        <span
+          className={`mt-1 block text-xs ${
+            selected ? "text-cream/70" : "text-ink-soft/80"
+          }`}
+        >
+          Regular price {formatPrice(PRE_SALE.regularPerMeal)} per meal,{" "}
+          {formatPrice(regularBundlePrice(size))} for {size}
+        </span>
+      )}
+
+      <span
+        className={`mt-1 block text-xs ${
+          selected ? "text-cream/70" : "text-ink-soft/80"
+        }`}
+      >
+        North Island delivery only. No rural delivery sorry.
       </span>
     </label>
   );

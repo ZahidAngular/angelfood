@@ -14,7 +14,8 @@ export function PageHeader({
 }: {
   eyebrow: string;
   title: string;
-  intro?: string;
+  /** A node, not just a string, so a page can emphasise part of it. */
+  intro?: ReactNode;
   /** Trail shown above the eyebrow, for pages that sit under another one. */
   breadcrumbs?: Crumb[];
   /**

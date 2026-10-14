@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { BuyNow } from "@/components/BuyNow";
 import { OG_DEFAULTS } from "@/lib/og";
+import { PRE_SALE, formatPriceShort } from "@/lib/pricing";
 
 // The 18 and 24 cartons are not on sale at the moment (see BUNDLE_SIZES in
 // lib/pricing.ts), so the wording here and in the header below describes the
@@ -28,7 +29,24 @@ export default function BuyNowPage() {
       <PageHeader
         eyebrow="Buy now"
         title="Fill your freezer."
-        intro="Our ready-to-go meals come straight from us, snap frozen to lock in freshness. Pick a carton of 12 and fill it with whatever you fancy."
+        intro={
+          PRE_SALE.active ? (
+            <>
+              <strong className="font-bold text-green">Pre-sales open now!</strong>{" "}
+              Place your order by {PRE_SALE.orderBy} for delivery by{" "}
+              {PRE_SALE.deliveredBy} and get a{" "}
+              {formatPriceShort(PRE_SALE.discountPerMeal)} discount on each meal.
+              <br />
+              <span className="mt-2 inline-block">
+                Our ready-to-go meals come straight from us, snap frozen to lock
+                in freshness. Pick a carton of {PRE_SALE.bundle} and fill it with
+                whatever you fancy.
+              </span>
+            </>
+          ) : (
+            "Our ready-to-go meals come straight from us, snap frozen to lock in freshness. Pick a carton of 12 and fill it with whatever you fancy."
+          )
+        }
       />
       <BuyNow />
     </main>

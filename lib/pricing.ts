@@ -54,6 +54,34 @@ export const DELIVERY_VARIES_BY_ISLAND: boolean =
   (DELIVERY.northIsland as number) !== (DELIVERY.southIsland as number);
 
 /**
+ * The pre-sale, in one place so that ending it is deleting one block.
+ *
+ * `regularPerMeal` is what a meal costs once this is over. The price actually
+ * charged is not here: it comes from the shop catalogue like every other
+ * price, because the server works the total out again from that catalogue
+ * when the order is placed. Advertising a discount the catalogue does not
+ * carry would show one figure and charge another, so the catalogue has to
+ * hold the pre-sale price for the offer to be real.
+ *
+ * Set `active` to false, or delete this, when the pre-sale closes — and put
+ * the catalogue back to the regular price at the same time.
+ */
+export const PRE_SALE = {
+  active: true,
+  /** Wednesday 28 October 2026. */
+  orderBy: "midday Wednesday 28 October",
+  /** Thursday 29 October 2026. */
+  deliveredBy: "the end of Thursday 29 October",
+  discountPerMeal: 1,
+  regularPerMeal: 12.9,
+  bundle: 12,
+} as const;
+
+/** What the carton costs at the regular price, for the comparison line. */
+export const regularBundlePrice = (size: number) =>
+  Math.round(size * PRE_SALE.regularPerMeal * 100) / 100;
+
+/**
  * Where the van actually goes.
  *
  * North Island only from October 2026. The rate card still holds South Island
