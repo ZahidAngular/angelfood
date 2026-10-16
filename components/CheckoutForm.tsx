@@ -289,6 +289,7 @@ export function CheckoutForm() {
                     errors={errors}
                     set={set}
                     onPickAddress={applyAddress}
+                    rateState={rateState}
                   />
                 )}
                 {step === "review" && (
@@ -511,7 +512,11 @@ function DeliveryStep({
   errors,
   set,
   onPickAddress,
-}: StepProps & { onPickAddress: (address: AddressSuggestion) => void }) {
+  rateState,
+}: StepProps & {
+  onPickAddress: (address: AddressSuggestion) => void;
+  rateState: ReturnType<typeof useDeliveryRate>;
+}) {
   return (
     <>
       <div className="mb-6">
@@ -588,13 +593,31 @@ function DeliveryStep({
         </div>
       </div>
 
+      {/* Said as soon as the postcode resolves, rather than waiting for
+          Continue. Someone filling in a Christchurch address should learn we
+          cannot deliver there before they have typed the rest of it, not
+          after. */}
+      {rateState.status === "not-delivered" &&
+        islandFor(rateState.postcode) === "South Island" && (
+          <p className="mt-5 rounded-xl bg-coral/10 px-4 py-3 text-xs font-semibold leading-relaxed text-coral">
+            We are only delivering in the North Island. We cannot deliver to{" "}
+            {rateState.postcode} at the moment —{" "}
+            <Link href="/where-to-buy" className="underline">
+              find a stockist
+            </Link>{" "}
+            near you instead.
+          </p>
+        )}
+
       <p className="mt-5 text-xs text-ink-soft">
-        New Zealand only:{" "}
+        <strong className="font-semibold text-ink">
+          We are only delivering in the North Island.
+        </strong>{" "}
         {DELIVERY_VARIES_BY_ISLAND
           ? `${formatPrice(DELIVERY.northIsland)} to the North Island, ${formatPrice(
               DELIVERY.southIsland
             )} to the South`
-          : `${formatPrice(DELIVERY.northIsland)} anywhere we deliver`}
+          : `Delivery is ${formatPrice(DELIVERY.northIsland)}`}
         {FREE_DELIVERY_OFFERED ? `, and free on orders of ${DELIVERY.freeFrom}` : ""}.
         Sorry, no rural delivery.
       </p>
