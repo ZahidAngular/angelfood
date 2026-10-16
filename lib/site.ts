@@ -344,6 +344,12 @@ export type NutritionFacts = {
   servingsPerPack?: string;
   servingSize?: string;
   rows: NutritionRow[];
+  /**
+   * Printed under the figures. For a panel the supplier has supplied but not
+   * yet signed off, where publishing the numbers silently would present them
+   * as final.
+   */
+  note?: string;
 };
 
 export type NutritionEntry = {
@@ -686,13 +692,29 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     product: "Thai Green Tofu Curry",
     slug: "thai-green-tofu-curry",
     category: "Meals",
-    // Listed so the range reads complete, with its panel still to come. The
-    // page says so rather than showing an empty ingredients list, and the
-    // nutrition table is left out entirely until there is one — an empty
-    // table reads as a product with no nutrition rather than a panel not yet
-    // published. Fill these three in and both appear on their own.
-    ingredients: "",
-    nutrition: { rows: [] },
+    ingredients:
+      "INGREDIENTS: Vegan Thai green curry sauce (50%) [water, coconut milk (coconut milk (99.9%), stabilisers (415, 412)), coconut cream (coconut cream (99.9%), stabilisers (415, 412, 407)), green curry paste (green chilli, lemongrass, salt, garlic, onion, galangal, kaffir lime peel, spices), spinach, canola oil, brown sugar, thickener (1422), Thai basil, kaffir lime leaves], cooked jasmine rice (30%), vegetables (20%) (bamboo shoots, green beans, red capsicum, green capsicum).",
+    allergens:
+      "May contain: Soy, Wheat, Cashew.",
+    nutrition: {
+      servingsPerPack: "1",
+      servingSize: "400g",
+      rows: [
+        { label: "Energy (kJ)", perServe: "1684", per100g: "421" },
+        { label: "Protein (g)", perServe: "7.0", per100g: "1.8" },
+        { label: "Fat, Total (g)", perServe: "19.8", per100g: "5.0" },
+        { label: "Saturated (g)", perServe: "14.4", per100g: "3.6" },
+        { label: "Carbohydrate (g)", perServe: "47.0", per100g: "11.8" },
+        { label: "Sugars (g)", perServe: "8.2", per100g: "2.1" },
+        { label: "Dietary fibre (g)", perServe: "3.0", per100g: "0.8" },
+        { label: "Sodium (mg)", perServe: "714", per100g: "179" },
+      ],
+      // The supplier's review marks these figures indicative and awaiting
+      // verification. Printed with the note rather than held back, so the
+      // page is useful without presenting them as settled. Drop the note
+      // once the panel is signed off.
+      note: "These figures are indicative and awaiting final verification.",
+    },
   },
   {
     product: "Cream Cheese",

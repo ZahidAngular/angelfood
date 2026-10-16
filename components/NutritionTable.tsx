@@ -45,6 +45,15 @@ export function NutritionTable({ facts }: { facts: NutritionFacts }) {
           ))}
         </tbody>
       </table>
+      {/* For a panel the supplier has given but not yet signed off. Printed
+          with the figures rather than beside them, because a reader who takes
+          the numbers has already taken them by the time they reach anything
+          sitting further down the page. */}
+      {facts.note && (
+        <p className="border-t border-line bg-cream-deep/40 px-4 py-2.5 text-xs text-ink-soft">
+          {facts.note}
+        </p>
+      )}
     </div>
   );
 }
