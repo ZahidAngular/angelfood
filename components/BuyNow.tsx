@@ -187,11 +187,16 @@ function Facts({ pricePerItem }: { pricePerItem: number }) {
     { icon: Shuffle, text: "Mix any meals you like", phone: false },
     {
       icon: Truck,
-      text: DELIVERY_VARIES_BY_ISLAND
-        ? `${formatPriceShort(DELIVERY.northIsland)} North Island, ${formatPriceShort(
-            DELIVERY.southIsland
-          )} South`
-        : `${formatPriceShort(DELIVERY.northIsland)} North Island only`,
+      text:
+        PRE_SALE.active && PRE_SALE.freeDelivery
+          ? "Free delivery · North Island only"
+          : DELIVERY_VARIES_BY_ISLAND
+            ? `${formatPriceShort(DELIVERY.northIsland)} North Island, ${formatPriceShort(
+                DELIVERY.southIsland
+              )} South`
+            : `${formatPriceShort(DELIVERY.northIsland)} North Island only`,
+      // The pill that carries the offer, so it reads first.
+      lead: PRE_SALE.active && PRE_SALE.freeDelivery,
     },
     // Only worth saying while a carton that size is actually on sale.
     ...(FREE_DELIVERY_OFFERED

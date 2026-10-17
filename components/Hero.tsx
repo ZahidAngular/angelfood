@@ -22,34 +22,29 @@ type Floater = {
  * is what the copy is selling. Same positions as the pack shots below, so the
  * layout does not move when the offer ends — only the pictures.
  */
+// Shown from the large breakpoint only: below it the copy runs the full
+// width of the screen and a plate floating behind it sits on the words.
 const PRE_SALE_FLOATERS: Floater[] = [
   {
     src: "/images/meals/butter-curry-v2.webp",
-    className: "right-[4%] top-[14%] w-[26vw] max-w-[340px]",
+    className: "hidden lg:block right-[3%] top-[12%] w-[21vw] max-w-[260px]",
     depth: 120,
     delay: 0.5,
     rotate: -6,
   },
   {
     src: "/images/meals/vege-lasagna-v2.webp",
-    className: "right-[26%] top-[40%] w-[20vw] max-w-[260px]",
+    className: "hidden lg:block right-[21%] top-[38%] w-[15vw] max-w-[185px]",
     depth: 220,
     delay: 0.65,
     rotate: 8,
   },
   {
     src: "/images/meals/thai-green-curry-v2.webp",
-    className: "right-[2%] bottom-[8%] w-[19vw] max-w-[250px]",
+    className: "hidden lg:block right-[4%] bottom-[10%] w-[16vw] max-w-[200px]",
     depth: 70,
     delay: 0.8,
     rotate: 5,
-  },
-  {
-    src: "/images/meals/mince-mash-v2.webp",
-    className: "left-[3%] bottom-[6%] w-[15vw] max-w-[190px]",
-    depth: 180,
-    delay: 0.95,
-    rotate: -10,
   },
 ];
 
@@ -109,19 +104,28 @@ export function Hero() {
         <Floater key={i} {...f} progress={scrollYProgress} index={i} />
       ))}
 
-      {/* Spinning sticker badge — doubles as a scroll cue */}
-      <motion.div
-        style={{ opacity: fade }}
-        className="absolute bottom-[5%] left-1/2 z-30 hidden h-28 w-28 -translate-x-1/2 md:block"
-      >
-        <RotatingBadge />
-      </motion.div>
+      {/* Spinning sticker badge — doubles as a scroll cue. Stood down for the
+          pre-sale, where the copy reaches the bottom of the screen and the
+          badge landed across the buttons. */}
+      {!PRE_SALE.active && (
+        <motion.div
+          style={{ opacity: fade }}
+          className="absolute bottom-[5%] left-1/2 z-30 hidden h-28 w-28 -translate-x-1/2 md:block"
+        >
+          <RotatingBadge />
+        </motion.div>
+      )}
 
       {/* Headline */}
       <motion.div
         style={{ y: textY, opacity: fade }}
         className="relative z-20 mx-auto w-full max-w-7xl px-5 sm:px-8"
       >
+        {/* The pre-sale copy runs to four paragraphs, so it is held to a
+            column rather than the full width the short headline could use —
+            otherwise the line length runs past comfortable reading and the
+            artwork has nowhere to go. */}
+        <div className={PRE_SALE.active ? "lg:max-w-[54%]" : ""}>
         <motion.span
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -147,7 +151,7 @@ export function Hero() {
         <h1
           className={`mt-6 font-display font-extrabold leading-[0.9] tracking-[-0.03em] text-ink ${
             PRE_SALE.active
-              ? "text-[clamp(2.1rem,5.5vw,4.6rem)]"
+              ? "text-[clamp(1.9rem,3.6vw,3.3rem)]"
               : "text-[clamp(2.5rem,7.5vw,7rem)]"
           }`}
         >
@@ -196,21 +200,25 @@ export function Hero() {
                 perfect for those busy days when you want something comforting,
                 tasty and easy.
               </span>
-              <span className="block">
-                <strong className="font-bold text-ink">
+              <span className="block rounded-2xl border border-green/20 bg-paper/70 p-4 backdrop-blur-sm sm:p-5">
+                <span className="block font-bold text-green">
                   Free delivery on all pre-sale orders!
-                </strong>{" "}
-                (Regular delivery fee is {formatPriceShort(DELIVERY.northIsland)}
-                .)
-              </span>
-              <span className="block">
-                Order by{" "}
-                <strong className="font-bold text-ink">{PRE_SALE.orderBy}</strong>{" "}
-                to get in on our pre-sale offer. We&apos;ll deliver{" "}
-                <strong className="font-bold text-ink">
-                  {PRE_SALE.deliveredBy}
-                </strong>
-                .
+                </span>
+                <span className="mt-0.5 block text-sm text-ink-soft">
+                  Regular delivery fee is{" "}
+                  {formatPriceShort(DELIVERY.northIsland)}.
+                </span>
+                <span className="mt-3 block border-t border-line pt-3 text-sm">
+                  Order by{" "}
+                  <strong className="font-bold text-ink">
+                    {PRE_SALE.orderBy}
+                  </strong>{" "}
+                  and we&apos;ll deliver{" "}
+                  <strong className="font-bold text-ink">
+                    {PRE_SALE.deliveredBy}
+                  </strong>
+                  .
+                </span>
               </span>
             </>
           ) : (
@@ -255,6 +263,7 @@ export function Hero() {
             </Link>
           </Magnetic>
         </motion.div>
+        </div>
       </motion.div>
 
       {/* scroll cue */}
