@@ -217,8 +217,9 @@ export function Hero() {
               {/* On its own line and set in caps: it is the offer, and it was
                   running on from the sentence before it as though it were an
                   aside. */}
-              <span className="block pt-1 font-display text-[clamp(1.15rem,2vw,1.5rem)] font-extrabold uppercase leading-tight tracking-[0.04em] text-green">
-                Free delivery — save {formatPriceShort(DELIVERY.northIsland)}
+              <span className="block pt-1 font-display text-[clamp(1.05rem,1.9vw,1.4rem)] font-extrabold uppercase leading-tight tracking-[0.03em] text-green">
+                First 200 pre-sales get free delivery — save{" "}
+                {formatPriceShort(DELIVERY.northIsland)}
               </span>
               <span className="block">
                 Your favourite plant-based meals are ready to make life easier.
@@ -228,7 +229,7 @@ export function Hero() {
               </span>
               <span className="block rounded-2xl border border-green/20 bg-paper/70 p-4 backdrop-blur-sm sm:p-5">
                 <span className="block font-bold text-green">
-                  Free delivery on all pre-sale orders!
+                  Free delivery for the first 200 pre-sale orders!
                 </span>
                 <span className="mt-0.5 block text-sm text-ink-soft">
                   Regular delivery fee is{" "}

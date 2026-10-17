@@ -277,14 +277,8 @@ export function OrderTracking() {
 
         {data.deliverTo && (
           <p className="mt-5 border-t border-line pt-4 text-sm leading-relaxed text-ink-soft">
-            Delivering to <span className="font-semibold text-ink">{data.deliverTo}</span>
-            {data.deliveryDay && (
-              <>
-                , usually on a{" "}
-                <span className="font-semibold text-ink">{data.deliveryDay}</span>
-              </>
-            )}
-            .
+            Delivering to{" "}
+            <span className="font-semibold text-ink">{data.deliverTo}</span>.
           </p>
         )}
       </section>
