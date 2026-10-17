@@ -376,8 +376,17 @@ function CartonOption({
       <span className="flex items-baseline justify-between gap-2">
         <span className="font-display text-2xl font-extrabold">{size} meals</span>
         {pricePerItem > 0 && (
-          <span className="font-display text-lg font-bold">
-            {formatPrice(size * pricePerItem)}
+          <span className="text-right">
+            <span className="block font-display text-lg font-bold">
+              {formatPrice(pricePerItem)} each
+            </span>
+            <span
+              className={`block text-xs font-semibold ${
+                selected ? "text-cream/70" : "text-ink-soft"
+              }`}
+            >
+              {formatPrice(size * pricePerItem)} total
+            </span>
           </span>
         )}
       </span>

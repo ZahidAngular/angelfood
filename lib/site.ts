@@ -601,7 +601,7 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     slug: "savoury-mince-and-mash",
     category: "Meals",
     ingredients:
-      "INGREDIENTS: Vegan casserole gravy (31.25%) [onion gravy (onion, water, canola oil, ginger, garlic, coriander, cumin, Kashmiri chilli, turmeric, garam masala, fenugreek leaves, salt), tomato-garlic sauce (tomato sauce, garlic, oil, flavour enhancer (621)), tomato paste, vegan Worcestershire sauce (water, salt, acidity regulator (260), colour (150d), spices, preservative (211), flavour), dark soy sauce (water, salt, defatted soybeans, wheat, colour (150a), preservative (202), sweetener (955)), canola oil, garlic, vegetable stock powder (sea salt, maize maltodextrin, vegetable flavour, yeast extract, spinach, celery, cabbage, canola oil, olive oil, sugar, potassium chloride, parsley), brown sugar, black pepper, thyme, paprika, vinegar, parsley, thickener (1422)], hydrated textured soy protein (25%) (water, textured soy protein), cooked vegetables (25%) (potato, carrot, peas, onion), mashed potatoes (12.5%) (potato, plant butter, water, salt, white pepper), rolled oats (6.25%).",
+      "INGREDIENTS: Vegan casserole gravy (31.25%) [onion gravy (onion, water, canola oil, ginger, garlic, coriander, cumin, Kashmiri chilli, turmeric, garam masala, fenugreek leaves, salt), tomato-garlic sauce (tomato sauce, garlic, oil), tomato paste, vegan Worcestershire sauce (water, salt, acidity regulator (260), colour (150d), spices, preservative (211), flavour), dark soy sauce (water, salt, defatted soybeans, wheat, colour (150a), preservative (202), sweetener (955)), canola oil, garlic, vegetable stock powder (sea salt, maize maltodextrin, vegetable flavour, yeast extract, spinach, celery, cabbage, canola oil, olive oil, sugar, potassium chloride, parsley), brown sugar, black pepper, thyme, paprika, vinegar, parsley, thickener (1422)], hydrated textured soy protein (25%) (water, textured soy protein), cooked vegetables (25%) (potato, carrot, peas, onion), mashed potatoes (12.5%) (potato, plant butter, water, salt, white pepper), rolled oats (6.25%).",
     allergens:
       "Contains: Soy, Wheat, Oats, Gluten.",
     nutrition: {
@@ -670,7 +670,7 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     slug: "chicken-stir-fry-noodles",
     category: "Meals",
     ingredients:
-      "INGREDIENTS: Cooked eggless noodles (30%) (wheat noodles, water), hydrated sliced soy protein (25%) (soy protein, water), garlic dark-soy sauce (25%) [water, dark soy sauce (soy sauce (70%) (water, salt, defatted soybeans, wheat), colour (150a), salt, preservative (202), sweetener (955)), garlic, vinegar, sugar, vegetable oil, corn starch, flavour enhancer (621), white pepper, black pepper], mixed vegetables (20%) (green beans, carrots, broccoli, cauliflower, baby corn, capsicum).",
+      "INGREDIENTS: Cooked eggless noodles (30%) (wheat noodles, water), hydrated sliced soy protein (25%) (soy protein, water), garlic dark-soy sauce (25%) [water, dark soy sauce (soy sauce (70%) (water, salt, defatted soybeans, wheat), colour (150a), salt, preservative (202), sweetener (955)), garlic, vinegar, sugar, vegetable oil, corn starch, white pepper, black pepper], mixed vegetables (20%) (green beans, carrots, broccoli, cauliflower, baby corn, capsicum).",
     allergens:
       "Contains: Soy, Wheat, Gluten.",
     nutrition: {
