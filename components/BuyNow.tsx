@@ -38,7 +38,7 @@ import {
   formatPriceShort,
   islandFor,
   PRE_SALE,
-  regularBundlePrice,
+
   orderTotals,
   type BundleSize,
 } from "@/lib/pricing";
@@ -388,7 +388,9 @@ function CartonOption({
             selected ? "text-cream/85" : free ? "text-green" : "text-ink-soft"
           }
         >
-          {free
+          {PRE_SALE.active && PRE_SALE.freeDelivery
+            ? "Free delivery on pre-sale orders"
+            : free
             ? "Delivered free, anywhere we go"
             : DELIVERY_VARIES_BY_ISLAND
               ? `plus ${formatPriceShort(DELIVERY.northIsland)}–${formatPriceShort(
@@ -398,22 +400,15 @@ function CartonOption({
         </span>
       </span>
 
-      {/* What the carton costs the rest of the time, so the saving reads as a
-          comparison rather than a claim.
-
-          Shown only while the catalogue is actually cheaper than the regular
-          price. The figure above is the live one and is also what the server
-          charges, so without that check a pre-sale switched on here but not
-          in the catalogue would print "$154.80" directly above "regular price
-          $154.80" — a discount announced and not given. */}
-      {PRE_SALE.active && pricePerItem > 0 && pricePerItem < PRE_SALE.regularPerMeal && (
+      {/* What freight costs the rest of the time, so "free" reads as a saving
+          rather than as the normal state of things. */}
+      {PRE_SALE.active && PRE_SALE.freeDelivery && (
         <span
           className={`mt-1 block text-xs ${
             selected ? "text-cream/70" : "text-ink-soft/80"
           }`}
         >
-          Regular price {formatPrice(PRE_SALE.regularPerMeal)} per meal,{" "}
-          {formatPrice(regularBundlePrice(size))} for {size}
+          Regular delivery is {formatPrice(DELIVERY.northIsland)}
         </span>
       )}
 

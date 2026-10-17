@@ -4,7 +4,8 @@ import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Truck } from "lucide-react";
+import { DELIVERY, PRE_SALE, formatPriceShort } from "@/lib/pricing";
 import { Magnetic } from "./Magnetic";
 import { RotatingBadge } from "./RotatingBadge";
 
@@ -15,6 +16,42 @@ type Floater = {
   delay: number;
   rotate: number;
 };
+
+/**
+ * What floats behind the hero while the pre-sale is on: the meals, since that
+ * is what the copy is selling. Same positions as the pack shots below, so the
+ * layout does not move when the offer ends — only the pictures.
+ */
+const PRE_SALE_FLOATERS: Floater[] = [
+  {
+    src: "/images/meals/butter-curry-v2.webp",
+    className: "right-[4%] top-[14%] w-[26vw] max-w-[340px]",
+    depth: 120,
+    delay: 0.5,
+    rotate: -6,
+  },
+  {
+    src: "/images/meals/vege-lasagna-v2.webp",
+    className: "right-[26%] top-[40%] w-[20vw] max-w-[260px]",
+    depth: 220,
+    delay: 0.65,
+    rotate: 8,
+  },
+  {
+    src: "/images/meals/thai-green-curry-v2.webp",
+    className: "right-[2%] bottom-[8%] w-[19vw] max-w-[250px]",
+    depth: 70,
+    delay: 0.8,
+    rotate: 5,
+  },
+  {
+    src: "/images/meals/mince-mash-v2.webp",
+    className: "left-[3%] bottom-[6%] w-[15vw] max-w-[190px]",
+    depth: 180,
+    delay: 0.95,
+    rotate: -10,
+  },
+];
 
 const FLOATERS: Floater[] = [
   {
@@ -66,8 +103,9 @@ export function Hero() {
       <div className="pointer-events-none absolute -right-40 top-0 h-[40rem] w-[40rem] rounded-full bg-gold/25 blur-[130px]" />
       <div className="pointer-events-none absolute -left-40 bottom-0 h-[34rem] w-[34rem] rounded-full bg-green-bright/20 blur-[130px]" />
 
-      {/* Floating products */}
-      {FLOATERS.map((f, i) => (
+      {/* Floating products — the meals while the pre-sale is on, because that
+          is what the copy beside them is selling. */}
+      {(PRE_SALE.active ? PRE_SALE_FLOATERS : FLOATERS).map((f, i) => (
         <Floater key={i} {...f} progress={scrollYProgress} index={i} />
       ))}
 
@@ -90,28 +128,99 @@ export function Hero() {
           transition={{ duration: 0.7, delay: 0.3 }}
           className="inline-flex items-center gap-2 rounded-full border border-line bg-paper/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-green backdrop-blur"
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-coral" />
-          Aotearoa&apos;s original vegan cheese co. · since 2006
+          {PRE_SALE.active ? (
+            <>
+              <Truck size={14} className="shrink-0" />
+              Free delivery · save {formatPriceShort(DELIVERY.northIsland)}
+            </>
+          ) : (
+            <>
+              <span className="h-1.5 w-1.5 rounded-full bg-coral" />
+              Aotearoa&apos;s original vegan cheese co. · since 2006
+            </>
+          )}
         </motion.span>
 
-        <h1 className="mt-6 font-display text-[clamp(2.5rem,7.5vw,7rem)] font-extrabold leading-[0.9] tracking-[-0.03em] text-ink">
-          <Line delay={0.35}>Your favourite</Line>
-          <Line delay={0.45} className="text-green">
-            foods,
-          </Line>
-          <Line delay={0.55}>
-            plant-based<span className="text-coral">.</span>
-          </Line>
+        {/* Smaller than the standing headline: the pre-sale version carries
+            three lines of its own underneath, and at 7rem the two together
+            fill a phone screen before the copy starts. */}
+        <h1
+          className={`mt-6 font-display font-extrabold leading-[0.9] tracking-[-0.03em] text-ink ${
+            PRE_SALE.active
+              ? "text-[clamp(2.1rem,5.5vw,4.6rem)]"
+              : "text-[clamp(2.5rem,7.5vw,7rem)]"
+          }`}
+        >
+          {PRE_SALE.active ? (
+            <>
+              <Line delay={0.35}>
+                We&apos;re open<span className="text-coral">!</span>
+              </Line>
+              <Line delay={0.45}>Your freezer just got</Line>
+              <Line delay={0.55} className="text-green">
+                a little more heavenly.
+              </Line>
+            </>
+          ) : (
+            <>
+              <Line delay={0.35}>Your favourite</Line>
+              <Line delay={0.45} className="text-green">
+                foods,
+              </Line>
+              <Line delay={0.55}>
+                plant-based<span className="text-coral">.</span>
+              </Line>
+            </>
+          )}
         </h1>
 
         <motion.p
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.9 }}
-          className="mt-8 max-w-md text-lg leading-relaxed text-ink-soft sm:text-xl"
+          className={`mt-8 text-ink-soft ${
+            PRE_SALE.active
+              ? "max-w-xl space-y-3 text-base leading-relaxed sm:text-lg"
+              : "max-w-md text-lg leading-relaxed sm:text-xl"
+          }`}
         >
-          No FOMO, no compromise — because{" "}
-          <em className="not-italic text-green">doing good should taste incredible.</em>
+          {PRE_SALE.active ? (
+            <>
+              <span className="block font-bold text-ink">
+                Angel Food&apos;s online store is now open for pre-sales! Free
+                delivery — save {formatPriceShort(DELIVERY.northIsland)}
+              </span>
+              <span className="block">
+                Your favourite plant-based meals are ready to make life easier.
+                Stock your freezer with our delicious frozen ready meals,
+                perfect for those busy days when you want something comforting,
+                tasty and easy.
+              </span>
+              <span className="block">
+                <strong className="font-bold text-ink">
+                  Free delivery on all pre-sale orders!
+                </strong>{" "}
+                (Regular delivery fee is {formatPriceShort(DELIVERY.northIsland)}
+                .)
+              </span>
+              <span className="block">
+                Order by{" "}
+                <strong className="font-bold text-ink">{PRE_SALE.orderBy}</strong>{" "}
+                to get in on our pre-sale offer. We&apos;ll deliver{" "}
+                <strong className="font-bold text-ink">
+                  {PRE_SALE.deliveredBy}
+                </strong>
+                .
+              </span>
+            </>
+          ) : (
+            <>
+              No FOMO, no compromise — because{" "}
+              <em className="not-italic text-green">
+                doing good should taste incredible.
+              </em>
+            </>
+          )}
         </motion.p>
 
         <motion.div
@@ -122,14 +231,18 @@ export function Hero() {
         >
           <Magnetic strength={0.5}>
             <Link
-              href="/products"
+              href={PRE_SALE.active ? "/buy-now" : "/products"}
               data-cursor="Let's cook"
               className="group inline-flex items-center gap-2 rounded-full bg-green px-8 py-4 text-base font-semibold text-cream"
             >
-              Explore the range
+              {PRE_SALE.active ? "Check out the range and order" : "Explore the range"}
               <ArrowDown
                 size={18}
-                className="transition-transform group-hover:translate-y-1"
+                className={`transition-transform ${
+                  PRE_SALE.active
+                    ? "-rotate-90 group-hover:translate-x-1"
+                    : "group-hover:translate-y-1"
+                }`}
               />
             </Link>
           </Magnetic>

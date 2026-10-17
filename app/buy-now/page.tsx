@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { BuyNow } from "@/components/BuyNow";
 import { OG_DEFAULTS } from "@/lib/og";
-import { PRE_SALE, formatPriceShort } from "@/lib/pricing";
+import { DELIVERY, PRE_SALE, formatPriceShort } from "@/lib/pricing";
 
 // The 18 and 24 cartons are not on sale at the moment (see BUNDLE_SIZES in
 // lib/pricing.ts), so the wording here and in the header below describes the
@@ -33,9 +33,9 @@ export default function BuyNowPage() {
           PRE_SALE.active ? (
             <>
               <strong className="font-bold text-green">Pre-sales open now!</strong>{" "}
-              Place your order by {PRE_SALE.orderBy} for delivery by{" "}
-              {PRE_SALE.deliveredBy} and get a{" "}
-              {formatPriceShort(PRE_SALE.discountPerMeal)} discount on each meal.
+              Free delivery on every pre-sale order — order by {PRE_SALE.orderBy}{" "}
+              and we will deliver {PRE_SALE.deliveredBy}. Regular delivery is{" "}
+              {formatPriceShort(DELIVERY.northIsland)}.
               <br />
               <span className="mt-2 inline-block">
                 Our ready-to-go meals come straight from us, snap frozen to lock

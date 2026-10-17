@@ -56,30 +56,26 @@ export const DELIVERY_VARIES_BY_ISLAND: boolean =
 /**
  * The pre-sale, in one place so that ending it is deleting one block.
  *
- * `regularPerMeal` is what a meal costs once this is over. The price actually
- * charged is not here: it comes from the shop catalogue like every other
- * price, because the server works the total out again from that catalogue
- * when the order is placed. Advertising a discount the catalogue does not
- * carry would show one figure and charge another, so the catalogue has to
- * hold the pre-sale price for the offer to be real.
- *
- * Set `active` to false, or delete this, when the pre-sale closes — and put
- * the catalogue back to the regular price at the same time.
+ * The offer is free freight. Meals stay at the price the shop catalogue
+ * carries, so nothing here touches what a meal costs.
  */
 export const PRE_SALE = {
   active: true,
   /** Wednesday 28 October 2026. */
-  orderBy: "midday Wednesday 28 October",
+  orderBy: "12 noon, Wednesday 28 October",
   /** Thursday 29 October 2026. */
-  deliveredBy: "the end of Thursday 29 October",
-  discountPerMeal: 1,
-  regularPerMeal: 12.9,
+  deliveredBy: "Thursday 29 October",
+  /**
+   * Freight is on us for the duration. Meals stay at their usual price.
+   *
+   * Turning this off is two places, not one: here, and PreSaleFreeDelivery in
+   * the API's WebsiteSalesOrderRepository. That constant is what anyone is
+   * actually charged — this one only decides what the site says — so leaving
+   * them out of step would quote one figure and take another.
+   */
+  freeDelivery: true,
   bundle: 12,
 } as const;
-
-/** What the carton costs at the regular price, for the comparison line. */
-export const regularBundlePrice = (size: number) =>
-  Math.round(size * PRE_SALE.regularPerMeal * 100) / 100;
 
 /**
  * Where the van actually goes.
@@ -135,6 +131,9 @@ export function deliveryFor(items: number, island: Island | null): number | null
   // than a free one — checked before the free-delivery rule, which would
   // otherwise quote $0 for somewhere no van goes.
   if (!DELIVERS_TO.includes(island)) return null;
+  // Free for the pre-sale, and free at the carton size that carries its own
+  // freight. The API applies the same rule; this only decides what is shown.
+  if (PRE_SALE.active && PRE_SALE.freeDelivery) return 0;
   if (items >= DELIVERY.freeFrom) return 0;
   return island === "South Island" ? DELIVERY.southIsland : DELIVERY.northIsland;
 }
