@@ -27,42 +27,42 @@ type Floater = {
 const PRE_SALE_FLOATERS: Floater[] = [
   {
     src: "/images/meals/butter-curry-v2.webp",
-    className: "hidden lg:block right-[2%] top-[9%] w-[19vw] max-w-[240px]",
+    className: "hidden lg:block right-[6%] top-[17%] w-[17vw] max-w-[215px]",
     depth: 120,
     delay: 0.5,
     rotate: -6,
   },
   {
     src: "/images/meals/saag-tofu-v2.webp",
-    className: "hidden lg:block right-[25%] top-[5%] w-[11vw] max-w-[140px]",
+    className: "hidden xl:block right-[29%] top-[25%] w-[10vw] max-w-[125px]",
     depth: 260,
     delay: 0.58,
     rotate: 9,
   },
   {
     src: "/images/meals/vege-lasagna-v2.webp",
-    className: "hidden lg:block right-[18%] top-[34%] w-[14vw] max-w-[175px]",
+    className: "hidden lg:block right-[20%] top-[43%] w-[12vw] max-w-[150px]",
     depth: 220,
     delay: 0.66,
     rotate: 8,
   },
   {
     src: "/images/meals/vege-korma-v2.webp",
-    className: "hidden xl:block right-[1%] top-[43%] w-[13vw] max-w-[165px]",
+    className: "hidden lg:block right-[3%] top-[48%] w-[13vw] max-w-[165px]",
     depth: 90,
     delay: 0.74,
     rotate: -4,
   },
   {
     src: "/images/meals/black-lentils-v2.webp",
-    className: "hidden xl:block right-[24%] bottom-[14%] w-[12vw] max-w-[150px]",
+    className: "hidden xl:block right-[25%] bottom-[14%] w-[10vw] max-w-[130px]",
     depth: 190,
     delay: 0.82,
     rotate: -9,
   },
   {
     src: "/images/meals/thai-green-curry-v2.webp",
-    className: "hidden lg:block right-[5%] bottom-[7%] w-[15vw] max-w-[190px]",
+    className: "hidden lg:block right-[8%] bottom-[9%] w-[13vw] max-w-[165px]",
     depth: 70,
     delay: 0.9,
     rotate: 5,
@@ -287,7 +287,10 @@ export function Hero() {
         </div>
       </motion.div>
 
-      {/* scroll cue */}
+      {/* scroll cue — stood down with the badge for the pre-sale, where the
+          copy and the buttons reach the bottom of the screen and it landed
+          across them. */}
+      {!PRE_SALE.active && (
       <motion.div
         style={{ opacity: fade }}
         className="absolute inset-x-0 bottom-7 z-20 mx-auto flex w-full max-w-7xl items-center px-5 text-xs uppercase tracking-[0.2em] text-ink-soft sm:px-8"
@@ -296,6 +299,7 @@ export function Hero() {
           <ArrowDown size={14} className="animate-bounce" /> Scroll to taste
         </span>
       </motion.div>
+      )}
     </section>
   );
 }

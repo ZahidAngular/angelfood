@@ -601,11 +601,7 @@ function DeliveryStep({
         islandFor(rateState.postcode) === "South Island" && (
           <p className="mt-5 rounded-xl bg-coral/10 px-4 py-3 text-xs font-semibold leading-relaxed text-coral">
             We are only delivering in the North Island. We cannot deliver to{" "}
-            {rateState.postcode} at the moment —{" "}
-            <Link href="/where-to-buy" className="underline">
-              find a stockist
-            </Link>{" "}
-            near you instead.
+            {rateState.postcode} at the moment.
           </p>
         )}
 

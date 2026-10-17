@@ -111,12 +111,12 @@ export function Navbar() {
             </div>
             <CartLink count={cartCount} />
             <Link
-              href="/where-to-buy"
+              href="/buy-now"
               className={`hidden rounded-full bg-green font-semibold text-cream transition-all duration-500 hover:scale-[1.04] sm:inline-flex ${
                 scrolled ? "px-5 py-2.5 text-sm" : "px-6 py-3 text-base"
               }`}
             >
-              Find a store
+              Buy Meals Now
             </Link>
             <button
               aria-label="Menu"
@@ -182,11 +182,11 @@ export function Navbar() {
                 />
               </div>
               <Link
-                href="/where-to-buy"
+                href="/buy-now"
                 onClick={() => setOpen(false)}
                 className="rounded-full bg-gold px-6 py-4 text-center text-base font-semibold text-ink"
               >
-                Find a store near you
+                Buy Meals Now
               </Link>
             </div>
           </motion.div>

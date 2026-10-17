@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ShoppingBag } from "lucide-react";
 import { getNutritionSlug, type Product } from "@/lib/site";
 import { Reveal } from "./Reveal";
 
@@ -31,8 +31,11 @@ export function PackCard({
   index,
   aspect = "square",
   fit = "cover",
+  buyable = false,
 }: {
   product: Product;
+  /** Shows a Buy online button. Only the meals are sold on the site. */
+  buyable?: boolean;
   index: number;
   aspect?: "square" | "4/3";
   /**
@@ -90,25 +93,43 @@ export function PackCard({
               className="transition-transform group-hover:translate-x-1"
             />
           </span>
+
+          {/* Raised above the card's own link, which covers everything else.
+              Without the z-index the overlay would take the click and send
+              someone reading about a meal to the ingredients instead of the
+              shop. */}
+          {buyable && (
+            <Link
+              href="/buy-now"
+              className="relative z-20 mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-green px-5 py-3 text-sm font-semibold text-cream transition-colors hover:bg-ink"
+            >
+              <ShoppingBag size={15} className="shrink-0" />
+              Buy online
+            </Link>
+          )}
         </div>
       </div>
     </motion.article>
   );
 
+  const href = nutritionSlug
+    ? `/ingredients-nutrition-info/${nutritionSlug}`
+    : "/ingredients-nutrition-info";
+
   return (
     <Reveal delay={(index % 4) * 0.07} className="h-full">
-      <Link
-        href={
-          nutritionSlug
-            ? `/ingredients-nutrition-info/${nutritionSlug}`
-            : "/ingredients-nutrition-info"
-        }
-        target={nutritionSlug ? "_blank" : undefined}
-        rel={nutritionSlug ? "noopener noreferrer" : undefined}
-        className="block h-full"
-      >
+      <div className="relative h-full">
+        {/* Covers the card so all of it is still clickable, while leaving the
+            Buy online button free to be its own link. */}
+        <Link
+          href={href}
+          target={nutritionSlug ? "_blank" : undefined}
+          rel={nutritionSlug ? "noopener noreferrer" : undefined}
+          aria-label={`${product.name} — ingredients and nutrition`}
+          className="absolute inset-0 z-10 rounded-[1.75rem]"
+        />
         {inner}
-      </Link>
+      </div>
     </Reveal>
   );
 }

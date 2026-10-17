@@ -877,17 +877,6 @@ export function OrderNotice({
     );
   }
 
-  if (rateState?.rate) {
-    return (
-      <p
-        className={`rounded-xl bg-green/10 p-3 text-xs font-semibold leading-relaxed text-green ${className}`}
-      >
-        {rateState.rate.deliveryDay} delivery to{" "}
-        {rateState.rate.suburb || rateState.rate.region}.
-      </p>
-    );
-  }
-
   return null;
 }
 

@@ -17,7 +17,7 @@ export function Meals() {
           {MEALS.map((meal, i) => (
             // Meal photography is 4:3; matching the frame to it means the shot
             // fills the card with no letterboxing and no meaningful crop.
-            <PackCard key={meal.name} product={meal} index={i} aspect="4/3" />
+            <PackCard key={meal.name} product={meal} index={i} aspect="4/3" buyable />
           ))}
         </div>
       </div>
