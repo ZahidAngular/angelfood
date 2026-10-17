@@ -212,8 +212,13 @@ export function Hero() {
           {PRE_SALE.active ? (
             <>
               <span className="block font-bold text-ink">
-                Angel Food&apos;s online store is now open for pre-sales! Free
-                delivery — save {formatPriceShort(DELIVERY.northIsland)}
+                Angel Food&apos;s online store is now open for pre-sales!
+              </span>
+              {/* On its own line and set in caps: it is the offer, and it was
+                  running on from the sentence before it as though it were an
+                  aside. */}
+              <span className="block pt-1 font-display text-[clamp(1.15rem,2vw,1.5rem)] font-extrabold uppercase leading-tight tracking-[0.04em] text-green">
+                Free delivery — save {formatPriceShort(DELIVERY.northIsland)}
               </span>
               <span className="block">
                 Your favourite plant-based meals are ready to make life easier.
