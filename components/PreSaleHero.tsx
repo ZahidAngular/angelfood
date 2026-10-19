@@ -1,10 +1,12 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Truck } from "lucide-react";
 import { DELIVERY, PRE_SALE, formatPriceShort } from "@/lib/pricing";
+import { MEALS } from "@/lib/site";
 import { Magnetic } from "./Magnetic";
 
 /**
@@ -17,46 +19,52 @@ import { Magnetic } from "./Magnetic";
  * paragraph, two dates and two buttons, and needs the artwork pinned where
  * it cannot collide with any of them.
  *
- * So the meals live inside a panel. Earlier versions scattered them across
- * the background as free-floating cut-outs, positioned as percentages of
- * the window — which meant the group that sat together on a laptop was
- * strewn across the edges of a wide monitor with holes between it. Inside
- * a panel the arrangement is a percentage of the panel, so it holds its
- * shape at every width, and the plates have something to sit on instead of
- * hanging in empty cream.
+ * So the meals live inside a panel, three at a time, turning through all
+ * nine. Positions are percentages of the panel rather than of the window,
+ * which is what stops the group spreading to the edges of a wide monitor
+ * and leaving holes in the middle of itself.
  */
 
-/** Four meals, composed. Positions are percentages of the panel. */
-const PLATES = [
-  // Three, not six. A panel this size holds three plates at an appetising
-  // size or six at thumbnail size, and the point of the picture is the
-  // food. They sit as a triangle — one across the top, two below — with
-  // just enough overlap at the edges to read as a stack rather than as
-  // three things parked next to each other.
-  {
-    src: "/images/meals/butter-curry-v2.webp",
-    alt: "Creamy Butter Curry",
-    className: "left-[17%] top-[3%] w-[64%]",
-    delay: 0.35,
-    drift: 5.5,
-  },
-  {
-    src: "/images/meals/thai-green-curry-v2.webp",
-    alt: "Thai Green Tofu Curry",
-    className: "left-[3%] bottom-[14%] w-[42%]",
-    delay: 0.5,
-    drift: 7,
-  },
-  {
-    src: "/images/meals/vege-korma-v2.webp",
-    alt: "Creamy Vege Korma",
-    className: "right-[3%] bottom-[14%] w-[42%]",
-    delay: 0.62,
-    drift: 6.2,
-  },
+/** Where the three on show sit. A triangle: one across the top, two below. */
+const SLOTS = [
+  { className: "left-[17%] top-[3%] w-[64%]", drift: 5.5 },
+  { className: "left-[3%] bottom-[14%] w-[42%]", drift: 7 },
+  { className: "right-[3%] bottom-[14%] w-[42%]", drift: 6.2 },
 ];
 
+const PAGES = Math.ceil(MEALS.length / SLOTS.length);
+const HOLD_MS = 4500;
+
+/**
+ * Which meal is in a given slot on a given page.
+ *
+ * Arranged so each slot owns a fixed set — slot 0 shows meals 1, 4 and 7
+ * and nothing else ever appears there. That lets every image be rendered
+ * once and simply faded, rather than mounted and unmounted as the pages
+ * turn, which would make each meal load the first time it was shown and
+ * flash while it did.
+ */
+const mealFor = (page: number, slot: number) =>
+  MEALS[(page * SLOTS.length + slot) % MEALS.length];
+
 export function PreSaleHero() {
+  const [page, setPage] = useState(0);
+  const stillness = useReducedMotion();
+
+  useEffect(() => {
+    // Someone who has asked for less movement gets the first three and no
+    // carousel. The dots are still there to see the rest by hand.
+    if (stillness) return;
+
+    const turn = window.setInterval(
+      () => setPage((p) => (p + 1) % PAGES),
+      HOLD_MS
+    );
+    return () => window.clearInterval(turn);
+  }, [stillness]);
+
+  const showing = SLOTS.map((_, slot) => mealFor(page, slot));
+
   return (
     <section
       id="top"
@@ -183,46 +191,79 @@ export function PreSaleHero() {
                   centre to sit in rather than floating on a flat wash. */}
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(58%_46%_at_52%_32%,rgba(255,255,255,0.8),transparent_70%)]" />
 
-              {PLATES.map((plate) => (
-                <motion.div
-                  key={plate.src}
-                  initial={{ opacity: 0, y: 24, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{
-                    duration: 0.8,
-                    delay: plate.delay,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
-                  className={`absolute ${plate.className}`}
-                >
+              {SLOTS.map((slot, i) => (
+                <div key={i} className={`absolute ${slot.className}`}>
                   <motion.div
-                    animate={{ y: [0, -10, 0] }}
+                    animate={stillness ? undefined : { y: [0, -10, 0] }}
                     transition={{
-                      duration: plate.drift,
+                      duration: slot.drift,
                       repeat: Infinity,
                       ease: "easeInOut",
                     }}
-                    className="drop-shadow-[0_24px_34px_rgba(20,66,44,0.28)]"
+                    className="relative drop-shadow-[0_24px_34px_rgba(20,66,44,0.28)]"
                   >
-                    <Image
-                      src={plate.src}
-                      alt={plate.alt}
-                      width={600}
-                      height={600}
-                      priority
-                      className="h-auto w-full"
-                    />
+                    {/* Every meal this slot will ever show, rendered once and
+                        faded between. The first is in flow so the slot has a
+                        height; the rest are stacked on top of it. */}
+                    {Array.from({ length: PAGES }, (_, p) => {
+                      const meal = mealFor(p, i);
+                      const live = p === page;
+                      return (
+                        <Image
+                          key={meal.image}
+                          src={meal.image}
+                          alt={live ? meal.name : ""}
+                          aria-hidden={!live}
+                          width={600}
+                          height={600}
+                          priority={p === 0}
+                          className={`h-auto w-full transition-opacity duration-700 ${
+                            p === 0 ? "" : "absolute inset-0"
+                          } ${live ? "opacity-100" : "opacity-0"}`}
+                        />
+                      );
+                    })}
                   </motion.div>
-                </motion.div>
+                </div>
               ))}
 
               {/* What the panel is a picture of. Without it the plates are
                   decoration; with it they are the thing being sold. */}
-              <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-ink/80 px-5 py-3 text-center backdrop-blur-sm">
-                <p className="text-sm font-semibold text-cream">
-                  Nine meals to choose from — mix and match your box of{" "}
+              <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-ink/80 px-5 py-3 backdrop-blur-sm">
+                <p className="text-center text-[0.62rem] font-bold uppercase tracking-[0.16em] text-gold">
+                  {MEALS.length} meals · mix and match your box of{" "}
                   {PRE_SALE.bundle}
                 </p>
+                <p
+                  // Announced as one update when the pictures turn, rather
+                  // than three names arriving separately.
+                  aria-live="polite"
+                  className="mt-1 text-center text-sm font-semibold leading-snug text-cream"
+                >
+                  {showing.map((meal) => meal.name).join(" · ")}
+                </p>
+              </div>
+
+              {/* Which third of the range is showing, and a way to go
+                  straight to one. Three dots for nine meals. */}
+              <div className="absolute right-5 top-5 flex gap-2">
+                {Array.from({ length: PAGES }, (_, p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setPage(p)}
+                    aria-label={`Show meals ${p * SLOTS.length + 1} to ${Math.min(
+                      (p + 1) * SLOTS.length,
+                      MEALS.length
+                    )} of ${MEALS.length}`}
+                    aria-current={p === page}
+                    className={`h-2.5 rounded-full transition-all ${
+                      p === page
+                        ? "w-7 bg-green"
+                        : "w-2.5 bg-green/25 hover:bg-green/50"
+                    }`}
+                  />
+                ))}
               </div>
             </div>
           </motion.div>
