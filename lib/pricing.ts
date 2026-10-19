@@ -63,6 +63,8 @@ export const PRE_SALE = {
   active: true,
   /** Wednesday 28 October 2026. */
   orderBy: "12 noon, Wednesday 28 October",
+  /** The same deadline, short enough for a badge. */
+  orderByShort: "Wed 28 Oct",
   /** Thursday 29 October 2026. */
   deliveredBy: "Thursday 29 October",
   /**

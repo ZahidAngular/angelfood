@@ -25,45 +25,49 @@ type Floater = {
 // Shown from the large breakpoint only: below it the copy runs the full
 // width of the screen and a plate floating behind it sits on the words.
 const PRE_SALE_FLOATERS: Floater[] = [
+  // A diagonal, not a grid. Largest at the top right, sweeping down and to
+  // the left through the smaller plates, then back out to a mid-sized one
+  // at the bottom. The sizes are deliberately uneven: six circles of
+  // roughly equal size in even rows read as a contact sheet.
   {
     src: "/images/meals/butter-curry-v2.webp",
-    className: "hidden lg:block right-[6%] top-[17%] w-[17vw] max-w-[215px]",
-    depth: 120,
+    className: "hidden lg:block right-[6%] top-[10%] w-[21vw] max-w-[290px]",
+    depth: 105,
     delay: 0.5,
-    rotate: -6,
+    rotate: -5,
   },
   {
     src: "/images/meals/saag-tofu-v2.webp",
-    className: "hidden xl:block right-[29%] top-[25%] w-[10vw] max-w-[125px]",
-    depth: 260,
+    className: "hidden xl:block right-[27%] top-[26%] w-[9vw] max-w-[120px]",
+    depth: 265,
     delay: 0.58,
-    rotate: 9,
-  },
-  {
-    src: "/images/meals/vege-lasagna-v2.webp",
-    className: "hidden lg:block right-[20%] top-[43%] w-[12vw] max-w-[150px]",
-    depth: 220,
-    delay: 0.66,
-    rotate: 8,
+    rotate: 10,
   },
   {
     src: "/images/meals/vege-korma-v2.webp",
-    className: "hidden lg:block right-[3%] top-[48%] w-[13vw] max-w-[165px]",
-    depth: 90,
-    delay: 0.74,
+    className: "hidden lg:block right-[3%] top-[46%] w-[16vw] max-w-[225px]",
+    depth: 85,
+    delay: 0.66,
     rotate: -4,
   },
   {
+    src: "/images/meals/vege-lasagna-v2.webp",
+    className: "hidden lg:block right-[23%] top-[50%] w-[13vw] max-w-[175px]",
+    depth: 215,
+    delay: 0.74,
+    rotate: 7,
+  },
+  {
     src: "/images/meals/black-lentils-v2.webp",
-    className: "hidden xl:block right-[25%] bottom-[14%] w-[10vw] max-w-[130px]",
-    depth: 190,
+    className: "hidden xl:block right-[30%] bottom-[14%] w-[10vw] max-w-[135px]",
+    depth: 200,
     delay: 0.82,
     rotate: -9,
   },
   {
     src: "/images/meals/thai-green-curry-v2.webp",
-    className: "hidden lg:block right-[8%] bottom-[9%] w-[13vw] max-w-[165px]",
-    depth: 70,
+    className: "hidden lg:block right-[8%] bottom-[3%] w-[15vw] max-w-[205px]",
+    depth: 65,
     delay: 0.9,
     rotate: 5,
   },
@@ -120,10 +124,23 @@ export function Hero() {
       <div className="pointer-events-none absolute -left-40 bottom-0 h-[34rem] w-[34rem] rounded-full bg-green-bright/20 blur-[130px]" />
 
       {/* Floating products — the meals while the pre-sale is on, because that
-          is what the copy beside them is selling. */}
-      {(PRE_SALE.active ? PRE_SALE_FLOATERS : FLOATERS).map((f, i) => (
-        <Floater key={i} {...f} progress={scrollYProgress} index={i} />
-      ))}
+          is what the copy beside them is selling.
+
+          Held to the same column as the words during the pre-sale. The
+          positions are percentages, so measured against the whole window
+          they drift apart as the monitor gets wider: the same six plates
+          that sit as a group on a laptop are strewn across the far edge of
+          a desktop with holes between them. Against the content column they
+          hold their arrangement at any width. */}
+      <div
+        className={`pointer-events-none absolute inset-0 ${
+          PRE_SALE.active ? "mx-auto w-full max-w-7xl" : ""
+        }`}
+      >
+        {(PRE_SALE.active ? PRE_SALE_FLOATERS : FLOATERS).map((f, i) => (
+          <Floater key={i} {...f} progress={scrollYProgress} index={i} />
+        ))}
+      </div>
 
       {/* Spinning sticker badge — doubles as a scroll cue. Stood down for the
           pre-sale, where the copy reaches the bottom of the screen and the
@@ -156,7 +173,7 @@ export function Hero() {
           {PRE_SALE.active ? (
             <>
               <Truck size={14} className="shrink-0" />
-              Free delivery · save {formatPriceShort(DELIVERY.northIsland)}
+              Pre-sale · order by {PRE_SALE.orderByShort}
             </>
           ) : (
             <>
@@ -227,24 +244,25 @@ export function Hero() {
                 perfect for those busy days when you want something comforting,
                 tasty and easy.
               </span>
-              <span className="block rounded-2xl border border-green/20 bg-paper/70 p-4 backdrop-blur-sm sm:p-5">
-                <span className="block font-bold text-green">
-                  Free delivery for the first 200 pre-sale orders!
-                </span>
-                <span className="mt-0.5 block text-sm text-ink-soft">
-                  Regular delivery fee is{" "}
-                  {formatPriceShort(DELIVERY.northIsland)}.
-                </span>
-                <span className="mt-3 block border-t border-line pt-3 text-sm">
-                  Order by{" "}
-                  <strong className="font-bold text-ink">
+              {/* The dates, and nothing else. The offer is already above
+                  it in caps; repeating it here was the third time of
+                  asking. */}
+              <span className="flex flex-wrap gap-x-8 gap-y-3 rounded-2xl border border-green/20 bg-paper/70 px-5 py-4 backdrop-blur-sm">
+                <span className="block">
+                  <span className="block text-[0.68rem] font-bold uppercase tracking-[0.14em] text-green">
+                    Order by
+                  </span>
+                  <span className="mt-0.5 block font-semibold text-ink">
                     {PRE_SALE.orderBy}
-                  </strong>{" "}
-                  and we&apos;ll deliver{" "}
-                  <strong className="font-bold text-ink">
+                  </span>
+                </span>
+                <span className="block">
+                  <span className="block text-[0.68rem] font-bold uppercase tracking-[0.14em] text-green">
+                    Delivered
+                  </span>
+                  <span className="mt-0.5 block font-semibold text-ink">
                     {PRE_SALE.deliveredBy}
-                  </strong>
-                  .
+                  </span>
                 </span>
               </span>
             </>
