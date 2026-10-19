@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ShoppingBag } from "lucide-react";
 import { NUTRITION_INFO, getProductMeta } from "@/lib/site";
 import { Reveal } from "@/components/Reveal";
 import { NutritionTable } from "@/components/NutritionTable";
@@ -121,6 +121,19 @@ export default async function NutritionDetailPage({
                     />
                   </div>
                   <p className="mt-5 text-ink-soft">{meta.blurb}</p>
+
+                  {/* Only the meals are sold on the site — the cheeses and
+                      the meats are shop-shelf products, and the button would
+                      lead to a shop that does not stock them. */}
+                  {entry.category === "Meals" && (
+                    <Link
+                      href={`/buy-now?meal=${entry.slug}`}
+                      className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-green px-6 py-3.5 font-semibold text-cream transition-colors hover:bg-ink"
+                    >
+                      <ShoppingBag size={17} className="shrink-0" />
+                      Buy online
+                    </Link>
+                  )}
                 </div>
               </Reveal>
             )}

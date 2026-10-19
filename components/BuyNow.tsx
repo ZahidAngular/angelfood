@@ -376,17 +376,8 @@ function CartonOption({
       <span className="flex items-baseline justify-between gap-2">
         <span className="font-display text-2xl font-extrabold">{size} meals</span>
         {pricePerItem > 0 && (
-          <span className="text-right">
-            <span className="block font-display text-lg font-bold">
-              {formatPrice(pricePerItem)} each
-            </span>
-            <span
-              className={`block text-xs font-semibold ${
-                selected ? "text-cream/70" : "text-ink-soft"
-              }`}
-            >
-              {formatPrice(size * pricePerItem)} total
-            </span>
+          <span className="font-display text-lg font-bold">
+            {formatPrice(pricePerItem)} each
           </span>
         )}
       </span>
@@ -585,12 +576,81 @@ export function ProductThumb({
  * same number and can never disagree. An untouched meal shows an Add button
  * instead, which invites a first tap better than a stepper reading zero.
  */
+
+/**
+ * Whether this card is the one the shopper followed a link to.
+ *
+ * "Buy online" on a product page carries ?meal=<slug>. The catalogue is
+ * fetched after the page loads, so the card does not exist at the moment the
+ * browser would normally jump to an anchor — the scroll has to happen once
+ * the card is actually on the page, which is what this waits for.
+ */
+function useAskedFor(slug: string | undefined) {
+  const [asked, setAsked] = useState(false);
+
+  useEffect(() => {
+    if (!slug) return;
+
+    const wanted = new URLSearchParams(window.location.search).get("meal");
+    if (wanted !== slug) return;
+
+    setAsked(true);
+
+    let cancelled = false;
+
+    // The card mounts long before the page is its full height: the grid
+    // below is still laying out and none of the photographs have loaded.
+    // A scroll aimed 2,300px down a document that is currently 900px tall
+    // is clamped to the top, which is exactly what it looks like when
+    // nothing happens. So wait until the page can hold the position.
+    const tryScroll = (attempt: number) => {
+      if (cancelled) return;
+
+      const card = document.getElementById(`meal-${slug}`);
+      const top = card
+        ? card.getBoundingClientRect().top + window.scrollY - 140
+        : 0;
+      const furthest =
+        document.documentElement.scrollHeight - window.innerHeight;
+
+      if ((!card || furthest < top - 4) && attempt < 20) {
+        window.setTimeout(() => tryScroll(attempt + 1), 200);
+        return;
+      }
+
+      if (!card) return;
+
+      // Positional, not smooth. Lenis overrides the page's scroll-behavior,
+      // which swallows a smooth scroll whole — and its own scrollTo does
+      // nothing from here either. A jump is the right behaviour anyway:
+      // the page has just opened because somebody asked for this meal by
+      // name, so landing on it is the answer.
+      window.scrollTo(0, top);
+    };
+
+    const go = window.setTimeout(() => tryScroll(0), 250);
+
+    // The ring answers "which of these nine did I click". Once that is
+    // answered it is just a colour to ignore, so it goes.
+    const done = window.setTimeout(() => setAsked(false), 6000);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(go);
+      window.clearTimeout(done);
+    };
+  }, [slug]);
+
+  return asked;
+}
+
 function ProductCard({ product, index }: { product: ShopProduct; index: number }) {
   const { quantityOf, remaining } = useOrder();
   const quantity = quantityOf(product.code);
   const inOrder = quantity > 0;
   const cartonFull = remaining <= 0;
   const detailSlug = getNutritionSlug(product.name);
+  const asked = useAskedFor(detailSlug);
 
   const change = (next: number) =>
     setQuantity(
@@ -607,8 +667,13 @@ function ProductCard({ product, index }: { product: ShopProduct; index: number }
   return (
     <Reveal delay={(index % 2) * 0.07} className="h-full">
       <article
-        className={`flex h-full flex-col overflow-hidden rounded-[1.75rem] border bg-paper transition-colors ${
-          inOrder ? "border-green ring-1 ring-green" : "border-line"
+        id={detailSlug ? `meal-${detailSlug}` : undefined}
+        className={`flex h-full flex-col overflow-hidden rounded-[1.75rem] border bg-paper transition-[border-color,box-shadow] duration-500 ${
+          inOrder
+            ? "border-green ring-1 ring-green"
+            : asked
+              ? "border-gold ring-2 ring-gold"
+              : "border-line"
         }`}
       >
         <div className="relative aspect-[4/3] overflow-hidden bg-cream">

@@ -100,7 +100,9 @@ export function PackCard({
               shop. */}
           {buyable && (
             <Link
-              href="/buy-now"
+              /* Names the meal, so the shop opens on it rather than at the
+                 top of a list of nine for someone to find theirs again. */
+              href={nutritionSlug ? `/buy-now?meal=${nutritionSlug}` : "/buy-now"}
               className="relative z-20 mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-green px-5 py-3 text-sm font-semibold text-cream transition-colors hover:bg-ink"
             >
               <ShoppingBag size={15} className="shrink-0" />
