@@ -943,10 +943,6 @@ export function OrderNotice({
             {" — we can't do rural addresses. "}
           </>
         )}
-        <Link href="/where-to-buy" className="underline">
-          Find a stockist
-        </Link>{" "}
-        instead.
       </p>
     );
   }
@@ -1103,14 +1099,16 @@ function LoadFailed() {
         We couldn&apos;t load the range
       </p>
       <p className="mx-auto mt-2 max-w-sm text-sm text-ink-soft">
-        Please refresh the page to try again — or find us on a shelf near you.
+        That is almost always a passing glitch rather than anything wrong with
+        your order.
       </p>
-      <Link
-        href="/where-to-buy"
-        className="mt-6 inline-flex rounded-full bg-green px-6 py-3 text-sm font-bold uppercase tracking-[0.12em] text-cream"
+      <button
+        type="button"
+        onClick={() => window.location.reload()}
+        className="mt-6 inline-flex rounded-full bg-green px-6 py-3 text-sm font-bold uppercase tracking-[0.12em] text-cream transition-colors hover:bg-ink"
       >
-        Find a stockist
-      </Link>
+        Try again
+      </button>
     </div>
   );
 }
@@ -1120,14 +1118,14 @@ function NothingToSell() {
     <div className="rounded-[1.75rem] border border-line bg-paper px-6 py-12 text-center">
       <p className="font-display text-xl font-bold text-ink">Nothing to order right now</p>
       <p className="mx-auto mt-2 max-w-sm text-sm text-ink-soft">
-        Nothing is listed for online ordering at the moment. Our range is still
-        on shelves nationwide.
+        Nothing is listed for online ordering at the moment. Have a look at
+        what we make in the meantime.
       </p>
       <Link
-        href="/where-to-buy"
-        className="mt-6 inline-flex rounded-full bg-green px-6 py-3 text-sm font-bold uppercase tracking-[0.12em] text-cream"
+        href="/products"
+        className="mt-6 inline-flex rounded-full bg-green px-6 py-3 text-sm font-bold uppercase tracking-[0.12em] text-cream transition-colors hover:bg-ink"
       >
-        Find a stockist
+        See the range
       </Link>
     </div>
   );
