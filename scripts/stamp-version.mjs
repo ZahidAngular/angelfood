@@ -16,15 +16,28 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-/** The commit, when there is one. A build from a tarball has no git. */
+function git(command) {
+  return execSync(command, {
+    cwd: root,
+    stdio: ["ignore", "pipe", "ignore"],
+  })
+    .toString()
+    .trim();
+}
+
+/**
+ * The commit, when there is one. A build from a tarball has no git.
+ *
+ * Marked dirty when the tree has uncommitted changes, because building
+ * before committing stamps the build with the commit before the one it
+ * actually contains — which makes the stamp say the opposite of the truth
+ * at the exact moment someone is relying on it.
+ */
 function commit() {
   try {
-    return execSync("git rev-parse --short HEAD", {
-      cwd: root,
-      stdio: ["ignore", "pipe", "ignore"],
-    })
-      .toString()
-      .trim();
+    const head = git("git rev-parse --short HEAD");
+    const dirty = git("git status --porcelain").length > 0;
+    return dirty ? `${head}-dirty` : head;
   } catch {
     return "unknown";
   }
