@@ -65,7 +65,7 @@ const PRE_SALE_FLOATERS: Floater[] = [
     rotate: -9,
   },
   {
-    src: "/images/meals/thai-green-curry-v2.webp",
+    src: "/images/meals/thai-green-curry-v3.webp",
     className: "hidden lg:block right-[8%] bottom-[3%] w-[15vw] max-w-[205px]",
     depth: 65,
     delay: 0.9,

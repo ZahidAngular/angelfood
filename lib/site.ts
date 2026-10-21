@@ -235,7 +235,7 @@ export const MEALS: Product[] = [
       "Tofu and tender vegetables in a silky coconut green curry, fragrant with lemongrass and a gentle chilli warmth — served over fluffy rice to soak up every delicious spoonful.",
     alt: "Angel Food plant-based Thai green tofu curry NZ",
     tag: "Simmer",
-    image: "/images/meals/thai-green-curry-v2.webp",
+    image: "/images/meals/thai-green-curry-v3.webp",
     accent: "var(--color-green-bright)",
     weight: "400g",
     ready: "Ready in 4 minutes",
