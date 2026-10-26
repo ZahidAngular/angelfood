@@ -7,6 +7,8 @@ import { Reveal } from "./Reveal";
 import { RevealImage } from "./RevealImage";
 import { PublicRecipeCard } from "./PublicRecipeCard";
 import { Breadcrumbs } from "./Breadcrumbs";
+import { RichText } from "./RichText";
+import { isRichText } from "@/lib/rich-text";
 
 /** The full recipe layout — shared by the pre-built static pages (fast first
  * paint, then refreshed with live data) and the client-only fallback page
@@ -57,9 +59,10 @@ export function RecipeDetailView({
 
           {recipe.description && (
             <Reveal delay={0.15}>
-              <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-soft">
-                {recipe.description}
-              </p>
+              <RichText
+                value={recipe.description}
+                className="mt-5 max-w-xl text-lg leading-relaxed text-ink-soft"
+              />
             </Reveal>
           )}
         </div>
@@ -135,9 +138,18 @@ export function RecipeDetailView({
 
             {recipe.notes && (
               <Reveal delay={0.1}>
-                <blockquote className="mt-9 whitespace-pre-line rounded-2xl border-l-2 border-gold bg-cream-deep p-5 text-ink-soft">
-                  <span className="font-bold text-ink">Notes: </span>
-                  {recipe.notes}
+                <blockquote className="mt-9 rounded-2xl border-l-2 border-gold bg-cream-deep p-5 text-ink-soft">
+                  {isRichText(recipe.notes) ? (
+                    <>
+                      <p className="font-bold text-ink">Notes</p>
+                      <RichText value={recipe.notes} className="mt-2" />
+                    </>
+                  ) : (
+                    <div className="whitespace-pre-line">
+                      <span className="font-bold text-ink">Notes: </span>
+                      {recipe.notes}
+                    </div>
+                  )}
                 </blockquote>
               </Reveal>
             )}

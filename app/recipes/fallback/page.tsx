@@ -11,6 +11,7 @@ import {
 } from "@/lib/api";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { relatedRecipes } from "@/lib/related-recipes";
+import { richTextToPlain } from "@/lib/rich-text";
 import { RecipeDetailView } from "@/components/RecipeDetailView";
 
 /**
@@ -61,7 +62,8 @@ export default function RecipeFallbackPage() {
         canonical.setAttribute("href", canonicalHref);
 
         const description =
-          match.description || `${match.title} — a plant-based recipe from ${SITE_NAME}.`;
+          richTextToPlain(match.description) ||
+          `${match.title} — a plant-based recipe from ${SITE_NAME}.`;
         let metaDesc = document.querySelector('meta[name="description"]');
         if (!metaDesc) {
           metaDesc = document.createElement("meta");

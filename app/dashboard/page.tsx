@@ -12,6 +12,8 @@ import {
   type IngredientGroup,
 } from "@/lib/api";
 import { getSessionUser } from "@/lib/auth";
+import { richTextToPlain } from "@/lib/rich-text";
+import { RichTextEditor } from "@/components/RichTextEditor";
 
 const PAGE_SIZE = 200;
 
@@ -251,14 +253,12 @@ export default function DashboardPage() {
                   <label className="text-sm font-medium text-ink-soft">
                     Short description
                   </label>
-                  <textarea
-                    value={form.description ?? ""}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, description: e.target.value }))
-                    }
-                    rows={2}
+                  <RichTextEditor
+                    key={`description-${editingId ?? "new"}`}
+                    value={form.description}
+                    onChange={(html) => setForm((f) => ({ ...f, description: html }))}
                     placeholder="One line that sums up the dish"
-                    className="resize-none rounded-xl border border-line bg-paper px-4 py-3 text-sm outline-none transition-colors focus:border-green"
+                    minHeight="4rem"
                   />
                 </div>
 
@@ -365,12 +365,12 @@ export default function DashboardPage() {
                   <label className="text-sm font-medium text-ink-soft">
                     Notes <span className="font-normal text-ink-soft/70">(optional)</span>
                   </label>
-                  <textarea
-                    value={form.notes ?? ""}
-                    onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-                    rows={4}
+                  <RichTextEditor
+                    key={`notes-${editingId ?? "new"}`}
+                    value={form.notes}
+                    onChange={(html) => setForm((f) => ({ ...f, notes: html }))}
                     placeholder="Substitutions, storage tips, or anything else worth knowing"
-                    className="rounded-xl border border-line bg-paper px-4 py-3 text-sm outline-none transition-colors focus:border-green"
+                    minHeight="8rem"
                   />
                 </div>
 
@@ -448,7 +448,7 @@ export default function DashboardPage() {
                   </h3>
                   {recipe.description && (
                     <p className="line-clamp-2 text-sm text-ink-soft">
-                      {recipe.description}
+                      {richTextToPlain(recipe.description)}
                     </p>
                   )}
                   {recipe.ownerName && (

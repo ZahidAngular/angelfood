@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { PublicRecipeCard } from "./PublicRecipeCard";
 import type { Recipe } from "@/lib/api";
+import { richTextToPlain } from "@/lib/rich-text";
 
 const PAGE_SIZE = 12;
 
@@ -18,7 +19,7 @@ export function RecipesGrid({ recipes }: { recipes: Recipe[] }) {
     return recipes.filter(
       (r) =>
         r.title.toLowerCase().includes(q) ||
-        (r.description ?? "").toLowerCase().includes(q)
+        richTextToPlain(r.description).toLowerCase().includes(q)
     );
   }, [recipes, query]);
 

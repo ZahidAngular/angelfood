@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ImagePlus } from "lucide-react";
 import { resolveImageUrl, recipeSlug, type Recipe } from "@/lib/api";
+import { richTextToPlain } from "@/lib/rich-text";
 import { Reveal } from "./Reveal";
 
 export function PublicRecipeCard({ recipe, index }: { recipe: Recipe; index: number }) {
@@ -39,7 +40,7 @@ export function PublicRecipeCard({ recipe, index }: { recipe: Recipe; index: num
             </h3>
             {recipe.description && (
               <p className="mt-1 max-h-0 overflow-hidden text-sm text-cream/85 opacity-0 transition-all duration-500 group-hover:max-h-24 group-hover:opacity-100">
-                {recipe.description}
+                {richTextToPlain(recipe.description)}
               </p>
             )}
           </div>

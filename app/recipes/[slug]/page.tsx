@@ -11,6 +11,7 @@ import {
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { relatedRecipes } from "@/lib/related-recipes";
 import { clip, padDescription } from "@/lib/og";
+import { richTextToPlain } from "@/lib/rich-text";
 import { RecipeLiveDetail } from "@/components/RecipeLiveDetail";
 
 async function findRecipeBySlug(slug: string): Promise<Recipe | null> {
@@ -44,7 +45,8 @@ export async function generateMetadata({
   const title = fullTitle.length > 60 ? recipe.title : fullTitle;
   const description = clip(
     padDescription(
-      recipe.description || `${recipe.title} — a plant-based recipe from Angel Food.`,
+      richTextToPlain(recipe.description) ||
+        `${recipe.title} — a plant-based recipe from Angel Food.`,
       [
         "Full recipe on Angel Food.",
         "Get the full ingredients and method on Angel Food.",
@@ -107,7 +109,9 @@ export default async function RecipeDetailPage({
     "@context": "https://schema.org",
     "@type": "Recipe",
     name: recipe.title,
-    description: recipe.description || `${recipe.title} — a plant-based recipe from Angel Food.`,
+    description:
+      richTextToPlain(recipe.description) ||
+      `${recipe.title} — a plant-based recipe from Angel Food.`,
     image: [image || `${SITE_URL}/images/hero.webp`],
     author: { "@type": "Organization", name: SITE_NAME },
     publisher: {
