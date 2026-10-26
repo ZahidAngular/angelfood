@@ -580,7 +580,7 @@ export const NUTRITION_INFO: NutritionEntry[] = [
     ingredients:
       "INGREDIENTS: Cooked Basmati Rice (Water, Basmati Rice, Salt), Butter Sauce [Tomato Paste. Water, Soy Milk, Canola Oil, Cashew Paste (Cashews, Water), Ginger, Garlic, Vegan Butter (Plant Oils, Water, Salt), Brown Sugar, Paprika, Kashmiri Chilli, Fenugreek, Kitchen King Masala (Spices, Salt), Garam Masala (Spices), Cardamom Powder, Salt], Vegan Chicken (Soy Protein, Water, Vegetable Oils, Wheat Protein, Natural Flavours, Salt), Fenugreek Leaves.",
     allergens:
-      "Contains: Soya, Cashew. May contain: Wheat, Peanut, Sesame, Mustard.",
+      "Contains: Soya, Cashew, Wheat. May contain: Peanut, Sesame, Mustard.",
     nutrition: {
       servingsPerPack: "1",
       servingSize: "400g",
