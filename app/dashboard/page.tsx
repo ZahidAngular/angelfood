@@ -233,154 +233,169 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-6 py-8 sm:px-10 lg:px-16">
-            <form id="recipe-form" onSubmit={handleSubmit} className="mx-auto max-w-6xl">
-              <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.7fr_1fr]">
-              {/* Left column — content fields */}
-              <div className="flex flex-col gap-5">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-ink-soft">Title</label>
-                  <input
-                    required
-                    value={form.title}
-                    onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                    placeholder="e.g. Cheesy Zucchini Fritters"
-                    className="rounded-xl border border-line bg-paper px-4 py-3.5 text-base font-medium outline-none transition-colors focus:border-green"
-                  />
-                </div>
+          <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-8 lg:px-12">
+            <form id="recipe-form" onSubmit={handleSubmit} className="mx-auto w-full max-w-[1600px]">
+              <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+                {/* Left column — what the recipe is and how to make it */}
+                <div className="flex flex-col gap-6">
+                  <FormSection title="Recipe details">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-sm font-medium text-ink-soft">Title</label>
+                      <input
+                        required
+                        value={form.title}
+                        onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                        placeholder="e.g. Cheesy Zucchini Fritters"
+                        className="rounded-xl border border-line bg-paper px-4 py-3.5 text-base font-medium outline-none transition-colors focus:border-green"
+                      />
+                    </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-ink-soft">
-                    Short description
-                  </label>
-                  <RichTextEditor
-                    key={`description-${editingId ?? "new"}`}
-                    value={form.description}
-                    onChange={(html) => setForm((f) => ({ ...f, description: html }))}
-                    placeholder="One line that sums up the dish"
-                    minHeight="4rem"
-                  />
-                </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-sm font-medium text-ink-soft">
+                        Short description
+                      </label>
+                      <RichTextEditor
+                        key={`description-${editingId ?? "new"}`}
+                        value={form.description}
+                        onChange={(html) => setForm((f) => ({ ...f, description: html }))}
+                        placeholder="One line that sums up the dish"
+                        minHeight="4.5rem"
+                        blocks
+                      />
+                      <p className="text-xs text-ink-soft/80">
+                        Shown on the recipe card and in Google results — keep it to a sentence or two.
+                      </p>
+                    </div>
+                  </FormSection>
 
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-ink-soft">Ingredients</label>
-                    <button
-                      type="button"
-                      onClick={addIngredientGroup}
-                      className="flex items-center gap-1 text-xs font-semibold text-green hover:underline"
-                    >
-                      <Plus size={13} /> Add group
-                    </button>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    {form.ingredientGroups.map((group, i) => (
-                      <div key={i} className="rounded-xl border border-line p-4">
-                        <div className="mb-2 flex items-center gap-2">
-                          <input
-                            value={group.heading ?? ""}
-                            onChange={(e) => updateGroupHeading(i, e.target.value)}
-                            placeholder={
-                              form.ingredientGroups.length > 1
-                                ? "Group name, e.g. Cake"
-                                : "Group name (optional)"
-                            }
-                            className="flex-1 rounded-lg border border-line bg-paper px-3 py-2 text-sm font-medium outline-none transition-colors focus:border-green"
-                          />
-                          {form.ingredientGroups.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => removeIngredientGroup(i)}
-                              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-coral transition-colors hover:bg-coral/10"
-                              aria-label="Remove group"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          )}
-                        </div>
-                        <textarea
-                          value={group.items.join("\n")}
-                          onChange={(e) => updateGroupItems(i, e.target.value)}
-                          rows={4}
-                          placeholder={"One per line, e.g.\n2 cups flour\n1 tsp salt"}
-                          className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm outline-none transition-colors focus:border-green"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-ink-soft">Instructions</label>
-                  <textarea
-                    required
-                    value={form.instructions}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, instructions: e.target.value }))
+                  <FormSection
+                    title="Ingredients"
+                    hint="One ingredient per line. Use groups for parts of a recipe, e.g. Cake and Icing."
+                    action={
+                      <button
+                        type="button"
+                        onClick={addIngredientGroup}
+                        className="flex items-center gap-1 rounded-full border border-line px-3 py-1.5 text-xs font-semibold text-green transition-colors hover:border-green"
+                      >
+                        <Plus size={13} /> Add group
+                      </button>
                     }
-                    rows={7}
-                    placeholder={"Step by step, e.g.\n1. Preheat oven to 180°C\n2. Mix everything together"}
-                    className="rounded-xl border border-line bg-paper px-4 py-3 text-sm outline-none transition-colors focus:border-green"
-                  />
-                </div>
-              </div>
-
-              {/* Right column — photo + meta */}
-              <div className="flex flex-col gap-5">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-ink-soft">Photo</label>
-                  <label className="group relative flex h-64 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-line bg-cream-deep/40 transition-colors hover:border-green">
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/webp"
-                      onChange={handleImageChange}
-                      className="hidden"
-                    />
-                    {form.imageUrl ? (
-                      <>
-                        <Image
-                          src={resolveImageUrl(form.imageUrl)!}
-                          alt="Recipe preview"
-                          fill
-                          unoptimized
-                          className="object-cover"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-ink/0 opacity-0 transition-opacity group-hover:bg-ink/40 group-hover:opacity-100">
-                          <span className="rounded-full bg-paper px-4 py-2 text-xs font-semibold text-ink">
-                            Change photo
-                          </span>
+                  >
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      {form.ingredientGroups.map((group, i) => (
+                        <div
+                          key={i}
+                          className={`rounded-xl border border-line bg-cream/40 p-4 ${
+                            form.ingredientGroups.length === 1 ? "md:col-span-2" : ""
+                          }`}
+                        >
+                          <div className="mb-2 flex items-center gap-2">
+                            <input
+                              value={group.heading ?? ""}
+                              onChange={(e) => updateGroupHeading(i, e.target.value)}
+                              placeholder={
+                                form.ingredientGroups.length > 1
+                                  ? "Group name, e.g. Cake"
+                                  : "Group name (optional)"
+                              }
+                              className="flex-1 rounded-lg border border-line bg-paper px-3 py-2 text-sm font-medium outline-none transition-colors focus:border-green"
+                            />
+                            {form.ingredientGroups.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => removeIngredientGroup(i)}
+                                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-coral transition-colors hover:bg-coral/10"
+                                aria-label="Remove group"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            )}
+                          </div>
+                          <textarea
+                            value={group.items.join("\n")}
+                            onChange={(e) => updateGroupItems(i, e.target.value)}
+                            rows={7}
+                            placeholder={"One per line, e.g.\n2 cups flour\n1 tsp salt"}
+                            className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm leading-relaxed outline-none transition-colors focus:border-green"
+                          />
                         </div>
-                      </>
-                    ) : (
-                      <div className="flex flex-col items-center gap-2 px-6 text-center text-ink-soft">
-                        <ImagePlus size={28} />
-                        <span className="text-sm font-semibold">Click to upload a photo</span>
-                        <span className="text-xs">PNG, JPG or WEBP — up to 5MB</span>
-                      </div>
-                    )}
-                  </label>
+                      ))}
+                    </div>
+                  </FormSection>
+
+                  <FormSection
+                    title="Method"
+                    hint="One step per line — each line becomes a numbered step on the recipe page."
+                  >
+                    <textarea
+                      required
+                      value={form.instructions}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, instructions: e.target.value }))
+                      }
+                      rows={12}
+                      placeholder={"Step by step, e.g.\n1. Preheat oven to 180°C\n2. Mix everything together"}
+                      className="w-full rounded-xl border border-line bg-paper px-4 py-3 text-sm leading-relaxed outline-none transition-colors focus:border-green"
+                    />
+                  </FormSection>
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-ink-soft">
-                    Notes <span className="font-normal text-ink-soft/70">(optional)</span>
-                  </label>
-                  <RichTextEditor
-                    key={`notes-${editingId ?? "new"}`}
-                    value={form.notes}
-                    onChange={(html) => setForm((f) => ({ ...f, notes: html }))}
-                    placeholder="Substitutions, storage tips, or anything else worth knowing"
-                    minHeight="8rem"
-                  />
-                </div>
+                {/* Right column — photo and notes */}
+                <div className="flex flex-col gap-6">
+                  <FormSection title="Photo">
+                    <label className="group relative flex aspect-[16/10] w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-line bg-cream-deep/40 transition-colors hover:border-green">
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                      {form.imageUrl ? (
+                        <>
+                          <Image
+                            src={resolveImageUrl(form.imageUrl)!}
+                            alt="Recipe preview"
+                            fill
+                            unoptimized
+                            className="object-cover"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-ink/0 opacity-0 transition-opacity group-hover:bg-ink/40 group-hover:opacity-100">
+                            <span className="rounded-full bg-paper px-4 py-2 text-xs font-semibold text-ink">
+                              Change photo
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 px-6 text-center text-ink-soft">
+                          <ImagePlus size={28} />
+                          <span className="text-sm font-semibold">Click to upload a photo</span>
+                          <span className="text-xs">PNG, JPG or WEBP — up to 5MB</span>
+                        </div>
+                      )}
+                    </label>
+                  </FormSection>
 
-                {formError && (
-                  <p className="rounded-xl bg-coral/10 px-4 py-3 text-sm text-coral">
-                    {formError}
-                  </p>
-                )}
+                  <FormSection
+                    title="Notes"
+                    hint="Optional. Tips, substitutions or storage — headings, tables and links all work here."
+                  >
+                    <RichTextEditor
+                      key={`notes-${editingId ?? "new"}`}
+                      value={form.notes}
+                      onChange={(html) => setForm((f) => ({ ...f, notes: html }))}
+                      placeholder="Substitutions, storage tips, or anything else worth knowing"
+                      minHeight="16rem"
+                      blocks
+                    />
+                  </FormSection>
+
+                  {formError && (
+                    <p className="rounded-xl bg-coral/10 px-4 py-3 text-sm text-coral">
+                      {formError}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
             </form>
           </div>
 
@@ -494,5 +509,31 @@ export default function DashboardPage() {
         </div>
       )}
     </div>
+  );
+}
+
+/** A titled card grouping related fields in the recipe form. */
+function FormSection({
+  title,
+  hint,
+  action,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-2xl border border-line bg-paper/70 p-5 shadow-[0_1px_0_rgba(20,66,44,0.04)] sm:p-6">
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <div>
+          <h3 className="font-display text-lg font-bold text-ink">{title}</h3>
+          {hint && <p className="mt-0.5 text-xs text-ink-soft">{hint}</p>}
+        </div>
+        {action}
+      </div>
+      <div className="flex flex-col gap-5">{children}</div>
+    </section>
   );
 }

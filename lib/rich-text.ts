@@ -2,8 +2,8 @@
  * Formatted text for recipe descriptions and notes.
  *
  * The dashboard's editor saves a small subset of HTML — paragraphs, line
- * breaks, bold, italic, lists and links — into the same text fields that used
- * to hold plain text, so the API needs no change. Older recipes are still
+ * breaks, bold, italic, lists, links, headings and tables — into the same
+ * text fields that used to hold plain text, so the API needs no change. Older recipes are still
  * plain text with newlines, and everything here handles both.
  *
  * Nothing is trusted: whatever comes back from the API is rebuilt tag by tag
@@ -27,6 +27,20 @@ const ALLOWED: Record<string, string> = {
   ol: "ol",
   li: "li",
   a: "a",
+  // The recipe title is the page's only <h1>, so a heading 1 written in the
+  // editor is kept one level down.
+  h1: "h2",
+  h2: "h2",
+  h3: "h3",
+  h4: "h4",
+  h5: "h5",
+  h6: "h6",
+  table: "table",
+  thead: "thead",
+  tbody: "tbody",
+  tr: "tr",
+  th: "th",
+  td: "td",
 };
 
 /** Tags whose content is dropped along with them. */
@@ -34,9 +48,16 @@ const DROP_WITH_CONTENT = new Set(["script", "style", "iframe", "object", "embed
 
 const VOID = new Set(["br"]);
 
+/** Blocks that can be aligned left, centre or right. */
+const ALIGNABLE = new Set(["p", "h2", "h3", "h4", "h5", "h6", "li", "th", "td"]);
+
+/** The sizes a table can be given in the editor. */
+export const TABLE_WIDTHS = new Set(["full", "three-quarter", "half", "fit"]);
+export const TABLE_ROWS = new Set(["compact", "normal", "tall"]);
+
 /** True when the text was written in the editor rather than as plain text. */
 export function isRichText(value: string | null | undefined): boolean {
-  return !!value && /<\/?(p|div|br|strong|b|em|i|ul|ol|li|a)\b[^>]*>/i.test(value);
+  return !!value && /<\/?(p|div|br|strong|b|em|i|ul|ol|li|a|h[1-6]|table)\b[^>]*>/i.test(value);
 }
 
 function decodeEntities(text: string): string {
@@ -133,6 +154,23 @@ export function sanitizeRichText(html: string, { forDisplay = false } = {}): str
       const extra =
         forDisplay && isExternal(href) ? ' target="_blank" rel="noopener noreferrer"' : "";
       out.push(`<a href="${escapeHtml(href)}"${extra}>`);
+    } else if (mapped === "table") {
+      // Size is chosen from fixed options, never free-form styles.
+      const width = /\sdata-width\s*=\s*["']?([a-z-]+)/i.exec(attrs)?.[1];
+      const rows = /\sdata-rows\s*=\s*["']?([a-z-]+)/i.exec(attrs)?.[1];
+      const size =
+        (width && TABLE_WIDTHS.has(width) ? ` data-width="${width}"` : "") +
+        (rows && TABLE_ROWS.has(rows) ? ` data-rows="${rows}"` : "");
+      out.push(`<table${size}>`);
+    } else if (ALIGNABLE.has(mapped)) {
+      // Text alignment is the one style kept, and only these four values.
+      const align =
+        /text-align\s*:\s*(left|center|right|justify)/i.exec(attrs)?.[1] ??
+        /\salign\s*=\s*["']?(left|center|right|justify)/i.exec(attrs)?.[1];
+      const lower = align?.toLowerCase();
+      out.push(
+        lower && lower !== "left" ? `<${mapped} style="text-align:${lower}">` : `<${mapped}>`
+      );
     } else {
       out.push(`<${mapped}>`);
     }
@@ -143,7 +181,7 @@ export function sanitizeRichText(html: string, { forDisplay = false } = {}): str
   const clean = out
     .join("")
     // Paragraphs and list items the editor leaves behind when emptied.
-    .replace(/<(p|li|strong|em)>(\s|<br>)*<\/\1>/g, "")
+    .replace(/<(p|li|strong|em|h[2-6])>(\s|<br>)*<\/\1>/g, "")
     .replace(/<(ul|ol)>\s*<\/\1>/g, "")
     .trim();
 
@@ -177,7 +215,7 @@ export function richTextToPlain(value: string | null | undefined): string {
     value
       .replace(/<(script|style)[\s\S]*?<\/\1>/gi, "")
       .replace(/<br\s*\/?>/gi, " ")
-      .replace(/<\/(p|div|li|ul|ol)>/gi, " ")
+      .replace(/<\/(p|div|li|ul|ol|h[1-6]|t[dhr])>/gi, " ")
       .replace(/<[^>]+>/g, "")
   )
     .replace(/\s+/g, " ")
