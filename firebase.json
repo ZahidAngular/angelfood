@@ -16,6 +16,26 @@
     ],
     "redirects": [
       {
+        "source": "/checkout/**",
+        "destination": "/where-to-buy",
+        "type": 302
+      },
+      {
+        "source": "/checkout",
+        "destination": "/where-to-buy",
+        "type": 302
+      },
+      {
+        "source": "/cart",
+        "destination": "/where-to-buy",
+        "type": 302
+      },
+      {
+        "source": "/buy-now",
+        "destination": "/where-to-buy",
+        "type": 302
+      },
+      {
         "source": "/social-media-giveaway-terms",
         "destination": "/social-media-giveaway-ts-cs",
         "type": 301

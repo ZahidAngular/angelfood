@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShoppingBag } from "lucide-react";
 import { getProductMeta, type NutritionEntry } from "@/lib/site";
+import { ONLINE_STORE_OPEN } from "@/lib/pricing";
 
 /**
  * Product tile used on the ingredients & nutrition index and on the "more
@@ -13,7 +14,7 @@ export function NutritionCard({ entry }: { entry: NutritionEntry }) {
 
   // Only the meals are sold on the site. A Buy online button on a cheese
   // or a pastrami would lead to a shop that does not stock it.
-  const buyable = entry.category === "Meals";
+  const buyable = entry.category === "Meals" && ONLINE_STORE_OPEN;
 
   return (
     <div className="group relative flex h-full flex-col rounded-2xl border border-line bg-paper p-5 transition-all duration-300 hover:-translate-y-1 hover:border-green/40 hover:shadow-[0_18px_40px_-24px_rgba(20,66,44,0.45)]">

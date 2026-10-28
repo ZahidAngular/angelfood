@@ -3,6 +3,7 @@ import { recipeApi, recipeSlug, type Recipe } from "@/lib/api";
 import { SITE_URL, NUTRITION_INFO } from "@/lib/site";
 import { BLOG_BASE_PATH, getBlogPosts } from "@/lib/blog";
 import { STORE_PRODUCTS } from "@/lib/store";
+import { ONLINE_STORE_OPEN } from "@/lib/pricing";
 
 // Required so a static export (Firebase Hosting) can prerender this route —
 // on Vercel `revalidate` still applies on top, so the sitemap refreshes at
@@ -18,7 +19,12 @@ const STATIC_ROUTES: {
 }[] = [
   { path: "", changeFrequency: "weekly", priority: 1 },
   { path: "/products", changeFrequency: "monthly", priority: 0.9 },
-  { path: "/buy-now", changeFrequency: "monthly", priority: 0.7 },
+  // Listed only while it can be reached. Advertising a page to Google
+  // that redirects away is how a site teaches search engines to
+  // distrust its sitemap.
+  ...(ONLINE_STORE_OPEN
+    ? [{ path: "/buy-now", changeFrequency: "monthly" as const, priority: 0.7 }]
+    : []),
   { path: "/recipes", changeFrequency: "weekly", priority: 0.9 },
   { path: BLOG_BASE_PATH, changeFrequency: "weekly", priority: 0.8 },
   { path: "/about", changeFrequency: "yearly", priority: 0.6 },

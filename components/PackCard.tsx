@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, ShoppingBag } from "lucide-react";
+import { ONLINE_STORE_OPEN } from "@/lib/pricing";
 import { getNutritionSlug, type Product } from "@/lib/site";
 import { Reveal } from "./Reveal";
 
@@ -98,7 +99,7 @@ export function PackCard({
               Without the z-index the overlay would take the click and send
               someone reading about a meal to the ingredients instead of the
               shop. */}
-          {buyable && (
+          {buyable && ONLINE_STORE_OPEN && (
             <Link
               /* Names the meal, so the shop opens on it rather than at the
                  top of a list of nine for someone to find theirs again. */

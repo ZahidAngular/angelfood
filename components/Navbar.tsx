@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import { NAV_LINKS } from "@/lib/site";
 import { useOrder } from "@/lib/cart";
+import { ONLINE_STORE_OPEN } from "@/lib/pricing";
 import { SocialLinks } from "./SocialIcons";
 
 /** The order being built on /buy-now, reachable from every page. */
@@ -109,14 +110,14 @@ export function Navbar() {
                 className="flex h-9 w-9 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-cream-deep hover:text-green"
               />
             </div>
-            <CartLink count={cartCount} />
+            {ONLINE_STORE_OPEN && <CartLink count={cartCount} />}
             <Link
-              href="/buy-now"
+              href={ONLINE_STORE_OPEN ? "/buy-now" : "/where-to-buy"}
               className={`hidden rounded-full bg-green font-semibold text-cream transition-all duration-500 hover:scale-[1.04] sm:inline-flex ${
                 scrolled ? "px-5 py-2.5 text-sm" : "px-6 py-3 text-base"
               }`}
             >
-              Buy Meals Now
+              {ONLINE_STORE_OPEN ? "Buy Meals Now" : "Find a store"}
             </Link>
             <button
               aria-label="Menu"
@@ -168,13 +169,15 @@ export function Navbar() {
               ))}
             </nav>
             <div className="mt-auto flex flex-col gap-5">
-              <Link
-                href="/cart"
-                onClick={() => setOpen(false)}
-                className="font-display text-lg font-bold tracking-tight text-gold"
-              >
-                Your order{cartCount > 0 ? ` (${cartCount})` : ""}
-              </Link>
+              {ONLINE_STORE_OPEN && (
+                <Link
+                  href="/cart"
+                  onClick={() => setOpen(false)}
+                  className="font-display text-lg font-bold tracking-tight text-gold"
+                >
+                  Your order{cartCount > 0 ? ` (${cartCount})` : ""}
+                </Link>
+              )}
               <div className="flex gap-3">
                 <SocialLinks
                   size={18}
@@ -182,11 +185,11 @@ export function Navbar() {
                 />
               </div>
               <Link
-                href="/buy-now"
+                href={ONLINE_STORE_OPEN ? "/buy-now" : "/where-to-buy"}
                 onClick={() => setOpen(false)}
                 className="rounded-full bg-gold px-6 py-4 text-center text-base font-semibold text-ink"
               >
-                Buy Meals Now
+                {ONLINE_STORE_OPEN ? "Buy Meals Now" : "Find a store"}
               </Link>
             </div>
           </motion.div>
