@@ -17,22 +17,22 @@
     "redirects": [
       {
         "source": "/checkout/**",
-        "destination": "/where-to-buy",
+        "destination": "/online-store",
         "type": 302
       },
       {
         "source": "/checkout",
-        "destination": "/where-to-buy",
+        "destination": "/online-store",
         "type": 302
       },
       {
         "source": "/cart",
-        "destination": "/where-to-buy",
+        "destination": "/online-store",
         "type": 302
       },
       {
         "source": "/buy-now",
-        "destination": "/where-to-buy",
+        "destination": "/online-store",
         "type": 302
       },
       {
