@@ -24,7 +24,13 @@ export async function generateMetadata({
   const entry = NUTRITION_INFO.find((n) => n.slug === slug);
   if (!entry) return {};
 
-  const title = `${entry.product} Ingredients & Nutrition | Angel Food`;
+  // The long meal names push the full title past what search results show,
+  // and crawlers flag it as too long; those drop "Ingredients &" to fit.
+  const fullTitle = `${entry.product} Ingredients & Nutrition | Angel Food`;
+  const title =
+    fullTitle.length > 60
+      ? `${entry.product} Nutrition | Angel Food`
+      : fullTitle;
   const description = `Full ingredients list, allergens and nutrition panel for Angel Food ${entry.product} — 100% plant-based, dairy-free ${entry.category.toLowerCase()}.`;
   const url = `/ingredients-nutrition-info/${slug}`;
 
