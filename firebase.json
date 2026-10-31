@@ -84,6 +84,311 @@
         "source": "/recipes/quick-pickled-onions",
         "destination": "/recipes/quick-pickled-red-onions",
         "type": 301
+      },
+      {
+        "source": "/product/dairy-free-cheddar-alternative",
+        "destination": "/ingredients-nutrition-info/cheddar-block",
+        "type": 301
+      },
+      {
+        "source": "/product/dairy-free-mozzarella-alternative",
+        "destination": "/ingredients-nutrition-info/mozza-block",
+        "type": 301
+      },
+      {
+        "source": "/product/dairy-free-sour-cream-alternative",
+        "destination": "/ingredients-nutrition-info/sour-cream",
+        "type": 301
+      },
+      {
+        "source": "/product/dairy-free-parmesan-alternative-smoky",
+        "destination": "/ingredients-nutrition-info/parmesan",
+        "type": 301
+      },
+      {
+        "source": "/product/angel-food-dairy-free-parmesan-alternative",
+        "destination": "/ingredients-nutrition-info/parmesan",
+        "type": 301
+      },
+      {
+        "source": "/store/dairy-free-parmesan-alternative",
+        "destination": "/ingredients-nutrition-info/parmesan",
+        "type": 301
+      },
+      {
+        "source": "/dairyfree-feta-alternative",
+        "destination": "/ingredients-nutrition-info/feta",
+        "type": 301
+      },
+      {
+        "source": "/dairy-free-cream-cheese-alternative",
+        "destination": "/ingredients-nutrition-info/cream-cheese",
+        "type": 301
+      },
+      {
+        "source": "/dairyfree-smoky-parmesan-alternative",
+        "destination": "/ingredients-nutrition-info/parmesan",
+        "type": 301
+      },
+      {
+        "source": "/dairyfree-smoked-cheddar-alternative",
+        "destination": "/ingredients-nutrition-info/cheddar-block",
+        "type": 301
+      },
+      {
+        "source": "/dairyfree-cheddar-alternative-2",
+        "destination": "/ingredients-nutrition-info/cheddar-block",
+        "type": 301
+      },
+      {
+        "source": "/parmesan-100g",
+        "destination": "/ingredients-nutrition-info/parmesan",
+        "type": 301
+      },
+      {
+        "source": "/grated-smoked-cheddar",
+        "destination": "/ingredients-nutrition-info/grated-cheese",
+        "type": 301
+      },
+      {
+        "source": "/all-products",
+        "destination": "/products",
+        "type": 301
+      },
+      {
+        "source": "/our-products.html",
+        "destination": "/products",
+        "type": 301
+      },
+      {
+        "source": "/our-story",
+        "destination": "/about",
+        "type": 301
+      },
+      {
+        "source": "/our-story-1",
+        "destination": "/about",
+        "type": 301
+      },
+      {
+        "source": "/ourstory",
+        "destination": "/about",
+        "type": 301
+      },
+      {
+        "source": "/about.htm",
+        "destination": "/about",
+        "type": 301
+      },
+      {
+        "source": "/press.htm",
+        "destination": "/about",
+        "type": 301
+      },
+      {
+        "source": "/media-kit",
+        "destination": "/about",
+        "type": 301
+      },
+      {
+        "source": "/contact-us",
+        "destination": "/contact",
+        "type": 301
+      },
+      {
+        "source": "/faqs",
+        "destination": "/help-centre",
+        "type": 301
+      },
+      {
+        "source": "/suitability-angel-food-products",
+        "destination": "/help-centre",
+        "type": 301
+      },
+      {
+        "source": "/sign-up",
+        "destination": "/subscribe",
+        "type": 301
+      },
+      {
+        "source": "/terms.html",
+        "destination": "/terms-of-website-use",
+        "type": 301
+      },
+      {
+        "source": "/index.htm",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/index.php",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/news",
+        "destination": "/alices-vegan-food-blog",
+        "type": 301
+      },
+      {
+        "source": "/news.html",
+        "destination": "/alices-vegan-food-blog",
+        "type": 301
+      },
+      {
+        "source": "/old-news",
+        "destination": "/alices-vegan-food-blog",
+        "type": 301
+      },
+      {
+        "source": "/stockists.htm",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/shops.html",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/online-retailers.html",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/shopping.html",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/buy-online.html",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/order.htm",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/buy-bay-plenty",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/buy-gisborne-hawkes-bay",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/buy-manawatu-wanganui",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/buy-nelson-marlborough-golden-bay",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/buy-otago-southland",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/buy-wellington-wairarapa",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/our-news",
+        "destination": "/alices-vegan-food-blog",
+        "type": 301
+      },
+      {
+        "source": "/our-news/**",
+        "destination": "/alices-vegan-food-blog",
+        "type": 301
+      },
+      {
+        "source": "/blog",
+        "destination": "/alices-vegan-food-blog",
+        "type": 301
+      },
+      {
+        "source": "/blog/**",
+        "destination": "/alices-vegan-food-blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-my-vegan-life",
+        "destination": "/alices-vegan-food-blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-my-vegan-life/**",
+        "destination": "/alices-vegan-food-blog",
+        "type": 301
+      },
+      {
+        "source": "/recipe",
+        "destination": "/recipes",
+        "type": 301
+      },
+      {
+        "source": "/recipe/**",
+        "destination": "/recipes",
+        "type": 301
+      },
+      {
+        "source": "/product",
+        "destination": "/products",
+        "type": 301
+      },
+      {
+        "source": "/product/**",
+        "destination": "/products",
+        "type": 301
+      },
+      {
+        "source": "/stockists",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/stockists/**",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/shop",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/shop/**",
+        "destination": "/where-to-buy",
+        "type": 301
+      },
+      {
+        "source": "/press",
+        "destination": "/about",
+        "type": 301
+      },
+      {
+        "source": "/press/**",
+        "destination": "/about",
+        "type": 301
+      },
+      {
+        "source": "/newsletter",
+        "destination": "/subscribe",
+        "type": 301
+      },
+      {
+        "source": "/newsletter/**",
+        "destination": "/subscribe",
+        "type": 301
       }
     ],
     "headers": [
