@@ -33,11 +33,9 @@ export default function ProductsPage() {
   // each entry points at its own ingredients page, which is the only per-product
   // URL the range has.
   //
-  // The list is the only markup here. There used to be a Product block per
-  // item as well, but Google reads Product markup on a listing page as a
-  // mistake, and without a price (the range sells in supermarkets, not here)
-  // every block failed its rich result checks — the one validation error the
-  // site audit kept reporting.
+  // The list is the only markup here. The Product blocks used to sit on this
+  // page too, but Google reads Product markup on a listing page as a mistake;
+  // each product's own ingredients page carries its block instead.
   const allProducts = [...PRODUCTS, ...MEATS, ...MEALS];
 
   return (

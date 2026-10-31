@@ -12,6 +12,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { relatedRecipes } from "@/lib/related-recipes";
 import { clip, padDescription } from "@/lib/og";
 import { richTextToPlain } from "@/lib/rich-text";
+import { articleSchema } from "@/lib/schema";
 import { RecipeLiveDetail } from "@/components/RecipeLiveDetail";
 
 async function findRecipeBySlug(slug: string): Promise<Recipe | null> {
@@ -132,11 +133,24 @@ export default async function RecipeDetailPage({
     })),
   };
 
+  const pageJsonLd = articleSchema({
+    headline: recipe.title,
+    description: recipeJsonLd.description,
+    image: recipeJsonLd.image[0],
+    url: `/recipes/${recipeSlug(recipe.title)}`,
+    datePublished: recipe.createdAt || undefined,
+    dateModified: recipe.updatedAt || undefined,
+  });
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(recipeJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageJsonLd) }}
       />
       <RecipeLiveDetail slug={slug} initialRecipe={recipe} initialRelated={related} />
     </>

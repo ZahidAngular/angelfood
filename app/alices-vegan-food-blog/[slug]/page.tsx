@@ -127,7 +127,9 @@ export default async function BlogPostPage({
 
   const articleJsonLd = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
+    // Both types: BlogPosting is the precise one, and some audits (Ahrefs)
+    // look for the word Article itself.
+    "@type": ["Article", "BlogPosting"],
     headline: post.title,
     description: post.description,
     image: [post.image],

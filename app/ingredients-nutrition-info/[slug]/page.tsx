@@ -9,6 +9,8 @@ import { Reveal } from "@/components/Reveal";
 import { NutritionTable } from "@/components/NutritionTable";
 import { NutritionCard } from "@/components/NutritionCard";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { JsonLd } from "@/components/JsonLd";
+import { productSchema } from "@/lib/schema";
 import { OG_DEFAULTS } from "@/lib/og";
 
 export function generateStaticParams() {
@@ -59,6 +61,20 @@ export default async function NutritionDetailPage({
 
   return (
     <main>
+      {/* This page is the product's own URL, so it is where the Product
+          markup belongs (the listing page carries an ItemList instead). No
+          offers: see productSchema for why there is no price to give. */}
+      {meta && (
+        <JsonLd
+          data={productSchema({
+            name: `Angel Food ${entry.product}`,
+            description: meta.blurb,
+            image: meta.image,
+            url: `/ingredients-nutrition-info/${entry.slug}`,
+            category: entry.category,
+          })}
+        />
+      )}
       <header className="relative overflow-hidden bg-cream pb-4 pt-40 sm:pt-48">
         <div className="pointer-events-none absolute -right-32 top-10 h-[26rem] w-[26rem] rounded-full bg-gold/20 blur-[120px]" />
         <div className="mx-auto max-w-5xl px-5 sm:px-8">

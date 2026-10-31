@@ -86,6 +86,45 @@ export function productSchema({
 }
 
 /**
+ * The page itself as an article, beside whatever the page is about.
+ *
+ * Recipe pages already carry Recipe markup, which is what earns the recipe
+ * rich result; this one describes the page as a piece of writing, which is
+ * what AI search tools and site audits (Ahrefs) look for. Google treats every
+ * Article field as recommended rather than required, so it adds no
+ * validation errors.
+ */
+export function articleSchema({
+  headline,
+  description,
+  image,
+  url,
+  datePublished,
+  dateModified,
+}: {
+  headline: string;
+  description: string;
+  image: string;
+  url: string;
+  datePublished?: string;
+  dateModified?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    // Google cuts headlines off at 110 characters.
+    headline: headline.slice(0, 110),
+    description,
+    image: [abs(image)],
+    author: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+    publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+    mainEntityOfPage: abs(url),
+    ...(datePublished ? { datePublished } : {}),
+    ...(dateModified ? { dateModified } : {}),
+  };
+}
+
+/**
  * A listing page's contents. `ItemList` tells Google the page is a collection
  * and what is in it, which helps the individual entries get discovered.
  */
