@@ -50,6 +50,9 @@ export default function LoginPage() {
     <main className="min-h-screen bg-cream px-5 pb-24 pt-40 sm:px-8">
       <div className="mx-auto max-w-md">
         <div className="mb-8 text-center">
+          {/* Crawlers flagged the page for having no heading; the visible
+              wordmark stays a span so nothing about it changes. */}
+          <h1 className="sr-only">Sign in to the recipes dashboard</h1>
           <span className="font-display text-3xl font-extrabold text-green">
             Angel<span className="text-gold">Food</span>
           </span>

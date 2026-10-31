@@ -92,6 +92,9 @@ export default function RecipeFallbackPage() {
   if (status === "loading") {
     return (
       <main className="flex min-h-[60vh] items-center justify-center bg-cream pt-32">
+        {/* The exported HTML is this state, which crawlers flagged for having
+            no heading. Hidden: the recipe brings its own once it loads. */}
+        <h1 className="sr-only">Recipe</h1>
         <p className="text-ink-soft">Loading recipe…</p>
       </main>
     );

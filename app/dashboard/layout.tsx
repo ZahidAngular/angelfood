@@ -27,6 +27,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!checked) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-cream pt-32">
+        {/* The exported HTML is this state, which crawlers flagged for having
+            no heading. Hidden: the page's own heading follows the login check. */}
+        <h1 className="sr-only">Recipes dashboard</h1>
         <p className="text-sm text-ink-soft">Loading…</p>
       </main>
     );
