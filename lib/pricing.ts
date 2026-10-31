@@ -59,8 +59,22 @@ export const DELIVERY_VARIES_BY_ISLAND: boolean =
  * The offer is free freight. Meals stay at the price the shop catalogue
  * carries, so nothing here touches what a meal costs.
  */
+/**
+ * Whether anything can be bought on the site.
+ *
+ * False puts the shop on hold: the nav button goes back to pointing at the
+ * stockist map, the cart disappears, every Buy online button stops being
+ * rendered, and /buy-now, /cart and the checkout are turned away at the
+ * CDN by the redirects in firebase.json. The pages are still built and the
+ * code is untouched — this is a shutter, not a demolition.
+ *
+ * Reopening is this flag and those four redirects, nothing else.
+ */
+export const ONLINE_STORE_OPEN = false;
+
 export const PRE_SALE = {
-  active: true,
+  // Off with the shop. A pre-sale nobody can order from is just a promise.
+  active: false,
   /** Wednesday 28 October 2026. */
   orderBy: "12 noon, Wednesday 28 October",
   /** The same deadline, short enough for a badge. */
