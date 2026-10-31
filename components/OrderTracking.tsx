@@ -145,6 +145,10 @@ export function OrderTracking() {
   if (loading) {
     return (
       <Centered>
+        {/* The exported HTML is this state, and crawlers flagged the page
+            for having no heading. Hidden, so nothing shifts when the real
+            heading arrives with the order. */}
+        <h1 className="sr-only">Track your order</h1>
         <Loader2 size={26} className="animate-spin text-green" />
         <p className="mt-4 text-sm text-ink-soft">Finding your order…</p>
       </Centered>
