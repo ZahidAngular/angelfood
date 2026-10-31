@@ -8,7 +8,7 @@ import { ProductsHeaderArt } from "@/components/ProductsHeaderArt";
 import { HashScroll } from "@/components/HashScroll";
 import { ProductCategoryNav } from "@/components/ProductCategoryNav";
 import { JsonLd } from "@/components/JsonLd";
-import { itemListSchema, productSchema } from "@/lib/schema";
+import { itemListSchema } from "@/lib/schema";
 import { PRODUCTS, MEATS, MEALS, getNutritionSlug } from "@/lib/site";
 import { OG_DEFAULTS } from "@/lib/og";
 
@@ -32,18 +32,13 @@ export default function ProductsPage() {
   // Cheeses, meats and meals share one listing page, so they share one list —
   // each entry points at its own ingredients page, which is the only per-product
   // URL the range has.
-  const allProducts = [
-    ...PRODUCTS.map((product) => ({ product, category: "Vegan cheese" })),
-    ...MEATS.map((product) => ({ product, category: "Plant-based meat" })),
-    ...MEALS.map((product) => ({ product, category: "Plant-based ready meal" })),
-  ];
-
-  // Where a product has an ingredients page, that page is its canonical URL;
-  // the rest are only ever shown here, so they point back at this listing.
-  const productUrl = (name: string) => {
-    const slug = getNutritionSlug(name);
-    return slug ? `/ingredients-nutrition-info/${slug}` : "/products";
-  };
+  //
+  // The list is the only markup here. There used to be a Product block per
+  // item as well, but Google reads Product markup on a listing page as a
+  // mistake, and without a price (the range sells in supermarkets, not here)
+  // every block failed its rich result checks — the one validation error the
+  // site audit kept reporting.
+  const allProducts = [...PRODUCTS, ...MEATS, ...MEALS];
 
   return (
     <main>
@@ -51,7 +46,7 @@ export default function ProductsPage() {
         data={itemListSchema({
           name: "The Angel Food range",
           url: "/products",
-          items: allProducts.flatMap(({ product }) => {
+          items: allProducts.flatMap((product) => {
             const slug = getNutritionSlug(product.name);
             return slug
               ? [
@@ -64,20 +59,6 @@ export default function ProductsPage() {
           }),
         })}
       />
-      {/* One Product block per item in the range, so each can earn its own
-          rich result rather than the page being read as a single thing. */}
-      {allProducts.map(({ product, category }) => (
-        <JsonLd
-          key={product.name}
-          data={productSchema({
-            name: product.name,
-            description: product.blurb,
-            image: product.image,
-            url: productUrl(product.name),
-            category,
-          })}
-        />
-      ))}
       <HashScroll />
       <PageHeader
         eyebrow="The range"
